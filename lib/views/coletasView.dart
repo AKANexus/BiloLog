@@ -2,6 +2,8 @@ import 'package:bilolog/widgets/coletasList.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../widgets/appDrawer.dart';
+
 class ColetasView extends StatelessWidget {
   ColetasView({Key? key}) : super(key: key);
   static const String routeName = "/coletasView";
@@ -11,17 +13,14 @@ class ColetasView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: AppDrawer(),
       appBar: AppBar(
         title: Text("Trilhogística"),
         actions: [
-          PopupMenuButton(
-              icon: const Icon(Icons.menu),
-              itemBuilder: (_) {
-                return [
-                  const PopupMenuItem(child: Text("Opção 1")),
-                  const PopupMenuItem(child: Text("Opção 2")),
-                ];
-              })
+          IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.add),
+          ),
         ],
       ),
       body: Padding(

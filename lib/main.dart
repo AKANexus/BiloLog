@@ -1,6 +1,8 @@
 import 'package:bilolog/providers/coletasProvider.dart';
+import 'package:bilolog/providers/entregasProvider.dart';
 import 'package:bilolog/views/authView.dart';
 import 'package:bilolog/views/coletasView.dart';
+import 'package:bilolog/views/entregasView.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,7 +17,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => ColetasProvider())],
+      providers: [
+        ChangeNotifierProvider(create: (_) => ColetasProvider()),
+        ChangeNotifierProvider(create: (_) => EntregasProvider()),
+      ],
       child: MaterialApp(
         title: 'Bilolog',
         theme: ThemeData(
@@ -24,6 +29,7 @@ class MyApp extends StatelessWidget {
         home: AuthenticationView(),
         routes: {
           ColetasView.routeName: (ctx) => ColetasView(),
+          EntregasView.routeName: (ctx) => EntregasView(),
         },
       ),
     );
