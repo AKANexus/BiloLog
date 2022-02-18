@@ -37,23 +37,17 @@ class AuthenticationProvider with ChangeNotifier {
         _name = content['name'];
         _uuid = content['uuid'];
         _authorization = content['authorization'];
-        print("NotifyListeners");
-        print(response.body);
+        print(_apiKey);
         notifyListeners();
         return;
       } else {
-        print("Erro esperado");
         onError(content['error']);
         return;
       }
     } on SocketException catch (se) {
-      print(se);
-      print("Falha de socket");
       onError("Falha de conexão");
       return;
     } on Exception catch (e) {
-      print(e);
-      print("Erro inesperado");
       onError("Erro inesperado");
       return;
     }

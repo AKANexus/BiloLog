@@ -12,12 +12,23 @@ class ColetasList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final coletasProvider = Provider.of<ColetasProvider>(context);
-    return ListView.builder(
-      itemBuilder: (ctx, ix) {
-        return ColetasListTile(coletasProvider.coletas[ix]);
-      },
-      itemCount: coletasProvider.coletas.length,
-    );
+    final mqi = MediaQuery.of(context);
+    return coletasProvider.coletas.length == 0
+        ? SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
+            child: Container(
+              height: mqi.size.height - 270,
+              child: Center(
+                child: Text("Nenhuma coleta recebida"),
+              ),
+            ),
+          )
+        : ListView.builder(
+            itemBuilder: (ctx, ix) {
+              return ColetasListTile(coletasProvider.coletas[ix]);
+            },
+            itemCount: coletasProvider.coletas.length,
+          );
   }
 }
 

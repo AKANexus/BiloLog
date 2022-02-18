@@ -15,10 +15,10 @@ class ColetasProvider with ChangeNotifier {
 
   Future<void> getColetas() async {
     final url = Uri.https("bilolog.herokuapp.com", "/listacoleta");
-    final header = {'apiKey': _apiKey} as Map<String, String>;
+    //final header = {'apiKey': _apiKey!} as Map<String, String>;
     try {
-      final response =
-          http.get(url, headers: header).timeout(Duration(seconds: 5));
+      final response = http.get(url,
+          headers: {'apiKey': _apiKey!}).timeout(Duration(seconds: 5));
     } catch (e) {}
   }
 }

@@ -130,22 +130,20 @@ class _AuthenticationViewState extends State<AuthenticationView> {
               ],
             ),
             if (_isBusy)
-              Expanded(
-                child: Container(
-                  child: Center(
-                    child: Container(
-                      height: 300,
-                      width: 250,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CircularProgressIndicator(),
-                        ],
-                      ),
+              Container(
+                child: Center(
+                  child: Container(
+                    height: 300,
+                    width: 250,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(),
+                      ],
                     ),
                   ),
-                  color: Colors.black54,
                 ),
+                color: Colors.black54,
               ),
           ],
         ),

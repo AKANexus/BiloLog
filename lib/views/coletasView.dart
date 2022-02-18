@@ -1,14 +1,47 @@
+import 'package:bilolog/providers/coletasProvider.dart';
 import 'package:bilolog/widgets/coletasList.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 import '../widgets/appDrawer.dart';
 
-class ColetasView extends StatelessWidget {
+class ColetasView extends StatefulWidget {
   ColetasView({Key? key}) : super(key: key);
   static const String routeName = "/coletasView";
 
+  @override
+  State<ColetasView> createState() => _ColetasViewState();
+}
+
+class _ColetasViewState extends State<ColetasView> {
   DateTime _filterDate = DateTime.now();
+
+  bool _isLoading = false;
+  bool _isInit = true;
+
+  Future<void> _getColetas(BuildContext context) async {
+    print("_getColetas called");
+    setState(() {
+      _isLoading = true;
+    });
+    final coletasProvider =
+        Provider.of<ColetasProvider>(context, listen: false);
+    await coletasProvider.getColetas();
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (_isInit) {
+      _getColetas(context);
+      _isInit = false;
+    }
+
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +80,13 @@ class ColetasView extends StatelessWidget {
             ],
           ),
           Expanded(
-            child: ColetasList(),
+            child: _isLoading
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : RefreshIndicator(
+                    onRefresh: () => _getColetas(context),
+                    child: ColetasList()),
           ),
         ]),
       ),
