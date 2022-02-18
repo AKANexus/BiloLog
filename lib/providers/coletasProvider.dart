@@ -26,7 +26,7 @@ class ColetasProvider with ChangeNotifier {
     //final header = {'apiKey': _apiKey!} as Map<String, String>;
     try {
       final response = await http.get(url,
-          headers: {'apiKey': _apiKey!}).timeout(Duration(seconds: 5));
+          headers: {'apiKey': _apiKey!}).timeout(Duration(seconds: 10));
       final content = json.decode(response.body);
       if (response.statusCode == 200 || response.statusCode == 201) {
         for (Map<String, dynamic> coleta in content) {

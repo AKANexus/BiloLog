@@ -3,6 +3,7 @@ import 'package:bilolog/providers/coletasProvider.dart';
 import 'package:bilolog/providers/entregasProvider.dart';
 import 'package:bilolog/views/authView.dart';
 import 'package:bilolog/views/coletasView.dart';
+import 'package:bilolog/views/entregaDetalheView.dart';
 import 'package:bilolog/views/entregasView.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
         routes: {
           ColetasView.routeName: (ctx) => ColetasView(),
           EntregasView.routeName: (ctx) => EntregasView(),
+          EntregaDetalheView.routeName: (ctx) => EntregaDetalheView(),
         },
       ),
     );

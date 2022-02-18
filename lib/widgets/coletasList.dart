@@ -45,7 +45,7 @@ class ColetasListTile extends StatelessWidget {
       onTap: () {
         final entregasProvider =
             Provider.of<EntregasProvider>(context, listen: false);
-        entregasProvider.entregas = coleta.entregas;
+        entregasProvider.coleta = coleta;
         Navigator.of(context).pushNamed(EntregasView.routeName);
       },
       child: Card(

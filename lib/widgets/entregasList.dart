@@ -1,5 +1,6 @@
 import 'package:bilolog/main.dart';
 import 'package:bilolog/models/entrega.dart';
+import 'package:bilolog/views/entregaDetalheView.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -21,9 +22,9 @@ class EntregasList extends StatelessWidget {
 }
 
 class EntregasListTile extends StatelessWidget {
-  EntregasListTile(this.entrega, {Key? key}) : super(key: key);
+  EntregasListTile(this._entrega, {Key? key}) : super(key: key);
 
-  final Entrega entrega;
+  final Entrega _entrega;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +39,7 @@ class EntregasListTile extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(2),
                   child: Text(
-                    entrega.cliente.nome,
+                    _entrega.cliente.nome,
                     style: Theme.of(context)
                         .textTheme
                         .bodyText1!
@@ -54,7 +55,7 @@ class EntregasListTile extends StatelessWidget {
                         width: 5,
                       ),
                       Text(
-                        entrega.codPacote.toString(),
+                        _entrega.codPacote.toString(),
                       ),
                     ],
                   ),
@@ -75,7 +76,7 @@ class EntregasListTile extends StatelessWidget {
                         width: 5,
                       ),
                       Text(
-                        "${entrega.cliente.cep.substring(0, 5)}-${entrega.cliente.cep.substring(5)}",
+                        "${_entrega.cliente.cep.substring(0, 5)}-${_entrega.cliente.cep.substring(5)}",
                         style: Theme.of(context)
                             .textTheme
                             .bodyText1!
@@ -92,7 +93,7 @@ class EntregasListTile extends StatelessWidget {
                       SizedBox(
                         width: 5,
                       ),
-                      Text(entrega.ultimoStatus),
+                      Text(_entrega.ultimoStatus),
                     ],
                   ),
                 )
@@ -100,7 +101,12 @@ class EntregasListTile extends StatelessWidget {
             ),
           ),
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              final entregasProvider =
+                  Provider.of<EntregasProvider>(context, listen: false);
+              entregasProvider.entrega = _entrega;
+              Navigator.of(context).pushNamed(EntregaDetalheView.routeName);
+            },
             child: Column(
               children: [
                 Icon(Icons.qr_code),
