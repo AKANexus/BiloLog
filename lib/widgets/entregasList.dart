@@ -23,7 +23,7 @@ class EntregasList extends StatelessWidget {
 class EntregasListTile extends StatelessWidget {
   EntregasListTile(this.entrega, {Key? key}) : super(key: key);
 
-  final entrega;
+  final Entrega entrega;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +38,7 @@ class EntregasListTile extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(2),
                   child: Text(
-                    "Washington Ferreira",
+                    entrega.cliente.nome,
                     style: Theme.of(context)
                         .textTheme
                         .bodyText1!
@@ -47,7 +47,17 @@ class EntregasListTile extends StatelessWidget {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(2),
-                  child: Text("41096219893"),
+                  child: Row(
+                    children: [
+                      Icon(Icons.border_outer_rounded, size: 20),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Text(
+                        entrega.codPacote.toString(),
+                      ),
+                    ],
+                  ),
                 )
               ],
             ),
@@ -58,17 +68,33 @@ class EntregasListTile extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.all(2),
-                  child: Text(
-                    "Washington Ferreira",
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyText1!
-                        .copyWith(fontSize: 14),
+                  child: Row(
+                    children: [
+                      Icon(Icons.markunread_mailbox_outlined, size: 20),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Text(
+                        "${entrega.cliente.cep.substring(0, 5)}-${entrega.cliente.cep.substring(5)}",
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyText1!
+                            .copyWith(fontSize: 14),
+                      ),
+                    ],
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(2),
-                  child: Text("41096219893"),
+                  child: Row(
+                    children: [
+                      Icon(Icons.share, size: 20),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Text(entrega.ultimoStatus),
+                    ],
+                  ),
                 )
               ],
             ),

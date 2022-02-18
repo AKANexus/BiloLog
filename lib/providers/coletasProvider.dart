@@ -4,6 +4,7 @@ import 'package:bilolog/models/cliente.dart';
 import 'package:bilolog/models/coleta.dart';
 import 'package:bilolog/models/coletaState.dart';
 import 'package:bilolog/models/entrega.dart';
+import 'package:bilolog/models/statusEntrega.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -47,22 +48,33 @@ class ColetasProvider with ChangeNotifier {
                   DateTime.fromMillisecondsSinceEpoch(coleta['dataColeta']),
               estadoColeta: ColetaStateConverter.convert(coleta['statusLista']),
               nomeVendedor: coleta['nomeCliente'],
-              pacotesColetados: 0,
               entregas: []);
           for (Map<String, dynamic> pacote in coleta['pacotes']) {
-            novaColeta.entregas.add(Entrega(
+            Entrega novaEntrega = Entrega(
               id: pacote['idPacote'],
               codPacote: pacote['idPacote'],
               cliente: Vendedor(
                 id: coleta['idCliente'],
-                nome: coleta['nomeCliente'],
+                nome: pacote['destinatario'],
                 endereco: pacote['logradouro'],
                 bairro: pacote['bairro'],
                 cep: pacote['CEP'].toString(),
                 complemento: pacote['complemento'],
               ),
               statusEntregas: [],
-            ));
+            );
+            for (var statusEntrega in pacote['status']) {
+              novaEntrega.statusEntregas.add(
+                StatusEntrega(
+                  timestamp: DateTime.fromMillisecondsSinceEpoch(
+                      statusEntrega['statusData']),
+                  funcionarioResponsavel: statusEntrega['nomeColaborador'],
+                  colaboradorId: statusEntrega['colaborador_id'],
+                  descricaoStatus: statusEntrega['statusPacote'],
+                ),
+              );
+            }
+            novaColeta.entregas.add(novaEntrega);
           }
           _coletas.add(novaColeta);
         }

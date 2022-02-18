@@ -1,5 +1,6 @@
 import 'package:bilolog/main.dart';
 import 'package:bilolog/models/coleta.dart';
+import 'package:bilolog/providers/entregasProvider.dart';
 import 'package:bilolog/views/entregasView.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -42,6 +43,9 @@ class ColetasListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        final entregasProvider =
+            Provider.of<EntregasProvider>(context, listen: false);
+        entregasProvider.entregas = coleta.entregas;
         Navigator.of(context).pushNamed(EntregasView.routeName);
       },
       child: Card(

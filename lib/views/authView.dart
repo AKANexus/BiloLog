@@ -12,6 +12,19 @@ class AuthenticationView extends StatefulWidget {
 }
 
 class _AuthenticationViewState extends State<AuthenticationView> {
+  bool _isInit = true;
+
+  @override
+  void didChangeDependencies() {
+    if (_isInit) {
+      final authProvider =
+          Provider.of<AuthenticationProvider>(context, listen: false);
+      authProvider.CheckForLogIn();
+      _isInit = false;
+    }
+    super.didChangeDependencies();
+  }
+
   final GlobalKey<FormState> _formKey = GlobalKey();
   bool _isBusy = false;
   String? _username;

@@ -19,4 +19,9 @@ class Entrega {
     required this.cliente,
     required this.statusEntregas,
   });
+
+  String get ultimoStatus {
+    if (statusEntregas.length < 1) return "Não disponível";
+    return statusEntregas.last.descricaoStatus;
+  }
 }

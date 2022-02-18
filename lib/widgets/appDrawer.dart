@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/authProvider.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({Key? key}) : super(key: key);
@@ -19,10 +22,16 @@ class AppDrawer extends StatelessWidget {
             title: Text("Opção 2"),
             onTap: () {},
           ),
+          Divider(),
           ListTile(
-            leading: Icon(Icons.hail),
-            title: Text("Opção 3"),
-            onTap: () {},
+            leading: Icon(Icons.logout),
+            title: Text("Logout"),
+            onTap: () {
+              final authProvider =
+                  Provider.of<AuthenticationProvider>(context, listen: false);
+              authProvider.LogOut();
+              Navigator.of(context).pop();
+            },
           )
         ],
       )),

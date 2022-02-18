@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:bilolog/models/coleta.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthenticationProvider with ChangeNotifier {
   String? _apiKey;
@@ -17,7 +18,19 @@ class AuthenticationProvider with ChangeNotifier {
   }
 
   String get apiKey {
-    return _apiKey!;
+    return _apiKey ?? "";
+  }
+
+  Future<void> LogOut() async {
+    _apiKey = null;
+    _name = null;
+    _uuid = null;
+    _authorization = null;
+    _error = null;
+    final prefs = await SharedPreferences.getInstance();
+    final apiKey = await prefs.remove('apiKey');
+
+    notifyListeners();
   }
 
   Future<void> LogIn(String username, String password, Function onError) async {
@@ -37,7 +50,9 @@ class AuthenticationProvider with ChangeNotifier {
         _name = content['name'];
         _uuid = content['uuid'];
         _authorization = content['authorization'];
-        print(_apiKey);
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('apiKey', _apiKey!);
+
         notifyListeners();
         return;
       } else {
@@ -50,6 +65,15 @@ class AuthenticationProvider with ChangeNotifier {
     } on Exception catch (e) {
       onError("Erro inesperado");
       return;
+    }
+  }
+
+  Future<void> CheckForLogIn() async {
+    final prefs = await SharedPreferences.getInstance();
+    final apiKey = await prefs.get('apiKey') as String?;
+    if (apiKey != null) {
+      _apiKey = apiKey;
+      notifyListeners();
     }
   }
 }

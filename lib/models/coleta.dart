@@ -6,7 +6,6 @@ class Coleta {
   final String id;
   final DateTime dtColeta;
   final String nomeVendedor;
-  final int pacotesColetados;
   ColetaState? _estadoColeta;
   final List<Entrega> entregas;
 
@@ -14,11 +13,13 @@ class Coleta {
     required this.id,
     required this.dtColeta,
     required this.nomeVendedor,
-    required this.pacotesColetados,
     required estadoColeta,
     required this.entregas,
   }) {
     _estadoColeta = estadoColeta;
+  }
+  int get pacotesColetados {
+    return entregas.length;
   }
 
   Map<String, dynamic> get estadoColeta {
