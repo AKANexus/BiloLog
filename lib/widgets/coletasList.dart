@@ -14,9 +14,9 @@ class ColetasList extends StatelessWidget {
     final coletasProvider = Provider.of<ColetasProvider>(context);
     return ListView.builder(
       itemBuilder: (ctx, ix) {
-        return ColetasListTile(coletasProvider.coletasTeste[ix]);
+        return ColetasListTile(coletasProvider.coletas[ix]);
       },
-      itemCount: coletasProvider.coletasTeste.length,
+      itemCount: coletasProvider.coletas.length,
     );
   }
 }

@@ -13,9 +13,9 @@ class EntregasList extends StatelessWidget {
     final entregasProvider = Provider.of<EntregasProvider>(context);
     return ListView.builder(
       itemBuilder: (ctx, ix) {
-        return EntregasListTile(entregasProvider.entregasTeste[ix]);
+        return EntregasListTile(entregasProvider.entregas[ix]);
       },
-      itemCount: entregasProvider.entregasTeste.length,
+      itemCount: entregasProvider.entregas.length,
     );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:bilolog/providers/authProvider.dart';
 import 'package:bilolog/providers/coletasProvider.dart';
 import 'package:bilolog/providers/entregasProvider.dart';
 import 'package:bilolog/views/authView.dart';
@@ -18,7 +19,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ColetasProvider()),
+        ChangeNotifierProvider(create: (_) => AuthenticationProvider()),
+        ChangeNotifierProxyProvider<AuthenticationProvider, ColetasProvider>(
+            create: (_) => ColetasProvider(),
+            update: (_, auth, previousProvider) =>
+                previousProvider!..apiKey = auth.apiKey),
         ChangeNotifierProvider(create: (_) => EntregasProvider()),
       ],
       child: MaterialApp(
@@ -26,7 +31,11 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: AuthenticationView(),
+        home: Consumer<AuthenticationProvider>(
+          builder: (context, auth, _) {
+            return auth.isLoggedIn ? ColetasView() : AuthenticationView();
+          },
+        ),
         routes: {
           ColetasView.routeName: (ctx) => ColetasView(),
           EntregasView.routeName: (ctx) => EntregasView(),
