@@ -21,7 +21,7 @@ class _ColetasViewState extends State<ColetasView> {
   bool _isInit = true;
 
   Future<void> _getColetas(BuildContext context) async {
-    print("_getColetas called");
+    //print("_getColetas called");
     setState(() {
       _isLoading = true;
     });

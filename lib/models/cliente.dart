@@ -1,12 +1,12 @@
-class Cliente {
-  final int id;
+class Vendedor {
+  final String id;
   final String nome;
   final String endereco;
   final String bairro;
   final String cep;
   final String complemento;
 
-  Cliente({
+  Vendedor({
     required this.id,
     required this.nome,
     required this.endereco,

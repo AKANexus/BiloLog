@@ -2,6 +2,7 @@ import 'package:bilolog/main.dart';
 import 'package:bilolog/models/coleta.dart';
 import 'package:bilolog/views/entregasView.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/coletasProvider.dart';
@@ -33,9 +34,9 @@ class ColetasList extends StatelessWidget {
 }
 
 class ColetasListTile extends StatelessWidget {
-  const ColetasListTile(Coleta this.coleta, {Key? key}) : super(key: key);
+  const ColetasListTile(this.coleta, {Key? key}) : super(key: key);
 
-  final coleta;
+  final Coleta coleta;
 
   @override
   Widget build(BuildContext context) {
@@ -54,24 +55,29 @@ class ColetasListTile extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(2),
                     child: Text(
-                      "01/01/0001",
+                      DateFormat.yMd().format(coleta.dtColeta),
                       textAlign: TextAlign.left,
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(2),
-                    child: Text(
-                      "Nome do cliente bem grande",
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyText1!
-                          .copyWith(fontSize: 16),
+                  FittedBox(
+                    alignment: Alignment.centerLeft,
+                    fit: BoxFit.scaleDown,
+                    child: Padding(
+                      padding: const EdgeInsets.all(2),
+                      child: Text(
+                        coleta.nomeVendedor,
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyText1!
+                            .copyWith(fontSize: 16),
+                      ),
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(2),
-                    child: Text("120 pacotes coletados"),
+                    child:
+                        Text(" ${coleta.pacotesColetados} pacotes coletados"),
                   )
                 ],
               ),
@@ -81,8 +87,8 @@ class ColetasListTile extends StatelessWidget {
             padding: const EdgeInsets.all(10),
             child: Column(
               children: [
-                Icon(Icons.check),
-                Text("confirmado"),
+                Icon(coleta.estadoColeta['icon']),
+                Text(coleta.estadoColeta['estado']),
               ],
             ),
           )
