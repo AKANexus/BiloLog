@@ -1,6 +1,7 @@
 import 'package:bilolog/providers/authProvider.dart';
 import 'package:bilolog/providers/coletasProvider.dart';
 import 'package:bilolog/providers/entregasProvider.dart';
+import 'package:bilolog/providers/novaColetaProvider.dart';
 import 'package:bilolog/views/authView.dart';
 import 'package:bilolog/views/coletasView.dart';
 import 'package:bilolog/views/entregaDetalheView.dart';
@@ -22,6 +23,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthenticationProvider()),
+        ChangeNotifierProvider(create: (_) => NovaColetaProvider()),
         ChangeNotifierProxyProvider<AuthenticationProvider, ColetasProvider>(
             create: (_) => ColetasProvider(),
             update: (_, auth, previousProvider) =>

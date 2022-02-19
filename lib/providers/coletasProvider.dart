@@ -17,7 +17,6 @@ class ColetasProvider with ChangeNotifier {
   String? _apiKey;
 
   List<Coleta> _coletas = [];
-
   List<Coleta> get coletas => [..._coletas];
 
   Future<void> getColetas() async {
