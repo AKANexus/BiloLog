@@ -1,4 +1,5 @@
 import 'package:bilolog/providers/coletasProvider.dart';
+import 'package:bilolog/views/qrScanView.dart';
 import 'package:bilolog/widgets/coletasList.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -51,7 +52,9 @@ class _ColetasViewState extends State<ColetasView> {
         title: Text("Trilhogística"),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).pushNamed(QRScanView.routeName);
+            },
             icon: Icon(Icons.add),
           ),
         ],
