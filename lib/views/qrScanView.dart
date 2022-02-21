@@ -49,8 +49,9 @@ class _QRScanViewState extends State<QRScanView> {
     super.didChangeDependencies();
   }
 
-  void conferirColeta() {
-    
+  void conferirColeta() async {
+    await Provider.of<NovaColetaProvider>(context, listen: false)
+        .conferirColeta();
   }
 
   @override
@@ -108,7 +109,7 @@ class _QRScanViewState extends State<QRScanView> {
             margin: EdgeInsets.symmetric(horizontal: 20),
             child: ElevatedButton(
               onPressed: () {
-                pegaInfoColeta();
+                conferirColeta();
               },
               child: Padding(
                 padding: const EdgeInsets.all(10.0),

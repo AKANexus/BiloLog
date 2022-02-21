@@ -21,6 +21,10 @@ class AuthenticationProvider with ChangeNotifier {
     return _apiKey ?? "";
   }
 
+  String get uuid {
+    return _uuid ?? "";
+  }
+
   Future<void> LogOut() async {
     _apiKey = null;
     _name = null;

@@ -1,9 +1,12 @@
 import 'package:bilolog/models/entrega.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 import '../models/coleta.dart';
 
 class NovaColetaProvider with ChangeNotifier {
+  Map<String, dynamic>? authInfo;
+
   List<EntregaEscaneada> _entregasEscaneadas = [];
   List<EntregaEscaneada> get entregasEscaneadas => [..._entregasEscaneadas];
 
@@ -36,10 +39,29 @@ class NovaColetaProvider with ChangeNotifier {
         .toList();
   }
 
-  Future<void> conferirColeta() async
-  {
-
+  Future<void> conferirColeta() async {
+    if (_entregasEscaneadas.length == 0) {
+      return;
+    }
+    if (authInfo == null) return;
+    final url = Uri.https("bilolog.kerokuapp.com", "/listacoleta");
+    try {
+      final response = http.post(url, headers: {
+        'apiKey': authInfo!['apiKey']
+      }, body: {
+        'vendedor_uuid': authInfo!['uuid'],
+        'listacoleta': _entregasEscaneadas
+            .map((e) => {'entregaId': e.id, 'senderId': e.senderId})
+      }).timeout(Duration(seconds: 10));
+      print("sent");
+    } catch (e) {}
   }
+  //\listacoletas
+  //Post
+  //header: apiKey
+  //body:
+  //vendedor_uuid: _uuid
+  //array[{id, senderId}]
 }
 
 class EntregaEscaneada {

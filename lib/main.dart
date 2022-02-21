@@ -23,7 +23,10 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthenticationProvider()),
-        ChangeNotifierProvider(create: (_) => NovaColetaProvider()),
+        ChangeNotifierProxyProvider<AuthenticationProvider, NovaColetaProvider>(
+            create: (_) => NovaColetaProvider(),
+            update: (_, auth, previousProvider) => previousProvider!
+              ..authInfo = {'apiKey': auth.apiKey, 'uuid': auth.uuid}),
         ChangeNotifierProxyProvider<AuthenticationProvider, ColetasProvider>(
             create: (_) => ColetasProvider(),
             update: (_, auth, previousProvider) =>
