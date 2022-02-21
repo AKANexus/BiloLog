@@ -49,7 +49,9 @@ class _QRScanViewState extends State<QRScanView> {
     super.didChangeDependencies();
   }
 
-  void conferirColeta() {}
+  void conferirColeta() {
+    
+  }
 
   @override
   void dispose() {

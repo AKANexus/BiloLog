@@ -35,6 +35,11 @@ class NovaColetaProvider with ChangeNotifier {
         .map((e) => e.id)
         .toList();
   }
+
+  Future<void> conferirColeta() async
+  {
+
+  }
 }
 
 class EntregaEscaneada {
