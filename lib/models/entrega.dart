@@ -8,7 +8,7 @@ class Entrega {
   final int codPacote;
   // final ColetaState statusEntrega;
   // final String numColeta;
-  final Vendedor cliente;
+  final Comprador cliente;
   final List<StatusEntrega> statusEntregas;
 
   Entrega({

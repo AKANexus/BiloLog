@@ -56,6 +56,12 @@ class Coleta {
           estado = "Entregue";
           break;
         }
+      case ColetaState.EmAnalise:
+        {
+          icon = Icons.question_mark;
+          estado = "Conferindo...";
+          break;
+        }
       default:
         throw Exception("Estado Coleta Inválido");
     }

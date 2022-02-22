@@ -1,4 +1,4 @@
-class Vendedor {
+class Comprador {
   final String id;
   final String nome;
   final String endereco;
@@ -6,7 +6,7 @@ class Vendedor {
   final String cep;
   final String complemento;
 
-  Vendedor({
+  Comprador({
     required this.id,
     required this.nome,
     required this.endereco,

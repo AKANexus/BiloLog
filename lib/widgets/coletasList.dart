@@ -9,13 +9,15 @@ import 'package:provider/provider.dart';
 import '../providers/coletasProvider.dart';
 
 class ColetasList extends StatelessWidget {
-  const ColetasList({Key? key}) : super(key: key);
+  ColetasList(List<Coleta> this._coletas, {Key? key}) : super(key: key);
+
+  List<Coleta> _coletas = [];
 
   @override
   Widget build(BuildContext context) {
-    final coletasProvider = Provider.of<ColetasProvider>(context);
+    //final coletasProvider = Provider.of<ColetasProvider>(context);
     final mqi = MediaQuery.of(context);
-    return coletasProvider.coletas.length == 0
+    return _coletas.length == 0
         ? SingleChildScrollView(
             physics: AlwaysScrollableScrollPhysics(),
             child: Container(
@@ -27,9 +29,9 @@ class ColetasList extends StatelessWidget {
           )
         : ListView.builder(
             itemBuilder: (ctx, ix) {
-              return ColetasListTile(coletasProvider.coletas[ix]);
+              return ColetasListTile(_coletas[ix]);
             },
-            itemCount: coletasProvider.coletas.length,
+            itemCount: _coletas.length,
           );
   }
 }

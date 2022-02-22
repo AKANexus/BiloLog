@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../models/coleta.dart';
 import '../widgets/appDrawer.dart';
 
 class ColetasView extends StatefulWidget {
+  //Stateful pois enquanto está em "loading", é exibido um _CircleLoading_, então muda o state da tela.
   ColetasView({Key? key}) : super(key: key);
   static const String routeName = "/coletasView";
 
@@ -18,6 +20,7 @@ class ColetasView extends StatefulWidget {
 class _ColetasViewState extends State<ColetasView> {
   DateTime _filterDate = DateTime.now();
 
+  List<Coleta>? _coletas;
   bool _isLoading = false;
   bool _isInit = true;
 
@@ -30,6 +33,7 @@ class _ColetasViewState extends State<ColetasView> {
         Provider.of<ColetasProvider>(context, listen: false);
     await coletasProvider.getColetas();
     setState(() {
+      _coletas = coletasProvider.coletas;
       _isLoading = false;
     });
   }
@@ -89,7 +93,7 @@ class _ColetasViewState extends State<ColetasView> {
                   )
                 : RefreshIndicator(
                     onRefresh: () => _getColetas(context),
-                    child: ColetasList()),
+                    child: ColetasList(_coletas!)),
           ),
         ]),
       ),

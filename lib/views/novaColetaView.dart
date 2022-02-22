@@ -7,9 +7,9 @@ import 'package:provider/provider.dart';
 
 import '../widgets/entregasList.dart';
 
-class EntregasView extends StatelessWidget {
-  EntregasView({Key? key}) : super(key: key);
-  static const String routeName = "/coletasView/entregasView";
+class NovaColetaView extends StatelessWidget {
+  NovaColetaView({Key? key}) : super(key: key);
+  static const String routeName = "/novaColetaView";
 
   late Coleta _coleta;
 

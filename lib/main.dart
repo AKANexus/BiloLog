@@ -12,6 +12,8 @@ import 'package:bilolog/views/qrScanView.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'views/novaColetaView.dart';
+
 void main() {
   HttpOverrides.global = MyHttpOverrides();
   runApp(const MyApp());
@@ -62,6 +64,7 @@ class MyApp extends StatelessWidget {
           EntregasView.routeName: (ctx) => EntregasView(),
           EntregaDetalheView.routeName: (ctx) => EntregaDetalheView(),
           QRScanView.routeName: (ctx) => QRScanView(),
+          NovaColetaView.routeName: (ctx) => NovaColetaView(),
         },
       ),
     );

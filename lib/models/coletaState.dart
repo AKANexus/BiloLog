@@ -1,4 +1,4 @@
-enum ColetaState { Confirmado, Coletado, Recebido, EmRota, Entregue }
+enum ColetaState { Confirmado, Coletado, Recebido, EmRota, Entregue, EmAnalise }
 
 class ColetaStateConverter {
   static ColetaState convert(String state) {

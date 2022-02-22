@@ -7,16 +7,18 @@ import 'package:provider/provider.dart';
 import '../providers/entregasProvider.dart';
 
 class EntregasList extends StatelessWidget {
-  const EntregasList({Key? key}) : super(key: key);
+  const EntregasList(this._entregas, {Key? key}) : super(key: key);
+
+  final List<Entrega> _entregas;
 
   @override
   Widget build(BuildContext context) {
-    final entregasProvider = Provider.of<EntregasProvider>(context);
+    //final entregasProvider = Provider.of<EntregasProvider>(context);
     return ListView.builder(
       itemBuilder: (ctx, ix) {
-        return EntregasListTile(entregasProvider.entregas[ix]);
+        return EntregasListTile(_entregas[ix]);
       },
-      itemCount: entregasProvider.entregas.length,
+      itemCount: _entregas.length,
     );
   }
 }

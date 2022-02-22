@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:bilolog/providers/novaColetaProvider.dart';
+import 'package:bilolog/views/novaColetaCheckView.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -49,8 +50,13 @@ class _QRScanViewState extends State<QRScanView> {
   }
 
   void conferirColeta() async {
-    await Provider.of<NovaColetaProvider>(context, listen: false)
-        .conferirColeta();
+    try {
+      await Provider.of<NovaColetaProvider>(context, listen: false)
+          .conferirColeta();
+    } on Exception catch (e) {
+      print("Falha ao conferirColeta()");
+    }
+    Navigator.of(context).pushNamed(NovaEntregaView.routeName);
   }
 
   @override
