@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:bilolog/models/entrega.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -10,7 +13,7 @@ class NovaColetaProvider with ChangeNotifier {
   List<EntregaEscaneada> _entregasEscaneadas = [];
   List<EntregaEscaneada> get entregasEscaneadas => [..._entregasEscaneadas];
 
-  void addNovaEntrega(String seller, String sender) {
+  void addNovaEntrega(String seller, int sender) {
     if (!_entregasEscaneadas
         .any((element) => element.senderId == sender && element.id == seller)) {
       _entregasEscaneadas.add(EntregaEscaneada(sender, seller));
@@ -22,8 +25,8 @@ class NovaColetaProvider with ChangeNotifier {
     _entregasEscaneadas.clear();
   }
 
-  List<String> get senders {
-    List<String> _senders = [];
+  List<int> get senders {
+    List<int> _senders = [];
     for (var entEsc in _entregasEscaneadas) {
       if (!_senders.contains(entEsc.senderId)) {
         _senders.add(entEsc.senderId);
@@ -44,17 +47,27 @@ class NovaColetaProvider with ChangeNotifier {
       return;
     }
     if (authInfo == null) return;
-    final url = Uri.https("bilolog.kerokuapp.com", "/listacoleta");
+    final url = Uri.https("bilolog.herokuapp.com", "/listacoleta");
+    final jsonBody = {
+      'transportadora_uuid': 2345, //authInfo!['uuid'],
+      'listacoleta': _entregasEscaneadas
+          .map((e) => {'id': e.id, 'sender_id': e.senderId})
+          .toList(),
+    };
+
     try {
-      final response = http.post(url, headers: {
-        'apiKey': authInfo!['apiKey']
-      }, body: {
-        'vendedor_uuid': authInfo!['uuid'],
-        'listacoleta': _entregasEscaneadas
-            .map((e) => {'entregaId': e.id, 'senderId': e.senderId})
-      }).timeout(Duration(seconds: 10));
+      final response = await http
+          .post(url,
+              headers: {
+                'apiKey': authInfo!['apiKey'] as String,
+                'content-type': 'application/json'
+              },
+              body: json.encode(jsonBody))
+          .timeout(Duration(seconds: 10));
       print("sent");
-    } catch (e) {}
+    } catch (e) {
+      print(e);
+    }
   }
   //\listacoletas
   //Post
@@ -65,7 +78,7 @@ class NovaColetaProvider with ChangeNotifier {
 }
 
 class EntregaEscaneada {
-  String senderId;
+  int senderId;
   String id;
 
   EntregaEscaneada(this.senderId, this.id);

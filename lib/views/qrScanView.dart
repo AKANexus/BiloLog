@@ -30,8 +30,7 @@ class _QRScanViewState extends State<QRScanView> {
       final novaColetaProvider =
           Provider.of<NovaColetaProvider>(context, listen: false);
       final qrParsed = json.decode(barcode);
-      novaColetaProvider.addNovaEntrega(
-          qrParsed['id'], qrParsed['sender_id'].toString());
+      novaColetaProvider.addNovaEntrega(qrParsed['id'], qrParsed['sender_id']);
     }
   }
 

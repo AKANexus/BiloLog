@@ -52,11 +52,13 @@ class AuthenticationProvider with ChangeNotifier {
       if (response.statusCode == 200 || response.statusCode == 201) {
         _apiKey = content['apiKey'];
         _name = content['name'];
-        _uuid = content['uuid'];
+        _uuid = content['transportadora']['uuid'];
         _authorization = content['authorization'];
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('apiKey', _apiKey!);
-
+        await prefs.setString('uuid', _uuid!); //Alterar para int
+        await prefs.setString('name', _name!);
+        await prefs.setString('authorization', _authorization!);
         notifyListeners();
         return;
       } else {

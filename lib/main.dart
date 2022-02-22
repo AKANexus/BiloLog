@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bilolog/providers/authProvider.dart';
 import 'package:bilolog/providers/coletasProvider.dart';
 import 'package:bilolog/providers/entregasProvider.dart';
@@ -11,8 +13,20 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 void main() {
+  HttpOverrides.global = MyHttpOverrides();
   runApp(const MyApp());
 }
+
+//TODO: REMOVE BEFORE PRODUCTION!!!!!
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
+}
+//TODO: REMOVE BEFORE PRODUCTION!!!!!
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
