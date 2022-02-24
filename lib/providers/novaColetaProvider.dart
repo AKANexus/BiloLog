@@ -60,6 +60,7 @@ class NovaColetaProvider with ChangeNotifier {
   }
 
   Future<void> conferirColeta() async {
+    _coletasVerificadas.clear();
     if (_entregasEscaneadas.length == 0) {
       return;
     }

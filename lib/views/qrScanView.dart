@@ -58,13 +58,16 @@ class _QRScanViewState extends State<QRScanView> {
   }
 
   void conferirColeta() async {
+    controller.stop();
     try {
       await Provider.of<NovaColetaProvider>(context, listen: false)
           .conferirColeta();
     } on Exception catch (e) {
       print("Falha ao conferirColeta()");
     }
-    Navigator.of(context).pushNamed(NovaColetaView.routeName);
+    Navigator.of(context)
+        .pushNamed(NovaColetaView.routeName)
+        .then((value) => controller.start());
   }
 
   @override
