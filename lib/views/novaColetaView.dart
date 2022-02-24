@@ -33,6 +33,32 @@ class _NovaColetaViewState extends State<NovaColetaView> {
     super.initState();
   }
 
+  void _onError(String errorMessage) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(errorMessage)));
+  }
+
+  void _conferirEEnviar() async {
+    setState(() {
+      _isBusy = true;
+    });
+
+    if (await Provider.of<ColetasProvider>(context, listen: false)
+        .postNovaColetaJson(
+            Provider.of<NovaColetaProvider>(context, listen: false)
+                .receivedJson,
+            onError: _onError)) {
+      Navigator.of(context).pushNamedAndRemoveUntil(
+          ColetasView.routeName, ModalRoute.withName('/'));
+    }
+
+    setState(() {
+      _isBusy = false;
+    });
+  }
+
+  bool _isBusy = false;
+
   @override
   Widget build(BuildContext context) {
     //final novaColetaProvider = Provider.of<NovaColetaProvider>(context);
@@ -113,20 +139,13 @@ class _NovaColetaViewState extends State<NovaColetaView> {
             Provider.of<NovaColetaProvider>(context, listen: false)
                 .entregasPorSellerName(vendedorSelecionado),
           )),
-          ElevatedButton(
-              onPressed: () async {
-                try {
-                  await Provider.of<ColetasProvider>(context, listen: false)
-                      .postNovaColetaJson(Provider.of<NovaColetaProvider>(
-                              context,
-                              listen: false)
-                          .receivedJson);
-                  Navigator.of(context).popUntil(ModalRoute.withName('/'));
-                } on Exception catch (e) {
-                  print("erro ao check and send");
-                }
-              },
-              child: Text("Conferir e enviar"))
+          _isBusy
+              ? Center(child: CircularProgressIndicator())
+              : ElevatedButton(
+                  onPressed: () {
+                    _conferirEEnviar();
+                  },
+                  child: Text("Conferir e enviar"))
         ]),
       ),
     );

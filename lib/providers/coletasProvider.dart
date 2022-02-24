@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:bilolog/models/cliente.dart';
 import 'package:bilolog/models/coleta.dart';
@@ -19,10 +21,25 @@ class ColetasProvider with ChangeNotifier {
   List<Coleta> _coletas = [];
   List<Coleta> get coletas => [..._coletas];
 
-  Future<void> getColetas() async {
+  Future<void> getColetas(
+      Function onError, DateTime startDate, DateTime endDate) async {
     _coletas.clear();
-    final url = Uri.https("bilolog.herokuapp.com", "/listacoleta");
-    //final header = {'apiKey': _apiKey!} as Map<String, String>;
+    final url = Uri(
+        scheme: 'https',
+        host: 'bilolog.herokuapp.com',
+        path: '/listacoleta',
+        query:
+            'dateStart=${DateTime(startDate.year, startDate.month, startDate.day).toIso8601String()}&dateEnd=${DateTime(endDate.year, endDate.month, endDate.day).toIso8601String()}'
+        // queryParameters: {
+        //   'startDate': Uri.encodeQueryComponent(
+        //       DateTime(startDate.year, startDate.month, startDate.day)
+        //           .toIso8601String()),
+        //   'endDate': Uri.encodeQueryComponent(
+        //       DateTime(endDate.year, endDate.month, endDate.day)
+        //           .toIso8601String()),
+        // },
+        );
+    print(url);
     try {
       final response = await http.get(url,
           headers: {'apiKey': _apiKey!}).timeout(Duration(seconds: 10));
@@ -78,10 +95,18 @@ class ColetasProvider with ChangeNotifier {
           }
           _coletas.add(novaColeta);
         }
+        _coletas.sort();
+        _coletas = _coletas.reversed.toList();
         notifyListeners();
+      } else {
+        onError(content['error']);
       }
-    } catch (e) {
-      print(e);
+    } on SocketException catch (socket) {
+      onError("Falha de conexão.\nVerifique sua conexão à internet.");
+    } on TimeoutException catch (timeout) {
+      onError("Falha na conexão. Tente novamente mais tarde.");
+    } on Exception catch (e) {
+      onError(e.toString());
     }
   }
 
@@ -95,13 +120,31 @@ class ColetasProvider with ChangeNotifier {
         .timeout(Duration(seconds: 10));
   }
 
-  Future<void> postNovaColetaJson(String jsonBody) async {
-    final url = Uri.https("bilolog.herokuapp.com", "/listacoleta");
-    final response = await http
-        .post(url,
-            headers: {'apiKey': _apiKey!, 'content-type': 'application/json'},
-            body: jsonBody)
-        .timeout(Duration(seconds: 10));
-    print(response);
+  Future<bool> postNovaColetaJson(String jsonBody,
+      {required Function onError}) async {
+    try {
+      final url = Uri.https("bilolog.herokuapp.com", "/listacoleta");
+      final response = await http
+          .post(url,
+              headers: {'apiKey': _apiKey!, 'content-type': 'application/json'},
+              body: jsonBody)
+          .timeout(Duration(seconds: 10));
+      final content = json.decode(response.body);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        onError(content['error']);
+        return false;
+      }
+    } on SocketException catch (socket) {
+      onError("Falha de conexão.\nVerifique sua conexão à internet.");
+      return false;
+    } on TimeoutException catch (timeout) {
+      onError("Falha na conexão. Tente novamente mais tarde.");
+      return false;
+    } on Exception catch (e) {
+      onError(e.toString());
+      return false;
+    }
   }
 }

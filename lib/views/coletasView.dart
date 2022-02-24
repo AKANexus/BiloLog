@@ -18,20 +18,25 @@ class ColetasView extends StatefulWidget {
 }
 
 class _ColetasViewState extends State<ColetasView> {
-  DateTime _filterDate = DateTime.now();
+  DateTime _startDate = DateTime.now();
+  DateTime _endDate = DateTime.now();
 
   List<Coleta>? _coletas;
   bool _isLoading = false;
   bool _isInit = true;
 
+  void _onError(String errorMessage) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(errorMessage)));
+  }
+
   Future<void> _getColetas(BuildContext context) async {
-    //print("_getColetas called");
     setState(() {
       _isLoading = true;
     });
     final coletasProvider =
         Provider.of<ColetasProvider>(context, listen: false);
-    await coletasProvider.getColetas();
+    await coletasProvider.getColetas(_onError, _startDate, _endDate);
     setState(() {
       _coletas = coletasProvider.coletas;
       _isLoading = false;
@@ -80,9 +85,40 @@ class _ColetasViewState extends State<ColetasView> {
             children: [
               Text("Lista de coletas"),
               TextButton.icon(
-                icon: Text(DateFormat('dd/MM/yyyy').format(_filterDate)),
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                ),
+                icon: Text(DateFormat('dd/MM/yyyy').format(_startDate)),
                 label: Icon(Icons.expand_more),
-                onPressed: () {},
+                onPressed: () async {
+                  final _selectedDate;
+                  _selectedDate = await showDatePicker(
+                      context: context,
+                      initialDate: _startDate,
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime.now());
+                  setState(() {
+                    _startDate = _selectedDate;
+                  });
+                },
+              ),
+              TextButton.icon(
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                ),
+                icon: Text(DateFormat('dd/MM/yyyy').format(_endDate)),
+                label: Icon(Icons.expand_more),
+                onPressed: () async {
+                  final _selectedDate;
+                  _selectedDate = await showDatePicker(
+                      context: context,
+                      initialDate: _endDate,
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime.now());
+                  setState(() {
+                    _endDate = _selectedDate;
+                  });
+                },
               )
             ],
           ),

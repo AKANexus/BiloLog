@@ -6,6 +6,7 @@ import 'package:bilolog/providers/novaColetaProvider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_beep/flutter_beep.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:provider/provider.dart';
 import 'package:vibration/vibration.dart';
@@ -22,16 +23,11 @@ class QRScanView extends StatefulWidget {
 }
 
 class _QRScanViewState extends State<QRScanView> {
+  bool _isBusy = false;
+
   String? _barcode;
   MobileScannerController controller =
       MobileScannerController(torchEnabled: false, facing: CameraFacing.back);
-
-  @override
-  void reassemble() {
-    // TODO: implement reassemble
-    super.reassemble();
-    controller.dispose();
-  }
 
   void _processQRCode(String barcode) {
     if (_barcode != barcode) {
@@ -39,6 +35,7 @@ class _QRScanViewState extends State<QRScanView> {
       print("QRCode detected>");
       print(barcode);
       Vibration.vibrate();
+      FlutterBeep.playSysSound(AndroidSoundIDs.TONE_CDMA_ABBR_ALERT);
       final novaColetaProvider =
           Provider.of<NovaColetaProvider>(context, listen: false);
       final qrParsed = json.decode(barcode);
@@ -57,17 +54,28 @@ class _QRScanViewState extends State<QRScanView> {
     super.didChangeDependencies();
   }
 
+  void _onError(String errorMessage) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(errorMessage)));
+  }
+
   void conferirColeta() async {
+    setState(() {
+      _isBusy = true;
+    });
     controller.stop();
     try {
       await Provider.of<NovaColetaProvider>(context, listen: false)
-          .conferirColeta();
+          .conferirColeta(_onError);
     } on Exception catch (e) {
       print("Falha ao conferirColeta()");
     }
     Navigator.of(context)
         .pushNamed(NovaColetaView.routeName)
         .then((value) => controller.start());
+    setState(() {
+      _isBusy = false;
+    });
   }
 
   @override
@@ -123,80 +131,24 @@ class _QRScanViewState extends State<QRScanView> {
           ),
           Container(
             margin: EdgeInsets.symmetric(horizontal: 20),
-            child: ElevatedButton(
-              onPressed: () {
-                conferirColeta();
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Text(
-                  "Conferir",
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyText2!
-                      .copyWith(fontSize: 22, color: Colors.white),
-                ),
-              ),
-            ),
+            child: _isBusy
+                ? Center(child: CircularProgressIndicator())
+                : ElevatedButton(
+                    onPressed: () {
+                      conferirColeta();
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Text(
+                        "Conferir",
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyText2!
+                            .copyWith(fontSize: 22, color: Colors.white),
+                      ),
+                    ),
+                  ),
           ),
-          // Container(
-          //   color: Colors.pink,
-          //   child: Row(
-          //       crossAxisAlignment: CrossAxisAlignment.center,
-          //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          //       children: [
-          //         IconButton(
-          //           color: Colors.white,
-          //           icon: ValueListenableBuilder(
-          //             valueListenable: controller.torchState,
-          //             builder: (context, state, child) {
-          //               switch (state as TorchState) {
-          //                 case TorchState.off:
-          //                   return const Icon(Icons.flash_off,
-          //                       color: Colors.grey);
-          //                 case TorchState.on:
-          //                   return const Icon(Icons.flash_on,
-          //                       color: Colors.yellow);
-          //               }
-          //             },
-          //           ),
-          //           iconSize: 32.0,
-          //           onPressed: () => controller.toggleTorch(),
-          //         ),
-          //         Center(
-          //           child: SizedBox(
-          //             width: MediaQuery.of(context).size.width - 120,
-          //             height: 50,
-          //             child: FittedBox(
-          //               child: Text(
-          //                 _barcode ?? 'Scan something!',
-          //                 overflow: TextOverflow.fade,
-          //                 style: Theme.of(context)
-          //                     .textTheme
-          //                     .headline4!
-          //                     .copyWith(color: Colors.white),
-          //               ),
-          //             ),
-          //           ),
-          //         ),
-          //         IconButton(
-          //           color: Colors.white,
-          //           icon: ValueListenableBuilder(
-          //             valueListenable: controller.cameraFacingState,
-          //             builder: (context, state, child) {
-          //               switch (state as CameraFacing) {
-          //                 case CameraFacing.front:
-          //                   return const Icon(Icons.camera_front);
-          //                 case CameraFacing.back:
-          //                   return const Icon(Icons.camera_rear);
-          //               }
-          //             },
-          //           ),
-          //           iconSize: 32.0,
-          //           onPressed: () => controller.switchCamera(),
-          //         ),
-          //       ]),
-          // ),
         ],
       ),
     );

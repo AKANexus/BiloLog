@@ -2,7 +2,7 @@ import 'package:bilolog/models/coletaState.dart';
 import 'package:bilolog/models/entrega.dart';
 import 'package:flutter/material.dart';
 
-class Coleta {
+class Coleta with Comparable<Coleta> {
   final int id;
   final DateTime dtColeta;
   final String nomeVendedor;
@@ -20,6 +20,11 @@ class Coleta {
   }
   int get pacotesColetados {
     return entregas.length;
+  }
+
+  @override
+  int compareTo(Coleta other) {
+    return (dtColeta.compareTo(other.dtColeta));
   }
 
   Map<String, dynamic> get estadoColeta {

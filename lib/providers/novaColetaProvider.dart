@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:bilolog/models/cliente.dart';
@@ -59,7 +61,7 @@ class NovaColetaProvider with ChangeNotifier {
     return _coletasVerificadas.map((e) => e.nomeVendedor).toList();
   }
 
-  Future<void> conferirColeta() async {
+  Future<void> conferirColeta(Function onError) async {
     _coletasVerificadas.clear();
     if (_entregasEscaneadas.length == 0) {
       return;
@@ -82,9 +84,9 @@ class NovaColetaProvider with ChangeNotifier {
               },
               body: json.encode(jsonBody))
           .timeout(Duration(seconds: 10));
+      final /*List<Map<String, dynamic>>*/ coletasRetornadas =
+          json.decode(response.body);
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final /*List<Map<String, dynamic>>*/ coletasRetornadas =
-            json.decode(response.body);
         receivedJson = response.body;
         for (Map<String, dynamic> coleta in coletasRetornadas) {
           var entregasVerificadas = coleta['listaPacotes'] as List<dynamic>;
@@ -111,11 +113,15 @@ class NovaColetaProvider with ChangeNotifier {
               nomeVendedor: coleta['nomeVendedor'],
               entregas: entregasAAdicionar));
         }
-        //notifyListeners();
+      } else {
+        onError(coletasRetornadas['error']);
       }
-    } catch (e) {
-      print('falha em novaColetaProvider:');
-      print(e);
+    } on SocketException catch (socket) {
+      onError("Falha de conexão.\nVerifique sua conexão à internet.");
+    } on TimeoutException catch (timeout) {
+      onError("Falha na conexão. Tente novamente mais tarde.");
+    } on Exception catch (e) {
+      onError(e.toString());
     }
   }
   //\listacoletas
