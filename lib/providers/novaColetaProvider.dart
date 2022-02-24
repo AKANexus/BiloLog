@@ -12,11 +12,19 @@ import '../models/coleta.dart';
 class NovaColetaProvider with ChangeNotifier {
   Map<String, dynamic>? authInfo;
 
+  late String receivedJson;
+
   List<EntregaEscaneada> _entregasEscaneadas = [];
   List<EntregaEscaneada> get entregasEscaneadas => [..._entregasEscaneadas];
 
   List<Coleta> _coletasVerificadas = [];
   List<Coleta> get coletasVerificadas => [..._coletasVerificadas];
+
+  List<Entrega> entregasPorSellerName(String nomeVendedor) {
+    return _coletasVerificadas
+        .firstWhere((element) => element.nomeVendedor == nomeVendedor)
+        .entregas;
+  }
 
   void addNovaEntrega(String seller, int sender) {
     if (!_entregasEscaneadas
@@ -47,6 +55,10 @@ class NovaColetaProvider with ChangeNotifier {
         .toList();
   }
 
+  List<String> get SellerNames {
+    return _coletasVerificadas.map((e) => e.nomeVendedor).toList();
+  }
+
   Future<void> conferirColeta() async {
     if (_entregasEscaneadas.length == 0) {
       return;
@@ -72,14 +84,16 @@ class NovaColetaProvider with ChangeNotifier {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final /*List<Map<String, dynamic>>*/ coletasRetornadas =
             json.decode(response.body);
+        receivedJson = response.body;
         for (Map<String, dynamic> coleta in coletasRetornadas) {
-          var entregasVerificadas = coleta['listaColeta'] as List<dynamic>;
+          var entregasVerificadas = coleta['listaPacotes'] as List<dynamic>;
           List<Entrega> entregasAAdicionar = [];
           for (var entregaVerificada in entregasVerificadas) {
             entregasAAdicionar.add(Entrega(
                 id: -1,
+                vendedorName: coleta['nomeVendedor'],
                 cliente: Comprador(
-                  id: "",
+                  id: -1,
                   nome: entregaVerificada['destinatario'],
                   endereco: entregaVerificada['logradouro'],
                   bairro: entregaVerificada['bairro'],
@@ -90,10 +104,10 @@ class NovaColetaProvider with ChangeNotifier {
                 statusEntregas: []));
           }
           _coletasVerificadas.add(Coleta(
-              id: "-1",
+              id: -1,
               dtColeta: DateTime.now(),
               estadoColeta: ColetaState.EmAnalise,
-              nomeVendedor: coleta['nickanme'],
+              nomeVendedor: coleta['nomeVendedor'],
               entregas: entregasAAdicionar));
         }
         //notifyListeners();

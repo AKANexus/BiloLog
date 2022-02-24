@@ -10,6 +10,7 @@ class Entrega {
   // final String numColeta;
   final Comprador cliente;
   final List<StatusEntrega> statusEntregas;
+  final String vendedorName;
 
   Entrega({
     required this.id,
@@ -18,10 +19,11 @@ class Entrega {
     // required this.numColeta,
     required this.cliente,
     required this.statusEntregas,
+    required this.vendedorName,
   });
 
   String get ultimoStatus {
-    if (statusEntregas.length < 1) return "Não disponível";
+    if (statusEntregas.length < 1) return "Coletando...";
     return statusEntregas.last.descricaoStatus;
   }
 }

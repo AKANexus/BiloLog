@@ -1,5 +1,5 @@
 class Comprador {
-  final String id;
+  final int id;
   final String nome;
   final String endereco;
   final String bairro;

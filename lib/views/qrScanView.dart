@@ -3,17 +3,19 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:bilolog/providers/novaColetaProvider.dart';
-import 'package:bilolog/views/novaColetaCheckView.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:provider/provider.dart';
 import 'package:vibration/vibration.dart';
 
+import 'novaColetaView.dart';
+
 class QRScanView extends StatefulWidget {
   QRScanView({Key? key}) : super(key: key);
 
-  static const String routeName = "/qrScanView";
+  static const String routeName = "/novaColeta";
 
   @override
   State<QRScanView> createState() => _QRScanViewState();
@@ -21,6 +23,15 @@ class QRScanView extends StatefulWidget {
 
 class _QRScanViewState extends State<QRScanView> {
   String? _barcode;
+  MobileScannerController controller =
+      MobileScannerController(torchEnabled: false, facing: CameraFacing.back);
+
+  @override
+  void reassemble() {
+    // TODO: implement reassemble
+    super.reassemble();
+    controller.dispose();
+  }
 
   void _processQRCode(String barcode) {
     if (_barcode != barcode) {
@@ -34,9 +45,6 @@ class _QRScanViewState extends State<QRScanView> {
       novaColetaProvider.addNovaEntrega(qrParsed['id'], qrParsed['sender_id']);
     }
   }
-
-  MobileScannerController controller =
-      MobileScannerController(torchEnabled: false, facing: CameraFacing.back);
 
   bool _isInit = true;
 
@@ -56,7 +64,7 @@ class _QRScanViewState extends State<QRScanView> {
     } on Exception catch (e) {
       print("Falha ao conferirColeta()");
     }
-    Navigator.of(context).pushNamed(NovaEntregaView.routeName);
+    Navigator.of(context).pushNamed(NovaColetaView.routeName);
   }
 
   @override
@@ -100,7 +108,7 @@ class _QRScanViewState extends State<QRScanView> {
                   borderRadius: BorderRadius.circular(15)),
               child: MobileScanner(
                 onDetect: (barcode, args) {
-                  _processQRCode(barcode.rawValue);
+                  _processQRCode(barcode.rawValue ?? "");
                 },
                 controller: controller,
                 //fit: BoxFit.fitHeight,

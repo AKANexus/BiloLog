@@ -3,7 +3,7 @@ import 'package:bilolog/models/entrega.dart';
 import 'package:flutter/material.dart';
 
 class Coleta {
-  final String id;
+  final int id;
   final DateTime dtColeta;
   final String nomeVendedor;
   ColetaState? _estadoColeta;

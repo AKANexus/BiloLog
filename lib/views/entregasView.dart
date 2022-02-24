@@ -40,7 +40,7 @@ class EntregasView extends StatelessWidget {
                 Text(_coleta.nomeVendedor,
                     style: Theme.of(context).textTheme.headline5),
                 Text(
-                  "{_coleta.pacotesColetados} pacotes coletados",
+                  "${_coleta.pacotesColetados} pacotes coletados",
                   style: Theme.of(context).textTheme.headline6!.copyWith(
                         color: Colors.grey,
                       ),

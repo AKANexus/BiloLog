@@ -6,19 +6,17 @@ import 'package:provider/provider.dart';
 
 class EntregaDetalheView extends StatelessWidget {
   EntregaDetalheView({Key? key}) : super(key: key);
-  static const String routeName =
-      "/coletasView/entregasView/entregaDetalheView";
+  static const String routeName = "/entregaDetalheView";
+
+  late Entrega _entrega;
+  //late String _vendedorName;
 
   @override
   Widget build(BuildContext context) {
-    final entregaProvider =
-        Provider.of<EntregasProvider>(context, listen: false);
-    if (entregaProvider.entregaDetalhe == null) {
-      print("entrega era nulo");
-      throw Exception();
-    }
-    final _entrega = entregaProvider.entregaDetalhe;
-    final _coleta = entregaProvider.coleta;
+    final args =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    _entrega = args['entrega'];
+    //_vendedorName = args['vendedorName'];
     return Scaffold(
       appBar: AppBar(
         title: Text("Trilhogística"),
@@ -55,7 +53,7 @@ class EntregaDetalheView extends StatelessWidget {
                           children: [
                             Icon(Icons.add_box),
                             SizedBox(width: 5),
-                            Text(_entrega!.codPacote.toString()),
+                            Text(_entrega.codPacote.toString()),
                           ],
                         ),
                       ],
@@ -100,22 +98,23 @@ class EntregaDetalheView extends StatelessWidget {
                         ),
                         SizedBox(height: 5),
                         Text(
-                          _coleta!.nomeVendedor,
+                          _entrega.vendedorName,
                           style: Theme.of(context).textTheme.bodyText1,
                         ),
                       ],
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Nº Coleta",
-                          style: Theme.of(context).textTheme.bodyText1,
-                        ),
-                        SizedBox(height: 5),
-                        Text("69420"),
-                      ],
-                    ),
+                    if (_entrega.id > 0)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Nº Coleta",
+                            style: Theme.of(context).textTheme.bodyText1,
+                          ),
+                          SizedBox(height: 5),
+                          Text(_entrega.id.toString()),
+                        ],
+                      ),
                   ],
                 ),
               ],
@@ -154,30 +153,32 @@ class EntregaDetalheView extends StatelessWidget {
                 SizedBox(
                   width: 15,
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      _entrega.cliente.nome,
-                      style: Theme.of(context).textTheme.bodyText2,
-                    ),
-                    Text(
-                      _entrega.cliente.endereco,
-                      style: Theme.of(context).textTheme.bodyText2,
-                    ),
-                    Text(
-                      _entrega.cliente.bairro,
-                      style: Theme.of(context).textTheme.bodyText2,
-                    ),
-                    Text(
-                      _entrega.cliente.cep,
-                      style: Theme.of(context).textTheme.bodyText2,
-                    ),
-                    Text(
-                      _entrega.cliente.complemento,
-                      style: Theme.of(context).textTheme.bodyText2,
-                    ),
-                  ],
+                Flexible(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _entrega.cliente.nome,
+                        style: Theme.of(context).textTheme.bodyText2,
+                      ),
+                      Text(
+                        _entrega.cliente.endereco,
+                        style: Theme.of(context).textTheme.bodyText2,
+                      ),
+                      Text(
+                        _entrega.cliente.bairro,
+                        style: Theme.of(context).textTheme.bodyText2,
+                      ),
+                      Text(
+                        _entrega.cliente.cep,
+                        style: Theme.of(context).textTheme.bodyText2,
+                      ),
+                      Text(
+                        _entrega.cliente.complemento,
+                        style: Theme.of(context).textTheme.bodyText2,
+                      ),
+                    ],
+                  ),
                 )
               ],
             ),

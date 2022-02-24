@@ -104,10 +104,11 @@ class EntregasListTile extends StatelessWidget {
           ),
           TextButton(
             onPressed: () {
-              final entregasProvider =
-                  Provider.of<EntregasProvider>(context, listen: false);
-              entregasProvider.entrega = _entrega;
-              Navigator.of(context).pushNamed(EntregaDetalheView.routeName);
+              // final entregasProvider =
+              //     Provider.of<EntregasProvider>(context, listen: false);
+              // entregasProvider.entrega = _entrega;
+              Navigator.of(context).pushNamed(EntregaDetalheView.routeName,
+                  arguments: {'entrega': _entrega});
             },
             child: Column(
               children: [
