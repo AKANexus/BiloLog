@@ -11,6 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
+import '../env/apiUrl.dart';
+
 class ColetasProvider with ChangeNotifier {
   set apiKey(String value) {
     _apiKey = value;
@@ -26,19 +28,10 @@ class ColetasProvider with ChangeNotifier {
     _coletas.clear();
     final url = Uri(
         scheme: 'https',
-        host: 'bilolog.herokuapp.com',
-        path: '/listacoleta',
+        host: ApiURL.apiAuthority,
+        path: '/listacoleta/',
         query:
-            'dateStart=${DateTime(startDate.year, startDate.month, startDate.day).toIso8601String()}&dateEnd=${DateTime(endDate.year, endDate.month, endDate.day).toIso8601String()}'
-        // queryParameters: {
-        //   'startDate': Uri.encodeQueryComponent(
-        //       DateTime(startDate.year, startDate.month, startDate.day)
-        //           .toIso8601String()),
-        //   'endDate': Uri.encodeQueryComponent(
-        //       DateTime(endDate.year, endDate.month, endDate.day)
-        //           .toIso8601String()),
-        // },
-        );
+            'dateStart=${DateTime(startDate.year, startDate.month, startDate.day).toIso8601String()}&dateEnd=${DateTime(endDate.year, endDate.month, endDate.day).add(Duration(days: 1)).toIso8601String()}');
     print(url);
     try {
       final response = await http.get(url,
@@ -111,7 +104,7 @@ class ColetasProvider with ChangeNotifier {
   }
 
   Future<void> postNovaColeta(Coleta coleta) async {
-    final url = Uri.https("bilolog.herokuapp.com", "/listacoleta");
+    final url = Uri.https(ApiURL.apiAuthority, "/listacoleta");
     final jsonBody = {};
     final response = await http
         .post(url,
@@ -123,7 +116,7 @@ class ColetasProvider with ChangeNotifier {
   Future<bool> postNovaColetaJson(String jsonBody,
       {required Function onError}) async {
     try {
-      final url = Uri.https("bilolog.herokuapp.com", "/listacoleta");
+      final url = Uri.https(ApiURL.apiAuthority, "/listacoleta");
       final response = await http
           .post(url,
               headers: {'apiKey': _apiKey!, 'content-type': 'application/json'},

@@ -9,6 +9,7 @@ import 'package:bilolog/models/entrega.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../env/apiUrl.dart';
 import '../models/coleta.dart';
 
 class NovaColetaProvider with ChangeNotifier {
@@ -67,10 +68,11 @@ class NovaColetaProvider with ChangeNotifier {
       return;
     }
     if (authInfo == null) return;
-    final url = Uri.https("bilolog.herokuapp.com", "/listacoleta/check");
+    final url = Uri.https(ApiURL.apiAuthority, "/listacoleta/check");
+    print(url);
     final jsonBody = {
       'transportadora_uuid': 2345, //authInfo!['uuid'],
-      'listacoleta': _entregasEscaneadas
+      'pacotes': _entregasEscaneadas
           .map((e) => {'id': e.id, 'sender_id': e.senderId})
           .toList(),
     };
@@ -89,7 +91,7 @@ class NovaColetaProvider with ChangeNotifier {
       if (response.statusCode == 200 || response.statusCode == 201) {
         receivedJson = response.body;
         for (Map<String, dynamic> coleta in coletasRetornadas) {
-          var entregasVerificadas = coleta['listaPacotes'] as List<dynamic>;
+          var entregasVerificadas = coleta['pacotes'] as List<dynamic>;
           List<Entrega> entregasAAdicionar = [];
           for (var entregaVerificada in entregasVerificadas) {
             entregasAAdicionar.add(Entrega(

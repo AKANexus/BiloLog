@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:bilolog/env/apiUrl.dart';
 import 'package:bilolog/models/coleta.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -39,7 +40,7 @@ class AuthenticationProvider with ChangeNotifier {
 
   Future<void> LogIn(String username, String password, Function onError) async {
     final loginUrl =
-        Uri.https("bilolog.herokuapp.com", "/transcolaboradores/login");
+        Uri.https(ApiURL.apiAuthority, "/transcolaboradores/login");
     try {
       final apiBody = {
         'username': username,
