@@ -1,5 +1,5 @@
 import 'package:bilolog/providers/coletasProvider.dart';
-import 'package:bilolog/views/qrScanView.dart';
+import 'package:bilolog/views/ColetaQRScanView.dart';
 import 'package:bilolog/widgets/coletasList.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -62,7 +62,7 @@ class _ColetasViewState extends State<ColetasView> {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.of(context).pushNamed(QRScanView.routeName);
+              Navigator.of(context).pushNamed(ColetaQRScanView.routeName);
             },
             icon: Icon(Icons.add),
           ),

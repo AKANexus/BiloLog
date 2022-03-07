@@ -13,16 +13,16 @@ import 'package:vibration/vibration.dart';
 
 import 'novaColetaView.dart';
 
-class QRScanView extends StatefulWidget {
-  QRScanView({Key? key}) : super(key: key);
+class ColetaQRScanView extends StatefulWidget {
+  ColetaQRScanView({Key? key}) : super(key: key);
 
   static const String routeName = "/novaColeta";
 
   @override
-  State<QRScanView> createState() => _QRScanViewState();
+  State<ColetaQRScanView> createState() => _ColetaQRScanViewState();
 }
 
-class _QRScanViewState extends State<QRScanView> {
+class _ColetaQRScanViewState extends State<ColetaQRScanView> {
   bool _isBusy = false;
 
   String? _barcode;

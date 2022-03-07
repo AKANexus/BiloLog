@@ -3,18 +3,19 @@ enum ColetaState { Confirmado, Coletado, Recebido, EmRota, Entregue, EmAnalise }
 class ColetaStateConverter {
   static ColetaState convert(String state) {
     ColetaState convertido;
-    switch (state) {
-      case "Recebido":
+    switch (state.toLowerCase()) {
+      case "recebido":
         return ColetaState.Recebido;
-      case "Confirmado":
+      case "confirmado":
         return ColetaState.Confirmado;
-      case "Coletado":
+      case "coletado":
         return ColetaState.Coletado;
-      case "Em rota":
+      case "em rota":
         return ColetaState.EmRota;
-      case "Entregue":
+      case "entregue":
         return ColetaState.Entregue;
       default:
+        print("State was $state");
         throw ArgumentError("O argumento informado não era esperado", "state");
     }
   }

@@ -1,6 +1,6 @@
 import 'package:bilolog/models/coleta.dart';
 import 'package:bilolog/providers/coletasProvider.dart';
-import 'package:bilolog/providers/entregasProvider.dart';
+import 'package:bilolog/providers/coletaPacotesProvider.dart';
 import 'package:bilolog/providers/novaColetaProvider.dart';
 import 'package:bilolog/views/coletasView.dart';
 import 'package:flutter/material.dart';

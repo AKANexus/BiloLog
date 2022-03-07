@@ -7,7 +7,7 @@ class Coleta with Comparable<Coleta> {
   final DateTime dtColeta;
   final String nomeVendedor;
   ColetaState? _estadoColeta;
-  final List<Entrega> entregas;
+  final List<Pacote> entregas;
 
   Coleta({
     required this.id,

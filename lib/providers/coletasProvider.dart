@@ -60,7 +60,7 @@ class ColetasProvider with ChangeNotifier {
               nomeVendedor: coleta['vendedor']['name'],
               entregas: []);
           for (Map<String, dynamic> pacote in coleta['pacotes']) {
-            Entrega novaEntrega = Entrega(
+            Pacote novaEntrega = Pacote(
               vendedorName: coleta['vendedor']['name'],
               id: pacote['id'],
               codPacote: pacote['id'],

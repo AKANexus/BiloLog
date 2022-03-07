@@ -2,17 +2,17 @@ import 'package:bilolog/models/coleta.dart';
 import 'package:bilolog/models/entrega.dart';
 import 'package:flutter/material.dart';
 
-class EntregasProvider with ChangeNotifier {
-  List<Entrega> _entregas = [];
-  List<Entrega> get entregas => [..._entregas];
+class ColetaPacotesProvider with ChangeNotifier {
+  List<Pacote> _entregas = [];
+  List<Pacote> get entregas => [..._entregas];
 
   Coleta? _coleta;
   Coleta? get coleta => _coleta;
 
-  Entrega? _entregaDetalhe;
-  Entrega? get entregaDetalhe => _entregaDetalhe;
+  Pacote? _entregaDetalhe;
+  Pacote? get entregaDetalhe => _entregaDetalhe;
 
-  set entrega(Entrega value) {
+  set entrega(Pacote value) {
     _entregaDetalhe = value;
   }
 
@@ -26,7 +26,7 @@ class EntregasProvider with ChangeNotifier {
     }
   }
 
-  set entregas(List<Entrega> value) {
+  set entregas(List<Pacote> value) {
     _entregas.clear();
     for (var entrega in value) {
       _entregas.add(entrega);

@@ -1,21 +1,20 @@
 import 'package:bilolog/models/entrega.dart';
-import 'package:bilolog/providers/entregasProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-class EntregaDetalheView extends StatelessWidget {
-  EntregaDetalheView({Key? key}) : super(key: key);
+class ColetaPacoteDetalheView extends StatelessWidget {
+  ColetaPacoteDetalheView({Key? key}) : super(key: key);
   static const String routeName = "/entregaDetalheView";
 
-  late Entrega _entrega;
+  late Pacote _pacote;
   //late String _vendedorName;
 
   @override
   Widget build(BuildContext context) {
     final args =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-    _entrega = args['entrega'];
+    _pacote = args['entrega'];
     //_vendedorName = args['vendedorName'];
     return Scaffold(
       appBar: AppBar(
@@ -53,7 +52,7 @@ class EntregaDetalheView extends StatelessWidget {
                           children: [
                             Icon(Icons.add_box),
                             SizedBox(width: 5),
-                            Text(_entrega.codPacote.toString()),
+                            Text(_pacote.codPacote.toString()),
                           ],
                         ),
                       ],
@@ -73,7 +72,7 @@ class EntregaDetalheView extends StatelessWidget {
                           children: [
                             Icon(Icons.share),
                             SizedBox(width: 5),
-                            Text(_entrega.ultimoStatus),
+                            Text(_pacote.ultimoStatus),
                           ],
                         ),
                       ],
@@ -98,12 +97,12 @@ class EntregaDetalheView extends StatelessWidget {
                         ),
                         SizedBox(height: 5),
                         Text(
-                          _entrega.vendedorName,
+                          _pacote.vendedorName,
                           style: Theme.of(context).textTheme.bodyText1,
                         ),
                       ],
                     ),
-                    if (_entrega.id > 0)
+                    if (_pacote.id > 0)
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -112,7 +111,7 @@ class EntregaDetalheView extends StatelessWidget {
                             style: Theme.of(context).textTheme.bodyText1,
                           ),
                           SizedBox(height: 5),
-                          Text(_entrega.id.toString()),
+                          Text(_pacote.id.toString()),
                         ],
                       ),
                   ],
@@ -158,23 +157,23 @@ class EntregaDetalheView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _entrega.cliente.nome,
+                        _pacote.cliente.nome,
                         style: Theme.of(context).textTheme.bodyText2,
                       ),
                       Text(
-                        _entrega.cliente.endereco,
+                        _pacote.cliente.endereco,
                         style: Theme.of(context).textTheme.bodyText2,
                       ),
                       Text(
-                        _entrega.cliente.bairro,
+                        _pacote.cliente.bairro,
                         style: Theme.of(context).textTheme.bodyText2,
                       ),
                       Text(
-                        _entrega.cliente.cep,
+                        _pacote.cliente.cep,
                         style: Theme.of(context).textTheme.bodyText2,
                       ),
                       Text(
-                        _entrega.cliente.complemento,
+                        _pacote.cliente.complemento,
                         style: Theme.of(context).textTheme.bodyText2,
                       ),
                     ],
@@ -197,10 +196,10 @@ class EntregaDetalheView extends StatelessWidget {
                         children: [
                           Text(DateFormat.yMd()
                               .add_Hm()
-                              .format(_entrega.statusEntregas[ix].timestamp)),
+                              .format(_pacote.statusEntregas[ix].timestamp)),
                           SizedBox(width: 15),
                           Text(
-                            _entrega.statusEntregas[ix].descricaoStatus,
+                            _pacote.statusEntregas[ix].descricaoStatus,
                             style: Theme.of(context).textTheme.bodyText1,
                           )
                         ],
@@ -211,14 +210,14 @@ class EntregaDetalheView extends StatelessWidget {
                           Text("Funcionário Responsável:"),
                           SizedBox(width: 15),
                           Text(
-                            _entrega.statusEntregas[ix].funcionarioResponsavel,
+                            _pacote.statusEntregas[ix].funcionarioResponsavel,
                           )
                         ],
                       ),
-                      if (ix != _entrega.statusEntregas.length - 1) Divider()
+                      if (ix != _pacote.statusEntregas.length - 1) Divider()
                     ]),
                   ),
-                  itemCount: _entrega.statusEntregas.length,
+                  itemCount: _pacote.statusEntregas.length,
                 ),
               ),
             )

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bilolog/env/apiUrl.dart';
+import 'package:bilolog/models/cargo.dart';
 import 'package:bilolog/models/coleta.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -16,6 +17,17 @@ class AuthenticationProvider with ChangeNotifier {
 
   bool get isLoggedIn {
     return (_apiKey != null);
+  }
+
+  Cargo get authorization {
+    switch (_authorization) {
+      case "motocorno":
+        return Cargo.Motocorno;
+      case "coletor":
+        return Cargo.Coletor;
+      default:
+        return Cargo.INVALID;
+    }
   }
 
   String get apiKey {
@@ -80,6 +92,9 @@ class AuthenticationProvider with ChangeNotifier {
     final apiKey = await prefs.get('apiKey') as String?;
     if (apiKey != null) {
       _apiKey = apiKey;
+      _authorization = await prefs.get('authorization') as String;
+      _name = await prefs.get('name') as String;
+      _uuid = await prefs.get('uuid') as String;
       notifyListeners();
     }
   }

@@ -17,13 +17,13 @@ class NovaColetaProvider with ChangeNotifier {
 
   late String receivedJson;
 
-  List<EntregaEscaneada> _entregasEscaneadas = [];
-  List<EntregaEscaneada> get entregasEscaneadas => [..._entregasEscaneadas];
+  List<PacoteEscaneado> _entregasEscaneadas = [];
+  List<PacoteEscaneado> get entregasEscaneadas => [..._entregasEscaneadas];
 
   List<Coleta> _coletasVerificadas = [];
   List<Coleta> get coletasVerificadas => [..._coletasVerificadas];
 
-  List<Entrega> entregasPorSellerName(String nomeVendedor) {
+  List<Pacote> entregasPorSellerName(String nomeVendedor) {
     return _coletasVerificadas
         .firstWhere((element) => element.nomeVendedor == nomeVendedor)
         .entregas;
@@ -32,7 +32,7 @@ class NovaColetaProvider with ChangeNotifier {
   void addNovaEntrega(String seller, int sender) {
     if (!_entregasEscaneadas
         .any((element) => element.senderId == sender && element.id == seller)) {
-      _entregasEscaneadas.add(EntregaEscaneada(sender, seller));
+      _entregasEscaneadas.add(PacoteEscaneado(sender, seller));
     }
   }
 
@@ -59,7 +59,7 @@ class NovaColetaProvider with ChangeNotifier {
   }
 
   List<String> get SellerNames {
-    return _coletasVerificadas.map((e) => e.nomeVendedor).toList();
+    return _coletasVerificadas.map((e) => e.nomeVendedor).toSet().toList();
   }
 
   Future<void> conferirColeta(Function onError) async {
@@ -86,43 +86,40 @@ class NovaColetaProvider with ChangeNotifier {
               },
               body: json.encode(jsonBody))
           .timeout(Duration(seconds: 10));
-      final /*List<Map<String, dynamic>>*/ coletasRetornadas =
-          json.decode(response.body);
+      final Map<String, dynamic> coletaRetornada = json.decode(response.body);
       if (response.statusCode == 200 || response.statusCode == 201) {
         receivedJson = response.body;
-        for (Map<String, dynamic> coleta in coletasRetornadas) {
-          var entregasVerificadas = coleta['pacotes'] as List<dynamic>;
-          List<Entrega> entregasAAdicionar = [];
-          for (var entregaVerificada in entregasVerificadas) {
-            entregasAAdicionar.add(Entrega(
+        List<Pacote> pacotesAAdicionar = [];
+        for (Map<String, dynamic> pacote in coletaRetornada['pacotes']) {
+          pacotesAAdicionar.add(Pacote(
+              id: -1,
+              vendedorName: coletaRetornada['nomeVendedor'],
+              cliente: Comprador(
                 id: -1,
-                vendedorName: coleta['nomeVendedor'],
-                cliente: Comprador(
-                  id: -1,
-                  nome: entregaVerificada['destinatario'],
-                  endereco: entregaVerificada['logradouro'],
-                  bairro: entregaVerificada['bairro'],
-                  cep: entregaVerificada['CEP'],
-                  complemento: entregaVerificada['complemento'] ?? "",
-                ),
-                codPacote: int.parse(entregaVerificada['idPacote']),
-                statusEntregas: []));
-          }
+                nome: pacote['destinatario'],
+                endereco: pacote['logradouro'],
+                bairro: pacote['bairro'],
+                cep: pacote['CEP'],
+                complemento: pacote['complemento'] ?? "",
+              ),
+              codPacote: int.parse(pacote['idPacote']),
+              statusEntregas: []));
           _coletasVerificadas.add(Coleta(
               id: -1,
               dtColeta: DateTime.now(),
               estadoColeta: ColetaState.EmAnalise,
-              nomeVendedor: coleta['nomeVendedor'],
-              entregas: entregasAAdicionar));
+              nomeVendedor: coletaRetornada['nomeVendedor'],
+              entregas: pacotesAAdicionar));
         }
       } else {
-        onError(coletasRetornadas['error']);
+        onError(coletaRetornada['error']);
       }
     } on SocketException catch (socket) {
       onError("Falha de conexão.\nVerifique sua conexão à internet.");
     } on TimeoutException catch (timeout) {
       onError("Falha na conexão. Tente novamente mais tarde.");
-    } on Exception catch (e) {
+    } catch (e) {
+      print(e.toString());
       onError(e.toString());
     }
   }
@@ -134,9 +131,9 @@ class NovaColetaProvider with ChangeNotifier {
   //array[{id, senderId}]
 }
 
-class EntregaEscaneada {
+class PacoteEscaneado {
   int senderId;
   String id;
 
-  EntregaEscaneada(this.senderId, this.id);
+  PacoteEscaneado(this.senderId, this.id);
 }

@@ -1,15 +1,15 @@
 import 'package:bilolog/main.dart';
 import 'package:bilolog/models/entrega.dart';
-import 'package:bilolog/views/entregaDetalheView.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../providers/entregasProvider.dart';
+import '../providers/coletaPacotesProvider.dart';
+import '../views/ColetaPacoteDetalheView.dart';
 
 class EntregasList extends StatelessWidget {
   const EntregasList(this._entregas, {Key? key}) : super(key: key);
 
-  final List<Entrega> _entregas;
+  final List<Pacote> _entregas;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,7 @@ class EntregasList extends StatelessWidget {
 class EntregasListTile extends StatelessWidget {
   EntregasListTile(this._entrega, {Key? key}) : super(key: key);
 
-  final Entrega _entrega;
+  final Pacote _entrega;
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +107,7 @@ class EntregasListTile extends StatelessWidget {
               // final entregasProvider =
               //     Provider.of<EntregasProvider>(context, listen: false);
               // entregasProvider.entrega = _entrega;
-              Navigator.of(context).pushNamed(EntregaDetalheView.routeName,
+              Navigator.of(context).pushNamed(ColetaPacoteDetalheView.routeName,
                   arguments: {'entrega': _entrega});
             },
             child: Column(

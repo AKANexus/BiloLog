@@ -1,21 +1,21 @@
 import 'package:bilolog/models/coleta.dart';
 import 'package:bilolog/providers/coletasProvider.dart';
-import 'package:bilolog/providers/entregasProvider.dart';
+import 'package:bilolog/providers/coletaPacotesProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets/entregasList.dart';
 
-class EntregasView extends StatelessWidget {
-  EntregasView({Key? key}) : super(key: key);
+class ColetaPacotesView extends StatelessWidget {
+  ColetaPacotesView({Key? key}) : super(key: key);
   static const String routeName = "/coletasView/entregasView";
 
   late Coleta _coleta;
 
   @override
   Widget build(BuildContext context) {
-    final entregasProvider = Provider.of<EntregasProvider>(context);
+    final entregasProvider = Provider.of<ColetaPacotesProvider>(context);
     _coleta = entregasProvider.coleta!;
     return Scaffold(
       appBar: AppBar(
@@ -55,7 +55,8 @@ class EntregasView extends StatelessWidget {
           ),
           Expanded(
             child: EntregasList(
-                Provider.of<EntregasProvider>(context, listen: false).entregas),
+                Provider.of<ColetaPacotesProvider>(context, listen: false)
+                    .entregas),
           ),
         ]),
       ),

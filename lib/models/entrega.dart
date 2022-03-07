@@ -3,7 +3,7 @@ import 'package:bilolog/models/statusEntrega.dart';
 
 import 'cliente.dart';
 
-class Entrega {
+class Pacote {
   final int id;
   final int codPacote;
   // final ColetaState statusEntrega;
@@ -12,7 +12,7 @@ class Entrega {
   final List<StatusEntrega> statusEntregas;
   final String vendedorName;
 
-  Entrega({
+  Pacote({
     required this.id,
     required this.codPacote,
     // required this.statusEntrega,
