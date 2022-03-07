@@ -72,10 +72,10 @@ class ColetasProvider with ChangeNotifier {
                 cep: pacote['CEP'],
                 complemento: pacote['complemento'] ?? "",
               ),
-              statusEntregas: [],
+              statusPacotes: [],
             );
             for (var statusEntrega in pacote['status']) {
-              novaEntrega.statusEntregas.add(
+              novaEntrega.statusPacotes.add(
                 StatusPacote(
                   timestamp: DateTime.parse(statusEntrega['data']),
                   funcionarioResponsavel: statusEntrega['colaborador']['name'],

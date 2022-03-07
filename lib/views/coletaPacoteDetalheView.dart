@@ -6,7 +6,7 @@ import '../models/pacote.dart';
 
 class ColetaPacoteDetalheView extends StatelessWidget {
   ColetaPacoteDetalheView({Key? key}) : super(key: key);
-  static const String routeName = "/entregaDetalheView";
+  static const String routeName = "/coletaPacoteDetalheView";
 
   late Pacote _pacote;
   //late String _vendedorName;
@@ -197,10 +197,10 @@ class ColetaPacoteDetalheView extends StatelessWidget {
                         children: [
                           Text(DateFormat.yMd()
                               .add_Hm()
-                              .format(_pacote.statusEntregas[ix].timestamp)),
+                              .format(_pacote.statusPacotes[ix].timestamp)),
                           SizedBox(width: 15),
                           Text(
-                            _pacote.statusEntregas[ix].descricaoStatus,
+                            _pacote.statusPacotes[ix].descricaoStatus,
                             style: Theme.of(context).textTheme.bodyText1,
                           )
                         ],
@@ -211,14 +211,14 @@ class ColetaPacoteDetalheView extends StatelessWidget {
                           Text("Funcionário Responsável:"),
                           SizedBox(width: 15),
                           Text(
-                            _pacote.statusEntregas[ix].funcionarioResponsavel,
+                            _pacote.statusPacotes[ix].funcionarioResponsavel,
                           )
                         ],
                       ),
-                      if (ix != _pacote.statusEntregas.length - 1) Divider()
+                      if (ix != _pacote.statusPacotes.length - 1) Divider()
                     ]),
                   ),
-                  itemCount: _pacote.statusEntregas.length,
+                  itemCount: _pacote.statusPacotes.length,
                 ),
               ),
             )

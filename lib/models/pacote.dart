@@ -9,7 +9,7 @@ class Pacote {
   // final ColetaState statusEntrega;
   // final String numColeta;
   final Comprador cliente;
-  final List<StatusPacote> statusEntregas;
+  final List<StatusPacote> statusPacotes;
   final String vendedorName;
 
   Pacote({
@@ -18,12 +18,12 @@ class Pacote {
     // required this.statusEntrega,
     // required this.numColeta,
     required this.cliente,
-    required this.statusEntregas,
+    required this.statusPacotes,
     required this.vendedorName,
   });
 
   String get ultimoStatus {
-    if (statusEntregas.length < 1) return "Coletando...";
-    return statusEntregas.last.descricaoStatus;
+    if (statusPacotes.length < 1) return "Coletando...";
+    return statusPacotes.last.descricaoStatus;
   }
 }

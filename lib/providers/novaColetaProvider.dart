@@ -103,7 +103,7 @@ class NovaColetaProvider with ChangeNotifier {
                 complemento: pacote['complemento'] ?? "",
               ),
               codPacote: int.parse(pacote['idPacote']),
-              statusEntregas: []));
+              statusPacotes: []));
           _coletasVerificadas.add(Coleta(
               id: -1,
               dtColeta: DateTime.now(),

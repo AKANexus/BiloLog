@@ -2,14 +2,14 @@ import 'package:bilolog/models/coletaState.dart';
 import 'package:bilolog/models/pacote.dart';
 import 'package:flutter/material.dart';
 
-class Entrega with Comparable<Entrega> {
+class XYZZY with Comparable<XYZZY> {
   final int id;
   final DateTime dtColeta;
   final String nomeVendedor;
   ColetaState? _estadoColeta;
   final List<Pacote> pacotes;
 
-  Entrega({
+  XYZZY({
     required this.id,
     required this.dtColeta,
     required this.nomeVendedor,
@@ -23,7 +23,7 @@ class Entrega with Comparable<Entrega> {
   }
 
   @override
-  int compareTo(Entrega other) {
+  int compareTo(XYZZY other) {
     return (dtColeta.compareTo(other.dtColeta));
   }
 
