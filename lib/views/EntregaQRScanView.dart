@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:bilolog/providers/novaColetaProvider.dart';
+import 'package:bilolog/providers/novaEntregaProvider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,18 +11,18 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:provider/provider.dart';
 import 'package:vibration/vibration.dart';
 
-import 'novaColetaView.dart';
+import 'novaEntregaView.dart';
 
-class ColetaQRScanView extends StatefulWidget {
-  ColetaQRScanView({Key? key}) : super(key: key);
+class EntregaQRScanView extends StatefulWidget {
+  EntregaQRScanView({Key? key}) : super(key: key);
 
-  static const String routeName = "/novaColeta";
+  static const String routeName = "/novaEntrega";
 
   @override
-  State<ColetaQRScanView> createState() => _ColetaQRScanViewState();
+  State<EntregaQRScanView> createState() => _EntregaQRScanViewState();
 }
 
-class _ColetaQRScanViewState extends State<ColetaQRScanView> {
+class _EntregaQRScanViewState extends State<EntregaQRScanView> {
   bool _isBusy = false;
   bool _isGrande = false;
 
@@ -37,11 +37,11 @@ class _ColetaQRScanViewState extends State<ColetaQRScanView> {
       print(barcode);
       Vibration.vibrate();
       FlutterBeep.playSysSound(AndroidSoundIDs.TONE_CDMA_ABBR_ALERT);
-      final novaColetaProvider =
-          Provider.of<NovaColetaProvider>(context, listen: false);
+      final novaEntregaProvider =
+          Provider.of<NovaEntregaProvider>(context, listen: false);
       final qrParsed = json.decode(barcode);
-      novaColetaProvider.addNovaEntrega(qrParsed['id'], qrParsed['sender_id'],
-          _isGrande ? "grande" : "pequeno");
+      // novaEntregaProvider.addNovaEntrega(qrParsed['id'], qrParsed['sender_id'],
+      //     _isGrande ? "grande" : "pequeno");
     }
   }
 
@@ -51,7 +51,7 @@ class _ColetaQRScanViewState extends State<ColetaQRScanView> {
   void didChangeDependencies() {
     if (_isInit) {
       _isInit = false;
-      Provider.of<NovaColetaProvider>(context, listen: false).startNewColeta();
+      //Provider.of<NovaEntregaProvider>(context, listen: false).startNewEntrega();
     }
     super.didChangeDependencies();
   }
@@ -61,20 +61,20 @@ class _ColetaQRScanViewState extends State<ColetaQRScanView> {
         .showSnackBar(SnackBar(content: Text(errorMessage)));
   }
 
-  void conferirColeta() async {
+  void conferirEntrega() async {
     setState(() {
       _isBusy = true;
     });
     controller.stop();
     try {
-      await Provider.of<NovaColetaProvider>(context, listen: false)
-          .conferirColeta(_onError);
+      // await Provider.of<NovaEntregaProvider>(context, listen: false)
+      //     .conferirEntrega(_onError);
     } on Exception catch (e) {
-      print("Falha ao conferirColeta()");
+      print("Falha ao conferirEntrega()");
     }
-    Navigator.of(context)
-        .pushNamed(NovaColetaView.routeName)
-        .then((value) => controller.start());
+    // Navigator.of(context)
+    //     .pushNamed(NovaEntregaView.routeName)
+    //     .then((value) => controller.start());
     setState(() {
       _isBusy = false;
     });
@@ -160,7 +160,7 @@ class _ColetaQRScanViewState extends State<ColetaQRScanView> {
                 ? Center(child: CircularProgressIndicator())
                 : ElevatedButton(
                     onPressed: () {
-                      conferirColeta();
+                      conferirEntrega();
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(10.0),

@@ -1,5 +1,5 @@
 import 'package:bilolog/models/coletaState.dart';
-import 'package:bilolog/models/entrega.dart';
+import 'package:bilolog/models/pacote.dart';
 import 'package:flutter/material.dart';
 
 class Coleta with Comparable<Coleta> {
@@ -7,19 +7,19 @@ class Coleta with Comparable<Coleta> {
   final DateTime dtColeta;
   final String nomeVendedor;
   ColetaState? _estadoColeta;
-  final List<Pacote> entregas;
+  final List<Pacote> pacotes;
 
   Coleta({
     required this.id,
     required this.dtColeta,
     required this.nomeVendedor,
     required estadoColeta,
-    required this.entregas,
+    required this.pacotes,
   }) {
     _estadoColeta = estadoColeta;
   }
   int get pacotesColetados {
-    return entregas.length;
+    return pacotes.length;
   }
 
   @override

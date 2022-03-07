@@ -5,7 +5,7 @@ import 'dart:math';
 
 import 'package:bilolog/models/cliente.dart';
 import 'package:bilolog/models/coletaState.dart';
-import 'package:bilolog/models/entrega.dart';
+import 'package:bilolog/models/pacote.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -26,13 +26,13 @@ class NovaColetaProvider with ChangeNotifier {
   List<Pacote> entregasPorSellerName(String nomeVendedor) {
     return _coletasVerificadas
         .firstWhere((element) => element.nomeVendedor == nomeVendedor)
-        .entregas;
+        .pacotes;
   }
 
-  void addNovaEntrega(String seller, int sender) {
+  void addNovaEntrega(String seller, int sender, String tamanho) {
     if (!_entregasEscaneadas
         .any((element) => element.senderId == sender && element.id == seller)) {
-      _entregasEscaneadas.add(PacoteEscaneado(sender, seller));
+      _entregasEscaneadas.add(PacoteEscaneado(sender, seller, tamanho));
     }
   }
 
@@ -73,7 +73,7 @@ class NovaColetaProvider with ChangeNotifier {
     final jsonBody = {
       'transportadora_uuid': 2345, //authInfo!['uuid'],
       'pacotes': _entregasEscaneadas
-          .map((e) => {'id': e.id, 'sender_id': e.senderId})
+          .map((e) => {'id': e.id, 'sender_id': e.senderId, 'size': e.tamanho})
           .toList(),
     };
 
@@ -109,7 +109,7 @@ class NovaColetaProvider with ChangeNotifier {
               dtColeta: DateTime.now(),
               estadoColeta: ColetaState.EmAnalise,
               nomeVendedor: coletaRetornada['nomeVendedor'],
-              entregas: pacotesAAdicionar));
+              pacotes: pacotesAAdicionar));
         }
       } else {
         onError(coletaRetornada['error']);
@@ -134,6 +134,7 @@ class NovaColetaProvider with ChangeNotifier {
 class PacoteEscaneado {
   int senderId;
   String id;
+  String tamanho;
 
-  PacoteEscaneado(this.senderId, this.id);
+  PacoteEscaneado(this.senderId, this.id, this.tamanho);
 }

@@ -1,5 +1,5 @@
 import 'package:bilolog/main.dart';
-import 'package:bilolog/models/entrega.dart';
+import 'package:bilolog/models/pacote.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

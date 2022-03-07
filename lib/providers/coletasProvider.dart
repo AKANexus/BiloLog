@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:bilolog/models/cliente.dart';
 import 'package:bilolog/models/coleta.dart';
 import 'package:bilolog/models/coletaState.dart';
-import 'package:bilolog/models/entrega.dart';
+import 'package:bilolog/models/pacote.dart';
 import 'package:bilolog/models/statusEntrega.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -58,7 +58,7 @@ class ColetasProvider with ChangeNotifier {
               estadoColeta:
                   ColetaStateConverter.convert(coleta['status'][0]['status']),
               nomeVendedor: coleta['vendedor']['name'],
-              entregas: []);
+              pacotes: []);
           for (Map<String, dynamic> pacote in coleta['pacotes']) {
             Pacote novaEntrega = Pacote(
               vendedorName: coleta['vendedor']['name'],
@@ -76,7 +76,7 @@ class ColetasProvider with ChangeNotifier {
             );
             for (var statusEntrega in pacote['status']) {
               novaEntrega.statusEntregas.add(
-                StatusEntrega(
+                StatusPacote(
                   timestamp: DateTime.parse(statusEntrega['data']),
                   funcionarioResponsavel: statusEntrega['colaborador']['name'],
                   colaboradorId: statusEntrega['colaborador_uuid'],
@@ -84,7 +84,7 @@ class ColetasProvider with ChangeNotifier {
                 ),
               );
             }
-            novaColeta.entregas.add(novaEntrega);
+            novaColeta.pacotes.add(novaEntrega);
           }
           _coletas.add(novaColeta);
         }

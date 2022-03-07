@@ -1,5 +1,5 @@
 import 'package:bilolog/models/coleta.dart';
-import 'package:bilolog/models/entrega.dart';
+import 'package:bilolog/models/pacote.dart';
 import 'package:flutter/material.dart';
 
 class ColetaPacotesProvider with ChangeNotifier {
@@ -20,7 +20,7 @@ class ColetaPacotesProvider with ChangeNotifier {
     if (value != null) {
       _coleta = value;
       _entregas.clear();
-      for (var entrega in value.entregas) {
+      for (var entrega in value.pacotes) {
         _entregas.add(entrega);
       }
     }

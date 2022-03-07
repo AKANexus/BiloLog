@@ -1,29 +1,75 @@
 import 'package:bilolog/models/coletaState.dart';
-import 'package:bilolog/models/statusEntrega.dart';
+import 'package:bilolog/models/pacote.dart';
+import 'package:flutter/material.dart';
 
-import 'cliente.dart';
-
-class Pacote {
+class Entrega with Comparable<Entrega> {
   final int id;
-  final int codPacote;
-  // final ColetaState statusEntrega;
-  // final String numColeta;
-  final Comprador cliente;
-  final List<StatusEntrega> statusEntregas;
-  final String vendedorName;
+  final DateTime dtColeta;
+  final String nomeVendedor;
+  ColetaState? _estadoColeta;
+  final List<Pacote> pacotes;
 
-  Pacote({
+  Entrega({
     required this.id,
-    required this.codPacote,
-    // required this.statusEntrega,
-    // required this.numColeta,
-    required this.cliente,
-    required this.statusEntregas,
-    required this.vendedorName,
-  });
+    required this.dtColeta,
+    required this.nomeVendedor,
+    required estadoColeta,
+    required this.pacotes,
+  }) {
+    _estadoColeta = estadoColeta;
+  }
+  int get pacotesAEntregar {
+    return pacotes.length;
+  }
 
-  String get ultimoStatus {
-    if (statusEntregas.length < 1) return "Coletando...";
-    return statusEntregas.last.descricaoStatus;
+  @override
+  int compareTo(Entrega other) {
+    return (dtColeta.compareTo(other.dtColeta));
+  }
+
+  Map<String, dynamic> get estadoColeta {
+    IconData icon;
+    String estado;
+    switch (_estadoColeta) {
+      case ColetaState.Recebido:
+        {
+          icon = Icons.call_received;
+          estado = "Recebido";
+          break;
+        }
+      case ColetaState.Confirmado:
+        {
+          icon = Icons.check;
+          estado = "Confirmado";
+          break;
+        }
+      case ColetaState.Coletado:
+        {
+          icon = Icons.recommend;
+          estado = "Coletado";
+          break;
+        }
+      case ColetaState.EmRota:
+        {
+          icon = Icons.motorcycle;
+          estado = "Em Rota";
+          break;
+        }
+      case ColetaState.Entregue:
+        {
+          icon = Icons.sentiment_satisfied_alt;
+          estado = "Entregue";
+          break;
+        }
+      case ColetaState.EmAnalise:
+        {
+          icon = Icons.question_mark;
+          estado = "Conferindo...";
+          break;
+        }
+      default:
+        throw Exception("Estado Coleta Inválido");
+    }
+    return {'icon': icon, 'estado': estado};
   }
 }

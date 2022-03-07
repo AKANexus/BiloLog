@@ -1,7 +1,8 @@
-import 'package:bilolog/models/entrega.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+
+import '../models/pacote.dart';
 
 class ColetaPacoteDetalheView extends StatelessWidget {
   ColetaPacoteDetalheView({Key? key}) : super(key: key);
