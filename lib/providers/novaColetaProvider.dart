@@ -17,33 +17,33 @@ class NovaColetaProvider with ChangeNotifier {
 
   late String receivedJson;
 
-  List<PacoteEscaneado> _entregasEscaneadas = [];
-  List<PacoteEscaneado> get entregasEscaneadas => [..._entregasEscaneadas];
+  List<PacoteEscaneado> _pacotesEscaneados = [];
+  List<PacoteEscaneado> get pacotesEscaneados => [..._pacotesEscaneados];
 
   List<Coleta> _coletasVerificadas = [];
   List<Coleta> get coletasVerificadas => [..._coletasVerificadas];
 
-  List<Pacote> entregasPorSellerName(String nomeVendedor) {
+  List<Pacote> pacotesPorSellerName(String nomeVendedor) {
     return _coletasVerificadas
         .firstWhere((element) => element.nomeVendedor == nomeVendedor)
         .pacotes;
   }
 
-  void addNovaEntrega(String seller, int sender, String tamanho) {
-    if (!_entregasEscaneadas
+  void addNovoPacote(String seller, int sender, String tamanho) {
+    if (!_pacotesEscaneados
         .any((element) => element.senderId == sender && element.id == seller)) {
-      _entregasEscaneadas.add(PacoteEscaneado(sender, seller, tamanho));
+      _pacotesEscaneados.add(PacoteEscaneado(sender, seller, tamanho));
     }
   }
 
   void startNewColeta() {
     print("Nova coleta iniciada");
-    _entregasEscaneadas.clear();
+    _pacotesEscaneados.clear();
   }
 
   List<int> get senders {
     List<int> _senders = [];
-    for (var entEsc in _entregasEscaneadas) {
+    for (var entEsc in _pacotesEscaneados) {
       if (!_senders.contains(entEsc.senderId)) {
         _senders.add(entEsc.senderId);
       }
@@ -51,8 +51,8 @@ class NovaColetaProvider with ChangeNotifier {
     return _senders;
   }
 
-  List<String> entregasBySender(String sender) {
-    return _entregasEscaneadas
+  List<String> pacotesBySender(String sender) {
+    return _pacotesEscaneados
         .where((element) => element.senderId == sender)
         .map((e) => e.id)
         .toList();
@@ -64,7 +64,7 @@ class NovaColetaProvider with ChangeNotifier {
 
   Future<void> conferirColeta(Function onError) async {
     _coletasVerificadas.clear();
-    if (_entregasEscaneadas.length == 0) {
+    if (_pacotesEscaneados.length == 0) {
       return;
     }
     if (authInfo == null) return;
@@ -72,7 +72,7 @@ class NovaColetaProvider with ChangeNotifier {
     print(url);
     final jsonBody = {
       'transportadora_uuid': 2345, //authInfo!['uuid'],
-      'pacotes': _entregasEscaneadas
+      'pacotes': _pacotesEscaneados
           .map((e) => {'id': e.id, 'sender_id': e.senderId, 'size': e.tamanho})
           .toList(),
     };
@@ -107,7 +107,7 @@ class NovaColetaProvider with ChangeNotifier {
           _coletasVerificadas.add(Coleta(
               id: -1,
               dtColeta: DateTime.now(),
-              estadoColeta: ColetaState.EmAnalise,
+              estadoColeta: RemessaState.EmAnalise,
               nomeVendedor: coletaRetornada['nomeVendedor'],
               pacotes: pacotesAAdicionar));
         }

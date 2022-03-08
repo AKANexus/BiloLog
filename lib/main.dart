@@ -4,12 +4,19 @@ import 'package:bilolog/models/cargo.dart';
 import 'package:bilolog/providers/authProvider.dart';
 import 'package:bilolog/providers/coletasProvider.dart';
 import 'package:bilolog/providers/coletaPacotesProvider.dart';
+import 'package:bilolog/providers/entregaPacotesProvider.dart';
+import 'package:bilolog/providers/entregasProvider.dart';
 import 'package:bilolog/providers/novaColetaProvider.dart';
+import 'package:bilolog/providers/novaEntregaProvider.dart';
+import 'package:bilolog/views/EntregaQRScanView.dart';
 import 'package:bilolog/views/authView.dart';
 import 'package:bilolog/views/coletasView.dart';
 import 'package:bilolog/views/coletaPacoteDetalheView.dart';
 import 'package:bilolog/views/coletaPacotesView.dart';
 import 'package:bilolog/views/ColetaQRScanView.dart';
+import 'package:bilolog/views/entregaPacotesView.dart';
+import 'package:bilolog/views/entregasView.dart';
+import 'package:bilolog/views/novaEntregaView.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -42,7 +49,7 @@ class MyApp extends StatelessWidget {
       case Cargo.Administrador:
         return const Text("Falha ao obter autorização.");
       case Cargo.Motocorno:
-        return ColetasView();
+        return EntregasView();
       case Cargo.GaleraDoCD:
         return ColetasView();
       default:
@@ -65,6 +72,16 @@ class MyApp extends StatelessWidget {
             update: (_, auth, previousProvider) =>
                 previousProvider!..apiKey = auth.apiKey),
         ChangeNotifierProvider(create: (_) => ColetaPacotesProvider()),
+        ChangeNotifierProxyProvider<AuthenticationProvider,
+                NovaEntregaProvider>(
+            create: (_) => NovaEntregaProvider(),
+            update: (_, auth, previousProvider) => previousProvider!
+              ..authInfo = {'apiKey': auth.apiKey, 'uuid': auth.uuid}),
+        ChangeNotifierProxyProvider<AuthenticationProvider, EntregasProvider>(
+            create: (_) => EntregasProvider(),
+            update: (_, auth, previousProvider) =>
+                previousProvider!..apiKey = auth.apiKey),
+        ChangeNotifierProvider(create: (_) => EntregaPacotesProvider()),
       ],
       child: MaterialApp(
         title: 'Bilolog',
@@ -81,10 +98,14 @@ class MyApp extends StatelessWidget {
         ),
         routes: {
           ColetasView.routeName: (ctx) => ColetasView(),
+          EntregasView.routeName: (ctx) => EntregasView(),
           ColetaPacotesView.routeName: (ctx) => ColetaPacotesView(),
+          EntregaPacotesView.routeName: (ctx) => EntregaPacotesView(),
           ColetaPacoteDetalheView.routeName: (ctx) => ColetaPacoteDetalheView(),
           ColetaQRScanView.routeName: (ctx) => ColetaQRScanView(),
+          EntregaQRScanView.routeName: (ctx) => EntregaQRScanView(),
           NovaColetaView.routeName: (ctx) => NovaColetaView(),
+          NovaEntregaView.routeName: (ctx) => NovaEntregaView(),
         },
       ),
     );

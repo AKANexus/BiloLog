@@ -1,19 +1,26 @@
-enum ColetaState { Confirmado, Coletado, Recebido, EmRota, Entregue, EmAnalise }
+enum RemessaState {
+  Confirmado,
+  Coletado,
+  Recebido,
+  EmRota,
+  Entregue,
+  EmAnalise
+}
 
 class ColetaStateConverter {
-  static ColetaState convert(String state) {
-    ColetaState convertido;
+  static RemessaState convert(String state) {
+    RemessaState convertido;
     switch (state.toLowerCase()) {
       case "recebido":
-        return ColetaState.Recebido;
+        return RemessaState.Recebido;
       case "confirmado":
-        return ColetaState.Confirmado;
+        return RemessaState.Confirmado;
       case "coletado":
-        return ColetaState.Coletado;
+        return RemessaState.Coletado;
       case "em rota":
-        return ColetaState.EmRota;
+        return RemessaState.EmRota;
       case "entregue":
-        return ColetaState.Entregue;
+        return RemessaState.Entregue;
       default:
         print("State was $state");
         throw ArgumentError("O argumento informado não era esperado", "state");

@@ -39,16 +39,16 @@ class ColetasProvider with ChangeNotifier {
       final content = json.decode(response.body);
       if (response.statusCode == 200 || response.statusCode == 201) {
         for (Map<String, dynamic> coleta in content) {
-          ColetaState coletaState;
+          RemessaState coletaState;
           switch (coleta['status'][0]['status']) {
             case "Recebido":
-              coletaState = ColetaState.Recebido;
+              coletaState = RemessaState.Recebido;
               break;
             case "Confirmado":
-              coletaState = ColetaState.Confirmado;
+              coletaState = RemessaState.Confirmado;
               break;
             case "Coletado":
-              coletaState = ColetaState.Coletado;
+              coletaState = RemessaState.Coletado;
               break;
             default:
           }
@@ -60,7 +60,7 @@ class ColetasProvider with ChangeNotifier {
               nomeVendedor: coleta['vendedor']['name'],
               pacotes: []);
           for (Map<String, dynamic> pacote in coleta['pacotes']) {
-            Pacote novaEntrega = Pacote(
+            Pacote novoPacote = Pacote(
               vendedorName: coleta['vendedor']['name'],
               id: pacote['id'],
               codPacote: pacote['id'],
@@ -75,7 +75,7 @@ class ColetasProvider with ChangeNotifier {
               statusPacotes: [],
             );
             for (var statusEntrega in pacote['status']) {
-              novaEntrega.statusPacotes.add(
+              novoPacote.statusPacotes.add(
                 StatusPacote(
                   timestamp: DateTime.parse(statusEntrega['data']),
                   funcionarioResponsavel: statusEntrega['colaborador']['name'],
@@ -84,7 +84,7 @@ class ColetasProvider with ChangeNotifier {
                 ),
               );
             }
-            novaColeta.pacotes.add(novaEntrega);
+            novaColeta.pacotes.add(novoPacote);
           }
           _coletas.add(novaColeta);
         }

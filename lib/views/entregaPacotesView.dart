@@ -1,22 +1,25 @@
 import 'package:bilolog/models/coleta.dart';
+import 'package:bilolog/models/entrega.dart';
 import 'package:bilolog/providers/coletasProvider.dart';
 import 'package:bilolog/providers/coletaPacotesProvider.dart';
+import 'package:bilolog/providers/entregaPacotesProvider.dart';
+import 'package:bilolog/widgets/entregaPacotesList.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets/coletaPacotesList.dart';
 
-class ColetaPacotesView extends StatelessWidget {
-  ColetaPacotesView({Key? key}) : super(key: key);
-  static const String routeName = "/coletasView/pacotesView";
+class EntregaPacotesView extends StatelessWidget {
+  EntregaPacotesView({Key? key}) : super(key: key);
+  static const String routeName = "/entregasView/pacotesView";
 
-  late Coleta _coleta;
+  late Entrega _entrega;
 
   @override
   Widget build(BuildContext context) {
-    final entregasProvider = Provider.of<ColetaPacotesProvider>(context);
-    _coleta = entregasProvider.coleta!;
+    final entregasProvider = Provider.of<EntregaPacotesProvider>(context);
+    _entrega = entregasProvider.entrega!;
     return Scaffold(
       appBar: AppBar(
         title: Text("Trilhogística"),
@@ -30,17 +33,17 @@ class ColetaPacotesView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  DateFormat.yMd().format(_coleta.dtColeta),
+                  DateFormat.yMd().format(_entrega.dtColeta),
                   textAlign: TextAlign.left,
                   style: Theme.of(context)
                       .textTheme
                       .bodyMedium!
                       .copyWith(color: Colors.grey),
                 ),
-                Text(_coleta.nomeVendedor,
+                Text(_entrega.nomeVendedor,
                     style: Theme.of(context).textTheme.headline5),
                 Text(
-                  "${_coleta.pacotesColetados} pacotes coletados",
+                  "${_entrega.pacotesAEntregar} pacotes a entregar",
                   style: Theme.of(context).textTheme.headline6!.copyWith(
                         color: Colors.grey,
                       ),
@@ -54,8 +57,8 @@ class ColetaPacotesView extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: ColetaPacotesList(
-                Provider.of<ColetaPacotesProvider>(context, listen: false)
+            child: EntregaPacotesList(
+                Provider.of<EntregaPacotesProvider>(context, listen: false)
                     .pacotes),
           ),
         ]),

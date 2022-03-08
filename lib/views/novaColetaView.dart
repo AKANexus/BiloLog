@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import '../widgets/entregasList.dart';
+import '../widgets/coletaPacotesList.dart';
 
 class NovaColetaView extends StatefulWidget {
   NovaColetaView({Key? key}) : super(key: key);
@@ -85,7 +85,7 @@ class _NovaColetaViewState extends State<NovaColetaView> {
                           Text(vendedorSelecionado,
                               style: Theme.of(context).textTheme.headline5),
                           Text(
-                            "${Provider.of<NovaColetaProvider>(context, listen: false).entregasPorSellerName(vendedorSelecionado).length} pacote(s) coletados",
+                            "${Provider.of<NovaColetaProvider>(context, listen: false).pacotesPorSellerName(vendedorSelecionado).length} pacote(s) coletados",
                             style:
                                 Theme.of(context).textTheme.headline6!.copyWith(
                                       color: Colors.grey,
@@ -117,7 +117,7 @@ class _NovaColetaViewState extends State<NovaColetaView> {
                           Text(vendedorSelecionado,
                               style: Theme.of(context).textTheme.headline5),
                           Text(
-                            "${Provider.of<NovaColetaProvider>(context, listen: false).entregasPorSellerName(vendedorSelecionado).length} pacote(s) coletados",
+                            "${Provider.of<NovaColetaProvider>(context, listen: false).pacotesPorSellerName(vendedorSelecionado).length} pacote(s) coletados",
                             style:
                                 Theme.of(context).textTheme.headline6!.copyWith(
                                       color: Colors.grey,
@@ -135,9 +135,9 @@ class _NovaColetaViewState extends State<NovaColetaView> {
             ),
           ),
           Expanded(
-              child: EntregasList(
+              child: ColetaPacotesList(
             Provider.of<NovaColetaProvider>(context, listen: false)
-                .entregasPorSellerName(vendedorSelecionado),
+                .pacotesPorSellerName(vendedorSelecionado),
           )),
           _isBusy
               ? Center(child: CircularProgressIndicator())

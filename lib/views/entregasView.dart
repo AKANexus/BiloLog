@@ -1,5 +1,7 @@
 import 'package:bilolog/providers/entregasProvider.dart';
 import 'package:bilolog/views/EntregaQRScanView.dart';
+import 'package:bilolog/widgets/coletaPacotesList.dart';
+import 'package:bilolog/widgets/entregaPacotesList.dart';
 import 'package:bilolog/widgets/entregasList.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -22,7 +24,7 @@ class _EntregasViewState extends State<EntregasView> {
   DateTime _startDate = DateTime.now();
   DateTime _endDate = DateTime.now();
 
-  List<Pacote>? _entregas;
+  List<Entrega>? _entregas;
   bool _isLoading = false;
   bool _isInit = true;
 
@@ -35,13 +37,13 @@ class _EntregasViewState extends State<EntregasView> {
     setState(() {
       _isLoading = true;
     });
-    // final entregasProvider =
-    //     Provider.of<EntregasProvider>(context, listen: false);
-    // await entregasProvider.getEntregas(_onError, _startDate, _endDate);
-    // setState(() {
-    //   _entregas = entregasProvider.pacotes;
-    //   _isLoading = false;
-    // });
+    final entregasProvider =
+        Provider.of<EntregasProvider>(context, listen: false);
+    await entregasProvider.getEntregas(_onError, _startDate, _endDate);
+    setState(() {
+      _entregas = entregasProvider.entregas;
+      _isLoading = false;
+    });
   }
 
   @override

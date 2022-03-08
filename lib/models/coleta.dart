@@ -6,7 +6,7 @@ class Coleta with Comparable<Coleta> {
   final int id;
   final DateTime dtColeta;
   final String nomeVendedor;
-  ColetaState? _estadoColeta;
+  RemessaState? _estadoColeta;
   final List<Pacote> pacotes;
 
   Coleta({
@@ -31,37 +31,37 @@ class Coleta with Comparable<Coleta> {
     IconData icon;
     String estado;
     switch (_estadoColeta) {
-      case ColetaState.Recebido:
+      case RemessaState.Recebido:
         {
           icon = Icons.call_received;
           estado = "Recebido";
           break;
         }
-      case ColetaState.Confirmado:
+      case RemessaState.Confirmado:
         {
           icon = Icons.check;
           estado = "Confirmado";
           break;
         }
-      case ColetaState.Coletado:
+      case RemessaState.Coletado:
         {
           icon = Icons.recommend;
           estado = "Coletado";
           break;
         }
-      case ColetaState.EmRota:
+      case RemessaState.EmRota:
         {
           icon = Icons.motorcycle;
           estado = "Em Rota";
           break;
         }
-      case ColetaState.Entregue:
+      case RemessaState.Entregue:
         {
           icon = Icons.sentiment_satisfied_alt;
           estado = "Entregue";
           break;
         }
-      case ColetaState.EmAnalise:
+      case RemessaState.EmAnalise:
         {
           icon = Icons.question_mark;
           estado = "Conferindo...";

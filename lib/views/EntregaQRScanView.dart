@@ -40,8 +40,7 @@ class _EntregaQRScanViewState extends State<EntregaQRScanView> {
       final novaEntregaProvider =
           Provider.of<NovaEntregaProvider>(context, listen: false);
       final qrParsed = json.decode(barcode);
-      // novaEntregaProvider.addNovaEntrega(qrParsed['id'], qrParsed['sender_id'],
-      //     _isGrande ? "grande" : "pequeno");
+      novaEntregaProvider.addNovoPacote(qrParsed['id'], qrParsed['sender_id']);
     }
   }
 
@@ -51,7 +50,8 @@ class _EntregaQRScanViewState extends State<EntregaQRScanView> {
   void didChangeDependencies() {
     if (_isInit) {
       _isInit = false;
-      //Provider.of<NovaEntregaProvider>(context, listen: false).startNewEntrega();
+      Provider.of<NovaEntregaProvider>(context, listen: false)
+          .startNewEntrega();
     }
     super.didChangeDependencies();
   }
@@ -67,14 +67,14 @@ class _EntregaQRScanViewState extends State<EntregaQRScanView> {
     });
     controller.stop();
     try {
-      // await Provider.of<NovaEntregaProvider>(context, listen: false)
-      //     .conferirEntrega(_onError);
+      await Provider.of<NovaEntregaProvider>(context, listen: false)
+          .conferirEntrega(_onError);
     } on Exception catch (e) {
       print("Falha ao conferirEntrega()");
     }
-    // Navigator.of(context)
-    //     .pushNamed(NovaEntregaView.routeName)
-    //     .then((value) => controller.start());
+    Navigator.of(context)
+        .pushNamed(NovaEntregaView.routeName)
+        .then((value) => controller.start());
     setState(() {
       _isBusy = false;
     });
@@ -131,26 +131,26 @@ class _EntregaQRScanViewState extends State<EntregaQRScanView> {
           SizedBox(
             height: 50,
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "Pacote Pequeno",
-                style: Theme.of(context).textTheme.headline6,
-              ),
-              Switch(
-                  value: _isGrande,
-                  onChanged: (value) {
-                    setState(() {
-                      _isGrande = value;
-                    });
-                  }),
-              Text(
-                "Pacote Grande",
-                style: Theme.of(context).textTheme.headline6,
-              ),
-            ],
-          ),
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.center,
+          //   children: [
+          //     Text(
+          //       "Pacote Pequeno",
+          //       style: Theme.of(context).textTheme.headline6,
+          //     ),
+          //     Switch(
+          //         value: _isGrande,
+          //         onChanged: (value) {
+          //           setState(() {
+          //             _isGrande = value;
+          //           });
+          //         }),
+          //     Text(
+          //       "Pacote Grande",
+          //       style: Theme.of(context).textTheme.headline6,
+          //     ),
+          //   ],
+          // ),
           SizedBox(
             height: 50,
           ),

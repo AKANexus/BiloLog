@@ -2,14 +2,14 @@ import 'package:bilolog/models/coletaState.dart';
 import 'package:bilolog/models/pacote.dart';
 import 'package:flutter/material.dart';
 
-class XYZZY with Comparable<XYZZY> {
+class Entrega with Comparable<Entrega> {
   final int id;
   final DateTime dtColeta;
   final String nomeVendedor;
-  ColetaState? _estadoColeta;
+  RemessaState? _estadoColeta;
   final List<Pacote> pacotes;
 
-  XYZZY({
+  Entrega({
     required this.id,
     required this.dtColeta,
     required this.nomeVendedor,
@@ -23,7 +23,7 @@ class XYZZY with Comparable<XYZZY> {
   }
 
   @override
-  int compareTo(XYZZY other) {
+  int compareTo(Entrega other) {
     return (dtColeta.compareTo(other.dtColeta));
   }
 
@@ -31,37 +31,37 @@ class XYZZY with Comparable<XYZZY> {
     IconData icon;
     String estado;
     switch (_estadoColeta) {
-      case ColetaState.Recebido:
+      case RemessaState.Recebido:
         {
           icon = Icons.call_received;
           estado = "Recebido";
           break;
         }
-      case ColetaState.Confirmado:
+      case RemessaState.Confirmado:
         {
           icon = Icons.check;
           estado = "Confirmado";
           break;
         }
-      case ColetaState.Coletado:
+      case RemessaState.Coletado:
         {
           icon = Icons.recommend;
           estado = "Coletado";
           break;
         }
-      case ColetaState.EmRota:
+      case RemessaState.EmRota:
         {
           icon = Icons.motorcycle;
           estado = "Em Rota";
           break;
         }
-      case ColetaState.Entregue:
+      case RemessaState.Entregue:
         {
           icon = Icons.sentiment_satisfied_alt;
           estado = "Entregue";
           break;
         }
-      case ColetaState.EmAnalise:
+      case RemessaState.EmAnalise:
         {
           icon = Icons.question_mark;
           estado = "Conferindo...";

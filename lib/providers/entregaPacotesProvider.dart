@@ -1,13 +1,14 @@
 import 'package:bilolog/models/coleta.dart';
+import 'package:bilolog/models/entrega.dart';
 import 'package:bilolog/models/pacote.dart';
 import 'package:flutter/material.dart';
 
-class ColetaPacotesProvider with ChangeNotifier {
+class EntregaPacotesProvider with ChangeNotifier {
   List<Pacote> _pacotes = [];
   List<Pacote> get pacotes => [..._pacotes];
 
-  Coleta? _coleta;
-  Coleta? get coleta => _coleta;
+  Entrega? _entrega;
+  Entrega? get entrega => _entrega;
 
   Pacote? _pacoteDetalhe;
   Pacote? get pacoteDetalhe => _pacoteDetalhe;
@@ -16,9 +17,9 @@ class ColetaPacotesProvider with ChangeNotifier {
     _pacoteDetalhe = value;
   }
 
-  set coleta(Coleta? value) {
+  set entrega(Entrega? value) {
     if (value != null) {
-      _coleta = value;
+      _entrega = value;
       _pacotes.clear();
       for (var pacote in value.pacotes) {
         _pacotes.add(pacote);

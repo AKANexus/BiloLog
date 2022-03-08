@@ -40,7 +40,7 @@ class _ColetaQRScanViewState extends State<ColetaQRScanView> {
       final novaColetaProvider =
           Provider.of<NovaColetaProvider>(context, listen: false);
       final qrParsed = json.decode(barcode);
-      novaColetaProvider.addNovaEntrega(qrParsed['id'], qrParsed['sender_id'],
+      novaColetaProvider.addNovoPacote(qrParsed['id'], qrParsed['sender_id'],
           _isGrande ? "grande" : "pequeno");
     }
   }
