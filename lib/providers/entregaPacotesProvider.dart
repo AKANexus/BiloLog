@@ -4,6 +4,10 @@ import 'package:bilolog/models/pacote.dart';
 import 'package:flutter/material.dart';
 
 class EntregaPacotesProvider with ChangeNotifier {
+  void notify() {
+    notifyListeners();
+  }
+
   List<Pacote> _pacotes = [];
   List<Pacote> get pacotes => [..._pacotes];
 

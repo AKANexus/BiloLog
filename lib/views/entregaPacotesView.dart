@@ -10,10 +10,15 @@ import 'package:provider/provider.dart';
 
 import '../widgets/coletaPacotesList.dart';
 
-class EntregaPacotesView extends StatelessWidget {
+class EntregaPacotesView extends StatefulWidget {
   EntregaPacotesView({Key? key}) : super(key: key);
   static const String routeName = "/entregasView/pacotesView";
 
+  @override
+  State<EntregaPacotesView> createState() => _EntregaPacotesViewState();
+}
+
+class _EntregaPacotesViewState extends State<EntregaPacotesView> {
   late Entrega _entrega;
 
   @override
@@ -58,8 +63,7 @@ class EntregaPacotesView extends StatelessWidget {
           ),
           Expanded(
             child: EntregaPacotesList(
-                Provider.of<EntregaPacotesProvider>(context, listen: false)
-                    .pacotes),
+                Provider.of<EntregaPacotesProvider>(context).pacotes),
           ),
         ]),
       ),

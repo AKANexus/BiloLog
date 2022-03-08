@@ -11,19 +11,23 @@ class Pacote {
   final Comprador cliente;
   final List<StatusPacote> statusPacotes;
   final String vendedorName;
+  int? mlUserID;
+  String? errorMessage;
 
-  Pacote({
-    required this.id,
-    required this.codPacote,
-    // required this.statusEntrega,
-    // required this.numColeta,
-    required this.cliente,
-    required this.statusPacotes,
-    required this.vendedorName,
-  });
+  Pacote(
+      {required this.id,
+      required this.codPacote,
+      // required this.statusEntrega,
+      // required this.numColeta,
+      required this.cliente,
+      required this.statusPacotes,
+      required this.vendedorName,
+      this.mlUserID});
+
+  bool get hasError => errorMessage != null;
 
   String get ultimoStatus {
-    if (statusPacotes.length < 1) return "Coletando...";
+    if (statusPacotes.length < 1) return "";
     return statusPacotes.last.descricaoStatus;
   }
 }

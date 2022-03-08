@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../providers/coletaPacotesProvider.dart';
 import '../views/ColetaPacoteDetalheView.dart';
+import '../views/entregaPacote.dart';
 
 class EntregaPacotesList extends StatelessWidget {
   const EntregaPacotesList(this._entregas, {Key? key}) : super(key: key);
@@ -28,6 +29,18 @@ class PacotesEntregaListTile extends StatelessWidget {
   PacotesEntregaListTile(this._pacote, {Key? key}) : super(key: key);
 
   final Pacote _pacote;
+
+  Color getColor(Set<MaterialState> states, BuildContext context) {
+    const Set<MaterialState> interactiveStates = <MaterialState>{
+      MaterialState.pressed,
+      MaterialState.hovered,
+      MaterialState.focused,
+    };
+    if (states.any(interactiveStates.contains)) {
+      return Theme.of(context).colorScheme.onPrimary;
+    }
+    return Theme.of(context).colorScheme.tertiary;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -137,7 +150,7 @@ class PacotesEntregaListTile extends StatelessWidget {
                         ColetaPacoteDetalheView.routeName,
                         arguments: {'entrega': _pacote});
                   },
-                  child: Text("Detalhes"),
+                  child: const Text("Detalhes"),
                 ),
               ),
               Expanded(
@@ -146,25 +159,34 @@ class PacotesEntregaListTile extends StatelessWidget {
                     tapTargetSize: MaterialTapTargetSize
                         .shrinkWrap, //THIS FUCKING THING REMOVES THE STUPID MARGIN AROUND THE BUTTONS. FFS
                     shape: MaterialStateProperty.all(
-                      RoundedRectangleBorder(
+                      const RoundedRectangleBorder(
                         borderRadius: BorderRadius.only(
                           bottomRight: Radius.circular(5),
                         ),
                       ),
                     ),
                     elevation: MaterialStateProperty.all(0),
-                    foregroundColor: MaterialStateProperty.all(
-                      Theme.of(context).colorScheme.onPrimary,
+                    foregroundColor: MaterialStateProperty.resolveWith(
+                      (_) => _pacote.ultimoStatus.toLowerCase() == "em rota"
+                          ? Theme.of(context).colorScheme.onPrimary
+                          : Theme.of(context).colorScheme.onPrimary,
                     ),
-                    backgroundColor: MaterialStateProperty.all(
-                        Theme.of(context).colorScheme.primary),
+                    backgroundColor: MaterialStateProperty.resolveWith(
+                      (_) => _pacote.ultimoStatus.toLowerCase() == "em rota"
+                          ? Theme.of(context).colorScheme.primary
+                          : Colors.green,
+                    ),
                   ),
                   onPressed: () {
-                    Navigator.of(context).pushNamed(
-                        ColetaPacoteDetalheView.routeName,
-                        arguments: {'entrega': _pacote});
+                    _pacote.ultimoStatus.toLowerCase() == "em rota"
+                        ? Navigator.of(context).pushNamed(
+                            EntregaPacoteView.routeName,
+                            arguments: {'pacote': _pacote})
+                        : null;
                   },
-                  child: Text("Entregar"),
+                  child: _pacote.ultimoStatus.toLowerCase() == "em rota"
+                      ? Text("Entregar")
+                      : Text("Entregue"),
                 ),
               )
             ],

@@ -23,6 +23,70 @@ class EntregasProvider with ChangeNotifier {
   List<Entrega> _entregas = [];
   List<Entrega> get entregas => [..._entregas];
 
+  late DateTime lastStartDate;
+  late DateTime lastEndDate;
+
+  Future<void> refreshEntregaByID(int id, {required Function onError}) async {
+    final url = Uri(
+        scheme: 'https',
+        host: ApiURL.apiAuthority,
+        path: '/entregas/entrega/$id');
+    try {
+      final response = await http.get(url,
+          headers: {'apiKey': _apiKey!}).timeout(Duration(seconds: 10));
+      if (response.statusCode == 200) {
+        final entrega = json.decode(response.body);
+        var entregaRefreshIx =
+            _entregas.indexWhere((element) => element.id == id);
+        Entrega novaEntrega = Entrega(
+            id: entrega['id'],
+            dtColeta: DateTime.parse(entrega['dataColeta']),
+            estadoColeta: ColetaStateConverter.convert(
+                entrega['status'][0]['status']), //Não é retornado!!!!!
+            nomeVendedor: "",
+            pacotes: []);
+        for (Map<String, dynamic> pacote in entrega['pacotes']) {
+          Pacote novoPacote = Pacote(
+            vendedorName: "",
+            id: pacote['id'],
+            codPacote: pacote['id'],
+            mlUserID: pacote['ml_user_id'],
+            cliente: Comprador(
+              id: entrega['id'],
+              nome: pacote['destinatario'],
+              endereco: pacote['logradouro'],
+              bairro: pacote['bairro'],
+              cep: pacote['CEP'],
+              complemento: pacote['complemento'] ?? "",
+            ),
+            statusPacotes: [],
+          );
+          for (var statusEntrega in pacote['status']) {
+            novoPacote.statusPacotes.add(
+              StatusPacote(
+                timestamp: DateTime.parse(statusEntrega['data']),
+                funcionarioResponsavel: statusEntrega['colaborador']['name'],
+                colaboradorId: statusEntrega['colaborador_uuid'],
+                descricaoStatus: statusEntrega['status'],
+              ),
+            );
+          }
+          novaEntrega.pacotes.add(novoPacote);
+        }
+        _entregas[entregaRefreshIx] = novaEntrega;
+        notifyListeners();
+      }
+    } catch (e) {
+      print("erro ao atualizar single entrega");
+      print(e);
+    }
+  }
+
+  Future<void> refreshCurrentEntregas(Function onError) async {
+    await getEntregas(onError, lastStartDate, lastEndDate);
+    notifyListeners();
+  }
+
   Future<void> getEntregas(
       Function onError, DateTime startDate, DateTime endDate) async {
     _entregas.clear();
@@ -42,19 +106,19 @@ class EntregasProvider with ChangeNotifier {
       final content = json.decode(response.body);
       if (response.statusCode == 200 || response.statusCode == 201) {
         for (Map<String, dynamic> entrega in content) {
-          RemessaState entregaState;
-          switch (entrega['status'][0]['status']) {
-            case "Recebido":
-              entregaState = RemessaState.Recebido;
-              break;
-            case "Confirmado":
-              entregaState = RemessaState.Confirmado;
-              break;
-            case "Entregado":
-              entregaState = RemessaState.Coletado;
-              break;
-            default:
-          }
+          // RemessaState entregaState;
+          // switch (entrega['status'][0]['status']) {
+          //   case "Recebido":
+          //     entregaState = RemessaState.Recebido;
+          //     break;
+          //   case "Confirmado":
+          //     entregaState = RemessaState.Confirmado;
+          //     break;
+          //   case "Entregado":
+          //     entregaState = RemessaState.Coletado;
+          //     break;
+          //   default:
+          // }
           Entrega novaEntrega = Entrega(
               id: entrega['id'],
               dtColeta: DateTime.parse(entrega['dataColeta']),
@@ -67,6 +131,7 @@ class EntregasProvider with ChangeNotifier {
               vendedorName: "",
               id: pacote['id'],
               codPacote: pacote['id'],
+              mlUserID: pacote['ml_user_id'],
               cliente: Comprador(
                 id: entrega['id'],
                 nome: pacote['destinatario'],
@@ -93,6 +158,8 @@ class EntregasProvider with ChangeNotifier {
         }
         _entregas.sort();
         _entregas = _entregas.reversed.toList();
+        lastStartDate = startDate;
+        lastEndDate = endDate;
         notifyListeners();
       } else {
         onError(content['error']);
@@ -127,6 +194,44 @@ class EntregasProvider with ChangeNotifier {
           .timeout(Duration(seconds: 10));
       final content = json.decode(response.body);
       if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        onError(content['error']);
+        return false;
+      }
+    } on SocketException catch (socket) {
+      onError("Falha de conexão.\nVerifique sua conexão à internet.");
+      return false;
+    } on TimeoutException catch (timeout) {
+      onError("Falha na conexão. Tente novamente mais tarde.");
+      return false;
+    } on Exception catch (e) {
+      onError(e.toString());
+      return false;
+    }
+  }
+
+  Future<bool> entregaPacoteAoCliente(
+      Pacote pacote, String nomeRecebedor, String documentoRecebedor,
+      {required Function onError}) async {
+    try {
+      final url = Uri.https(ApiURL.apiAuthority, "/entregas/entregue");
+      final jsonPacote = {
+        'id': pacote.id.toString(),
+        'ml_user_id': pacote.mlUserID!,
+        'receiver_name': nomeRecebedor,
+        'receiver_doc': documentoRecebedor,
+      };
+      final jsonBody = {
+        'pacotes': [jsonPacote]
+      };
+      final response = await http
+          .post(url,
+              headers: {'apiKey': _apiKey!, 'content-type': 'application/json'},
+              body: json.encode(jsonBody))
+          .timeout(Duration(seconds: 10));
+      final content = json.decode(response.body);
+      if (response.statusCode >= 200 && response.statusCode <= 299) {
         return true;
       } else {
         onError(content['error']);

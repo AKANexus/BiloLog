@@ -14,6 +14,7 @@ import 'package:bilolog/views/coletasView.dart';
 import 'package:bilolog/views/coletaPacoteDetalheView.dart';
 import 'package:bilolog/views/coletaPacotesView.dart';
 import 'package:bilolog/views/ColetaQRScanView.dart';
+import 'package:bilolog/views/entregaPacote.dart';
 import 'package:bilolog/views/entregaPacotesView.dart';
 import 'package:bilolog/views/entregasView.dart';
 import 'package:bilolog/views/novaEntregaView.dart';
@@ -86,8 +87,13 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Bilolog',
         theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
+            // primarySwatch: Colors.blue,
+            colorScheme: ColorScheme.light(
+                primary: Colors.blue,
+                secondary: Colors.lightBlueAccent,
+                tertiary: Colors.blueGrey,
+                onPrimary: Colors.white,
+                errorContainer: Color.fromARGB(255, 255, 190, 190))),
         home: Consumer<AuthenticationProvider>(
           builder: (context, auth, _) {
             print("auth.isLoggedIn: ${auth.isLoggedIn}");
@@ -106,6 +112,7 @@ class MyApp extends StatelessWidget {
           EntregaQRScanView.routeName: (ctx) => EntregaQRScanView(),
           NovaColetaView.routeName: (ctx) => NovaColetaView(),
           NovaEntregaView.routeName: (ctx) => NovaEntregaView(),
+          EntregaPacoteView.routeName: (ctx) => EntregaPacoteView(),
         },
       ),
     );
