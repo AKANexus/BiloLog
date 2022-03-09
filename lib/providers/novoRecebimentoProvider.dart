@@ -4,7 +4,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:bilolog/models/cliente.dart';
-import 'package:bilolog/models/coletaState.dart';
+import 'package:bilolog/models/remessaState.dart';
 import 'package:bilolog/models/pacote.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;

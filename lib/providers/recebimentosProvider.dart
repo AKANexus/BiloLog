@@ -4,7 +4,7 @@ import 'dart:io';
 
 import 'package:bilolog/models/cliente.dart';
 import 'package:bilolog/models/coleta.dart';
-import 'package:bilolog/models/coletaState.dart';
+import 'package:bilolog/models/remessaState.dart';
 import 'package:bilolog/models/pacote.dart';
 import 'package:bilolog/models/recebimento.dart';
 import 'package:bilolog/models/statusEntrega.dart';

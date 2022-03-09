@@ -1,4 +1,4 @@
-import 'package:bilolog/models/coletaState.dart';
+import 'package:bilolog/models/remessaState.dart';
 import 'package:bilolog/models/statusEntrega.dart';
 
 import 'cliente.dart';
