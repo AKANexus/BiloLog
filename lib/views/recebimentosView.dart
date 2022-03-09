@@ -1,11 +1,13 @@
+import 'package:bilolog/models/recebimento.dart';
 import 'package:bilolog/providers/coletasProvider.dart';
+import 'package:bilolog/providers/recebimentosProvider.dart';
 import 'package:bilolog/views/ColetaQRScanView.dart';
 import 'package:bilolog/widgets/coletasList.dart';
+import 'package:bilolog/widgets/recebimentosList.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import '../models/coleta.dart';
 import '../widgets/appDrawer.dart';
 
 class RecebimentosView extends StatefulWidget {
@@ -21,7 +23,7 @@ class _RecebimentosViewState extends State<RecebimentosView> {
   DateTime _startDate = DateTime.now();
   DateTime _endDate = DateTime.now();
 
-  List<Coleta>? _coletas;
+  List<Recebimento>? _recebimentos;
   bool _isLoading = false;
   bool _isInit = true;
 
@@ -34,11 +36,11 @@ class _RecebimentosViewState extends State<RecebimentosView> {
     setState(() {
       _isLoading = true;
     });
-    final coletasProvider =
-        Provider.of<ColetasProvider>(context, listen: false);
-    await coletasProvider.getColetas(_onError, _startDate, _endDate);
+    final recebimentosProvider =
+        Provider.of<RecebimentosProvider>(context, listen: false);
+    await recebimentosProvider.getColetas(_onError, _startDate, _endDate);
     setState(() {
-      _coletas = coletasProvider.coletas;
+      _recebimentos = recebimentosProvider.recebimentos;
       _isLoading = false;
     });
   }
@@ -129,7 +131,7 @@ class _RecebimentosViewState extends State<RecebimentosView> {
                   )
                 : RefreshIndicator(
                     onRefresh: () => _getColetas(context),
-                    child: ColetasList(_coletas!)),
+                    child: RecebimentosList(_recebimentos!)),
           ),
         ]),
       ),

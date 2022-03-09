@@ -7,8 +7,8 @@ import 'package:provider/provider.dart';
 import '../providers/coletaPacotesProvider.dart';
 import '../views/ColetaPacoteDetalheView.dart';
 
-class ColetaPacotesList extends StatelessWidget {
-  const ColetaPacotesList(this._entregas, {Key? key}) : super(key: key);
+class RecebimentoPacotesList extends StatelessWidget {
+  const RecebimentoPacotesList(this._entregas, {Key? key}) : super(key: key);
 
   final List<Pacote> _entregas;
 

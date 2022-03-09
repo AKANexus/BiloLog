@@ -12,7 +12,7 @@ import 'package:http/http.dart' as http;
 import '../env/apiUrl.dart';
 import '../models/coleta.dart';
 
-class NovaColetaProvider with ChangeNotifier {
+class NovoRecebimentoProvider with ChangeNotifier {
   Map<String, dynamic>? authInfo;
 
   late String receivedJson;
