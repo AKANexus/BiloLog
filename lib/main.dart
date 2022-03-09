@@ -24,7 +24,7 @@ import 'package:provider/provider.dart';
 import 'views/novaColetaView.dart';
 
 void main() {
-  HttpOverrides.global = MyHttpOverrides();
+  //HttpOverrides.global = MyHttpOverrides();
   runApp(const MyApp());
 }
 
@@ -85,7 +85,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => EntregaPacotesProvider()),
       ],
       child: MaterialApp(
-        title: 'Bilolog',
+        title: 'LogControl',
         theme: ThemeData(
             // primarySwatch: Colors.blue,
             colorScheme: ColorScheme.light(

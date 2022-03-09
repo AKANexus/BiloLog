@@ -5,14 +5,14 @@ import 'dart:math';
 
 import 'package:bilolog/models/cliente.dart';
 import 'package:bilolog/models/coletaState.dart';
-import 'package:bilolog/models/entrega.dart';
 import 'package:bilolog/models/pacote.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import '../env/apiUrl.dart';
+import '../models/coleta.dart';
 
-class NovaEntregaProvider with ChangeNotifier {
+class NovaColetaProvider with ChangeNotifier {
   Map<String, dynamic>? authInfo;
 
   late String receivedJson;
@@ -20,24 +20,24 @@ class NovaEntregaProvider with ChangeNotifier {
   List<PacoteEscaneado> _pacotesEscaneados = [];
   List<PacoteEscaneado> get pacotesEscaneados => [..._pacotesEscaneados];
 
-  List<Entrega> _entregasVerificadas = [];
-  List<Entrega> get entregasVerificadas => [..._entregasVerificadas];
+  List<Coleta> _coletasVerificadas = [];
+  List<Coleta> get coletasVerificadas => [..._coletasVerificadas];
 
   List<Pacote> pacotesPorSellerName(String nomeVendedor) {
-    return _entregasVerificadas
+    return _coletasVerificadas
         .firstWhere((element) => element.nomeVendedor == nomeVendedor)
         .pacotes;
   }
 
-  void addNovoPacote(String seller, int sender) {
+  void addNovoPacote(String seller, int sender, String tamanho) {
     if (!_pacotesEscaneados
         .any((element) => element.senderId == sender && element.id == seller)) {
-      _pacotesEscaneados.add(PacoteEscaneado(sender, seller, ""));
+      _pacotesEscaneados.add(PacoteEscaneado(sender, seller, tamanho));
     }
   }
 
-  void startNewEntrega() {
-    print("Nova entrega iniciada");
+  void startNewColeta() {
+    print("Nova coleta iniciada");
     _pacotesEscaneados.clear();
   }
 
@@ -59,21 +59,21 @@ class NovaEntregaProvider with ChangeNotifier {
   }
 
   List<String> get SellerNames {
-    return _entregasVerificadas.map((e) => e.nomeVendedor).toSet().toList();
+    return _coletasVerificadas.map((e) => e.nomeVendedor).toSet().toList();
   }
 
-  Future<void> conferirEntrega(Function onError) async {
-    _entregasVerificadas.clear();
+  Future<void> conferirColeta(Function onError) async {
+    _coletasVerificadas.clear();
     if (_pacotesEscaneados.length == 0) {
       return;
     }
     if (authInfo == null) return;
-    final url = Uri.https(ApiURL.apiAuthority, "/entregas/check");
+    final url = Uri.https(ApiURL.apiAuthority, "/listacoleta/check");
     print(url);
     final jsonBody = {
       'transportadora_uuid': 2345, //authInfo!['uuid'],
       'pacotes': _pacotesEscaneados
-          .map((e) => {'id': e.id, 'sender_id': e.senderId})
+          .map((e) => {'id': e.id, 'sender_id': e.senderId, 'size': e.tamanho})
           .toList(),
     };
 
@@ -86,50 +86,33 @@ class NovaEntregaProvider with ChangeNotifier {
               },
               body: json.encode(jsonBody))
           .timeout(Duration(seconds: 10));
-      final Map<String, dynamic> entregaRetornada = json.decode(response.body);
+      final Map<String, dynamic> coletaRetornada = json.decode(response.body);
       if (response.statusCode == 200 || response.statusCode == 201) {
         receivedJson = response.body;
         List<Pacote> pacotesAAdicionar = [];
-        for (Map<String, dynamic> pacote in entregaRetornada['pacotes']) {
-          if (pacote['error'] != null) {
-            pacotesAAdicionar.add(Pacote(
-                errorMessage: pacote['error'],
+        for (Map<String, dynamic> pacote in coletaRetornada['pacotes']) {
+          pacotesAAdicionar.add(Pacote(
+              id: -1,
+              vendedorName: coletaRetornada['nomeVendedor'],
+              cliente: Comprador(
                 id: -1,
-                vendedorName: "",
-                cliente: Comprador(
-                  id: -1,
-                  nome: "",
-                  endereco: "",
-                  bairro: "",
-                  cep: "",
-                  complemento: "",
-                ),
-                codPacote: -1,
-                statusPacotes: []));
-          } else {
-            pacotesAAdicionar.add(Pacote(
-                id: -1,
-                vendedorName: "",
-                cliente: Comprador(
-                  id: -1,
-                  nome: pacote['destinatario'],
-                  endereco: pacote['logradouro'],
-                  bairro: pacote['bairro'],
-                  cep: pacote['CEP'],
-                  complemento: pacote['complemento'] ?? "",
-                ),
-                codPacote: pacote['id'],
-                statusPacotes: []));
-          }
-          _entregasVerificadas.add(Entrega(
+                nome: pacote['destinatario'],
+                endereco: pacote['logradouro'],
+                bairro: pacote['bairro'],
+                cep: pacote['CEP'],
+                complemento: pacote['complemento'] ?? "",
+              ),
+              codPacote: int.parse(pacote['idPacote']),
+              statusPacotes: []));
+          _coletasVerificadas.add(Coleta(
               id: -1,
               dtColeta: DateTime.now(),
               estadoColeta: RemessaState.EmAnalise,
-              nomeVendedor: "",
+              nomeVendedor: coletaRetornada['nomeVendedor'],
               pacotes: pacotesAAdicionar));
         }
       } else {
-        onError(entregaRetornada['error']);
+        onError(coletaRetornada['error']);
       }
     } on SocketException catch (socket) {
       onError("Falha de conexão.\nVerifique sua conexão à internet.");

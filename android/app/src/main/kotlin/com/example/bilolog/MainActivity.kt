@@ -1,4 +1,4 @@
-package com.example.bilolog
+package com.trilhainformatica.logcontrol
 
 import io.flutter.embedding.android.FlutterActivity
 

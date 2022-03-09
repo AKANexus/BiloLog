@@ -22,7 +22,8 @@ class Pacote {
       required this.cliente,
       required this.statusPacotes,
       required this.vendedorName,
-      this.mlUserID});
+      this.mlUserID,
+      this.errorMessage});
 
   bool get hasError => errorMessage != null;
 
