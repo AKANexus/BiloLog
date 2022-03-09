@@ -6,6 +6,7 @@ import 'package:bilolog/models/cliente.dart';
 import 'package:bilolog/models/coleta.dart';
 import 'package:bilolog/models/coletaState.dart';
 import 'package:bilolog/models/pacote.dart';
+import 'package:bilolog/models/recebimento.dart';
 import 'package:bilolog/models/statusEntrega.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -13,19 +14,19 @@ import 'package:intl/intl.dart';
 
 import '../env/apiUrl.dart';
 
-class ColetasProvider with ChangeNotifier {
+class RecebimentosProvider with ChangeNotifier {
   set apiKey(String value) {
     _apiKey = value;
   }
 
   String? _apiKey;
 
-  List<Coleta> _coletas = [];
-  List<Coleta> get coletas => [..._coletas];
+  List<Recebimento> _recebimentos = [];
+  List<Recebimento> get recebimentos => [..._recebimentos];
 
   Future<void> getColetas(
       Function onError, DateTime startDate, DateTime endDate) async {
-    _coletas.clear();
+    _recebimentos.clear();
     final url = Uri(
         scheme: 'https',
         host: ApiURL.apiAuthority,
@@ -52,7 +53,7 @@ class ColetasProvider with ChangeNotifier {
               break;
             default:
           }
-          Coleta novaColeta = Coleta(
+          Recebimento novoRecebimento = Recebimento(
               id: coleta['id'],
               dtColeta: DateTime.parse(coleta['dataColeta']),
               estadoColeta:
@@ -84,12 +85,12 @@ class ColetasProvider with ChangeNotifier {
                 ),
               );
             }
-            novaColeta.pacotes.add(novoPacote);
+            novoRecebimento.pacotes.add(novoPacote);
           }
-          _coletas.add(novaColeta);
+          _recebimentos.add(novoRecebimento);
         }
-        _coletas.sort();
-        _coletas = _coletas.reversed.toList();
+        _recebimentos.sort();
+        _recebimentos = _recebimentos.reversed.toList();
         notifyListeners();
       } else {
         onError(content['error']);
@@ -103,7 +104,7 @@ class ColetasProvider with ChangeNotifier {
     }
   }
 
-  Future<void> postNovaColeta(Coleta coleta) async {
+  Future<void> postNovaColeta(Recebimento coleta) async {
     final url = Uri.https(ApiURL.apiAuthority, "/listacoleta");
     final jsonBody = {};
     final response = await http
