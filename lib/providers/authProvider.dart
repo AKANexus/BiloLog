@@ -1,9 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bilolog/env/apiUrl.dart';
+import 'package:bilolog/env/api_url.dart';
 import 'package:bilolog/models/cargo.dart';
-import 'package:bilolog/models/coleta.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';

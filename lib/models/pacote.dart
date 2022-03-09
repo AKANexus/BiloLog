@@ -1,13 +1,11 @@
-import 'package:bilolog/models/remessaState.dart';
-import 'package:bilolog/models/statusEntrega.dart';
+import 'package:bilolog/models/statusRemessa.dart';
+import 'package:bilolog/models/statusPacote.dart';
 
 import 'cliente.dart';
 
 class Pacote {
   final int id;
   final int codPacote;
-  // final ColetaState statusEntrega;
-  // final String numColeta;
   final Comprador cliente;
   final List<StatusPacote> statusPacotes;
   final String vendedorName;
@@ -17,8 +15,6 @@ class Pacote {
   Pacote(
       {required this.id,
       required this.codPacote,
-      // required this.statusEntrega,
-      // required this.numColeta,
       required this.cliente,
       required this.statusPacotes,
       required this.vendedorName,

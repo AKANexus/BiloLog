@@ -1,4 +1,4 @@
-enum RemessaState {
+enum StatusRemessa {
   Confirmado,
   Coletado,
   Recebido,
@@ -8,19 +8,19 @@ enum RemessaState {
 }
 
 class ColetaStateConverter {
-  static RemessaState convert(String state) {
-    RemessaState convertido;
+  static StatusRemessa convert(String state) {
+    StatusRemessa convertido;
     switch (state.toLowerCase()) {
       case "recebido":
-        return RemessaState.Recebido;
+        return StatusRemessa.Recebido;
       case "confirmado":
-        return RemessaState.Confirmado;
+        return StatusRemessa.Confirmado;
       case "coletado":
-        return RemessaState.Coletado;
+        return StatusRemessa.Coletado;
       case "em rota":
-        return RemessaState.EmRota;
+        return StatusRemessa.EmRota;
       case "entregue":
-        return RemessaState.Entregue;
+        return StatusRemessa.Entregue;
       default:
         print("State was $state");
         throw ArgumentError("O argumento informado não era esperado", "state");
