@@ -1,1 +1,1 @@
-enum RemessaKind { Coleta, Recebimento, Entrega }
+enum RemessaKind { coleta, recebimento, entrega }

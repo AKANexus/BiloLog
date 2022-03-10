@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 
 import '../models/remessa.dart';
@@ -19,7 +21,7 @@ class _RemessasListState extends State<RemessasList> {
     return _remessas.isEmpty
         ? SingleChildScrollView(
             physics: AlwaysScrollableScrollPhysics(),
-            child: Container(
+            child: SizedBox(
               height: mqi.size.height - 270,
               child: Center(
                 child: Text("Nenhuma remessa encontrada"),

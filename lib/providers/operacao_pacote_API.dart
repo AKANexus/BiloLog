@@ -1,4 +1,3 @@
-//ignore_for_file: todo
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -7,10 +6,8 @@ import 'package:bilolog/models/pacote.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
-import '../models/pacote_escaneado.dart';
-import '../models/remessa.dart';
 import '../env/api_url.dart';
-import 'authProvider.dart';
+import 'auth_provider.dart';
 
 class OperacaoDePacoteAPI with ChangeNotifier {
   AuthenticationProvider? authProvider;

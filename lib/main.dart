@@ -1,18 +1,20 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import 'package:bilolog/models/cargo.dart';
-import 'package:bilolog/providers/authProvider.dart';
-import 'package:bilolog/providers/operacao_pacote_API.dart';
-import 'package:bilolog/providers/operacao_remessa_API.dart';
-import 'package:bilolog/providers/remessas_API.dart';
+import 'package:bilolog/providers/auth_provider.dart';
+import 'package:bilolog/providers/operacao_pacote_api.dart';
+import 'package:bilolog/providers/operacao_remessa_api.dart';
+import 'package:bilolog/providers/remessas_api.dart';
 import 'package:bilolog/views/authView.dart';
 import 'package:bilolog/views/lista_de_remessas.dart';
 import 'package:bilolog/views/nova_remessa_view.dart';
 import 'package:bilolog/views/pacote_detalhe_view.dart';
 import 'package:bilolog/views/pacotes_da_remessa_view.dart';
-import 'package:bilolog/views/remessa_QR_scan_view.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:bilolog/views/remessa_qr_scan_view.dart';
 
 void main() {
   //HttpOverrides.global = MyHttpOverrides();
@@ -34,16 +36,16 @@ class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   Widget selectStartingWidget(Cargo authorizationString) {
-    print("authorizationString: $authorizationString");
+    //print("authorizationString: $authorizationString");
     switch (authorizationString) {
-      case Cargo.Coletor:
-        return RemessasView();
-      case Cargo.Administrador:
+      case Cargo.coletor:
+        return const RemessasView();
+      case Cargo.administrador:
         return const Text("Falha ao obter autorização.");
-      case Cargo.Motocorno:
-        return RemessasView();
-      case Cargo.GaleraDoCD:
-        return RemessasView();
+      case Cargo.motocorno:
+        return const RemessasView();
+      case Cargo.galeraDoCD:
+        return const RemessasView();
       default:
         return const Text("Falha ao obter autorização.");
     }
@@ -74,7 +76,7 @@ class MyApp extends StatelessWidget {
         title: 'LogControl',
         theme: ThemeData(
             // primarySwatch: Colors.blue,
-            colorScheme: ColorScheme.light(
+            colorScheme: const ColorScheme.light(
                 primary: Colors.blue,
                 secondary: Colors.lightBlueAccent,
                 tertiary: Colors.blueGrey,
@@ -82,18 +84,20 @@ class MyApp extends StatelessWidget {
                 errorContainer: Color.fromARGB(255, 255, 190, 190))),
         home: Consumer<AuthenticationProvider>(
           builder: (context, auth, _) {
-            print("auth.isLoggedIn: ${auth.isLoggedIn}");
+            if (kDebugMode) {
+              print("auth.isLoggedIn: ${auth.isLoggedIn}");
+            }
             return auth.isLoggedIn
                 ? selectStartingWidget(auth.authorization)
-                : AuthenticationView();
+                : const AuthenticationView();
           },
         ),
         routes: {
-          RemessasView.routeName: (ctx) => RemessasView(),
-          RemessaPacotesView.routeName: (ctx) => RemessaPacotesView(),
-          PacoteDetalheView.routeName: (ctx) => PacoteDetalheView(),
-          RemessaQRScanView.routeName: (ctx) => RemessaQRScanView(),
-          NovaRemessaView.routeName: (ctx) => NovaRemessaView(),
+          RemessasView.routeName: (ctx) => const RemessasView(),
+          RemessaPacotesView.routeName: (ctx) => const RemessaPacotesView(),
+          PacoteDetalheView.routeName: (ctx) => const PacoteDetalheView(),
+          RemessaQRScanView.routeName: (ctx) => const RemessaQRScanView(),
+          NovaRemessaView.routeName: (ctx) => const NovaRemessaView(),
         },
       ),
     );

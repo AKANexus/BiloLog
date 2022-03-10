@@ -1,9 +1,11 @@
-import 'package:bilolog/providers/authProvider.dart';
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+
+import 'package:bilolog/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class AuthenticationView extends StatefulWidget {
-  AuthenticationView({Key? key}) : super(key: key);
+  const AuthenticationView({Key? key}) : super(key: key);
   static const String routeName = "/authenticationView";
 
   @override
@@ -18,7 +20,7 @@ class _AuthenticationViewState extends State<AuthenticationView> {
     if (_isInit) {
       final authProvider =
           Provider.of<AuthenticationProvider>(context, listen: false);
-      authProvider.CheckForLogIn();
+      authProvider.checkForLogIn();
       _isInit = false;
     }
     super.didChangeDependencies();
@@ -50,7 +52,7 @@ class _AuthenticationViewState extends State<AuthenticationView> {
   }
 
   Future<void> _submit() async {
-    print("Attempting to login");
+    //print("Attempting to login");
     if (_formKey.currentState?.validate() == false) {
       return;
     } else {
@@ -62,7 +64,7 @@ class _AuthenticationViewState extends State<AuthenticationView> {
       final authProvider =
           Provider.of<AuthenticationProvider>(context, listen: false);
       final loginResult =
-          await authProvider.LogIn(_username!, _password!, _onError);
+          await authProvider.logIn(_username!, _password!, _onError);
       setState(() {
         _isBusy = false;
       });
@@ -144,7 +146,7 @@ class _AuthenticationViewState extends State<AuthenticationView> {
             if (_isBusy)
               Container(
                 child: Center(
-                  child: Container(
+                  child: SizedBox(
                     height: 300,
                     width: 250,
                     child: Column(

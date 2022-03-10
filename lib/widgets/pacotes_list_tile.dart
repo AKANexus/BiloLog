@@ -1,10 +1,12 @@
+import 'package:bilolog/providers/operacao_remessa_api.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../models/pacote.dart';
 import '../views/pacote_detalhe_view.dart';
 
 class PacotesListTile extends StatelessWidget {
-  PacotesListTile(this._pacote, {Key? key}) : super(key: key);
+  const PacotesListTile(this._pacote, {Key? key}) : super(key: key);
 
   final Pacote _pacote;
 
@@ -22,7 +24,7 @@ class PacotesListTile extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Falha ao adicionar o pacote"),
+                    const Text("Falha ao adicionar o pacote"),
                     Text(_pacote.errorMessage!)
                   ],
                 ),
@@ -46,8 +48,8 @@ class PacotesListTile extends StatelessWidget {
                         padding: const EdgeInsets.all(2),
                         child: Row(
                           children: [
-                            Icon(Icons.border_outer_rounded, size: 20),
-                            SizedBox(
+                            const Icon(Icons.border_outer_rounded, size: 20),
+                            const SizedBox(
                               width: 5,
                             ),
                             Text(
@@ -67,8 +69,9 @@ class PacotesListTile extends StatelessWidget {
                         padding: const EdgeInsets.all(2),
                         child: Row(
                           children: [
-                            Icon(Icons.markunread_mailbox_outlined, size: 20),
-                            SizedBox(
+                            const Icon(Icons.markunread_mailbox_outlined,
+                                size: 20),
+                            const SizedBox(
                               width: 5,
                             ),
                             Text(
@@ -85,8 +88,8 @@ class PacotesListTile extends StatelessWidget {
                         padding: const EdgeInsets.all(2),
                         child: Row(
                           children: [
-                            Icon(Icons.share, size: 20),
-                            SizedBox(
+                            const Icon(Icons.share, size: 20),
+                            const SizedBox(
                               width: 5,
                             ),
                             Text(_pacote.ultimoStatus),
@@ -98,14 +101,17 @@ class PacotesListTile extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () {
-                    // final entregasProvider =
-                    //     Provider.of<EntregasProvider>(context, listen: false);
-                    // entregasProvider.entrega = _entrega;
-                    Navigator.of(context).pushNamed(PacoteDetalheView.routeName,
-                        arguments: {'entrega': _pacote});
+                    final provider = Provider.of<OperacaoDeRemessaAPI>(context,
+                        listen: false);
+                    provider.pacote = _pacote;
+                    Navigator.of(context)
+                        .pushNamed(PacoteDetalheView.routeName)
+                        .then((_) {
+                      provider.pacote = null;
+                    });
                   },
                   child: Column(
-                    children: [
+                    children: const [
                       Icon(Icons.qr_code),
                       Text("Detalhes"),
                     ],

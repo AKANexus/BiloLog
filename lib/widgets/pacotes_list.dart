@@ -1,4 +1,4 @@
-import 'package:bilolog/providers/operacao_remessa_API.dart';
+import 'package:bilolog/providers/operacao_remessa_api.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

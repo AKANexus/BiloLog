@@ -1,6 +1,8 @@
-import 'package:bilolog/providers/remessas_API.dart';
-import 'package:bilolog/views/remessa_QR_scan_view.dart';
-import 'package:bilolog/widgets/appDrawer.dart';
+// ignore_for_file: prefer_const_constructors
+
+import 'package:bilolog/providers/remessas_api.dart';
+import 'package:bilolog/views/remessa_qr_scan_view.dart';
+import 'package:bilolog/widgets/app_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';

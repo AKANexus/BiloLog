@@ -1,5 +1,5 @@
 import 'package:bilolog/models/remessa_type.dart';
-import 'package:bilolog/models/statusRemessa.dart';
+import 'package:bilolog/models/status_remessa.dart';
 import 'package:bilolog/models/pacote.dart';
 import 'package:flutter/material.dart';
 
@@ -34,37 +34,37 @@ class Remessa with Comparable<Remessa> {
     IconData icon;
     String estado;
     switch (_estadoRemessa) {
-      case StatusRemessa.Recebido:
+      case StatusRemessa.recebido:
         {
           icon = Icons.call_received;
           estado = "Recebido";
           break;
         }
-      case StatusRemessa.Confirmado:
+      case StatusRemessa.confirmado:
         {
           icon = Icons.check;
           estado = "Confirmado";
           break;
         }
-      case StatusRemessa.Coletado:
+      case StatusRemessa.coletado:
         {
           icon = Icons.recommend;
           estado = "Coletado";
           break;
         }
-      case StatusRemessa.EmRota:
+      case StatusRemessa.emRota:
         {
           icon = Icons.motorcycle;
           estado = "Em Rota";
           break;
         }
-      case StatusRemessa.Entregue:
+      case StatusRemessa.entregue:
         {
           icon = Icons.sentiment_satisfied_alt;
           estado = "Entregue";
           break;
         }
-      case StatusRemessa.EmAnalise:
+      case StatusRemessa.emAnalise:
         {
           icon = Icons.question_mark;
           estado = "Conferindo...";

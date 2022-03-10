@@ -1,5 +1,4 @@
-import 'package:bilolog/models/statusRemessa.dart';
-import 'package:bilolog/models/statusPacote.dart';
+import 'package:bilolog/models/status_pacote.dart';
 
 import 'cliente.dart';
 
@@ -24,7 +23,7 @@ class Pacote {
   bool get hasError => errorMessage != null;
 
   String get ultimoStatus {
-    if (statusPacotes.length < 1) return "";
+    if (statusPacotes.isEmpty) return "";
     return statusPacotes.last.descricaoStatus;
   }
 }

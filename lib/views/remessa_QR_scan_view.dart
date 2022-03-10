@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:bilolog/providers/operacao_remessa_API.dart';
+import 'package:bilolog/providers/operacao_remessa_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_beep/flutter_beep.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -46,12 +46,12 @@ class _RemessaQRScanViewState extends State<RemessaQRScanView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Trilhogística"),
+        title: const Text("Trilhogística"),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SizedBox(
+          const SizedBox(
             height: 70,
           ),
           Text(
@@ -59,19 +59,19 @@ class _RemessaQRScanViewState extends State<RemessaQRScanView> {
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.headline5,
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
-          Text(
+          const Text(
             "São aceitos apenas códigos do Mercado Envios Flex",
             textAlign: TextAlign.center,
           ),
           Container(
-            margin: EdgeInsets.all(50),
+            margin: const EdgeInsets.all(50),
             height: 300,
             width: 300,
             child: Container(
-              padding: EdgeInsets.all(15),
+              padding: const EdgeInsets.all(15),
               decoration: BoxDecoration(
                   border: Border.all(width: 1.5, color: Colors.grey),
                   borderRadius: BorderRadius.circular(15)),
@@ -84,7 +84,7 @@ class _RemessaQRScanViewState extends State<RemessaQRScanView> {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 50,
           ),
           Row(
@@ -107,13 +107,13 @@ class _RemessaQRScanViewState extends State<RemessaQRScanView> {
               ),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 50,
           ),
           Container(
-            margin: EdgeInsets.symmetric(horizontal: 20),
+            margin: const EdgeInsets.symmetric(horizontal: 20),
             child: _isBusy
-                ? Center(child: CircularProgressIndicator())
+                ? const Center(child: CircularProgressIndicator())
                 : ElevatedButton(
                     onPressed: () {
                       _conferirColeta();
@@ -148,8 +148,8 @@ class _RemessaQRScanViewState extends State<RemessaQRScanView> {
     try {
       await Provider.of<OperacaoDeRemessaAPI>(context, listen: false)
           .conferirRemessa(onError: _onError);
-    } on Exception catch (e) {
-      print("Falha ao conferirColeta()");
+    } on Exception {
+      //print("Falha ao conferirColeta()");
     }
     Navigator.of(context)
         .pushNamed(NovaRemessaView.routeName)
@@ -162,8 +162,8 @@ class _RemessaQRScanViewState extends State<RemessaQRScanView> {
   void _processQRCode(String barcode) {
     if (_barcode != barcode) {
       _barcode = barcode;
-      print("QRCode detected>");
-      print(barcode);
+      //print("QRCode detected>");
+      //print(barcode);
       Vibration.vibrate();
       FlutterBeep.playSysSound(AndroidSoundIDs.TONE_CDMA_ABBR_ALERT);
       final novaColetaProvider =

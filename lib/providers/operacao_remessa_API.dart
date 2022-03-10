@@ -1,4 +1,3 @@
-//ignore_for_file: todo
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -10,7 +9,7 @@ import '../models/pacote.dart';
 import '../models/pacote_escaneado.dart';
 import '../models/remessa.dart';
 import '../env/api_url.dart';
-import 'authProvider.dart';
+import 'auth_provider.dart';
 
 class OperacaoDeRemessaAPI with ChangeNotifier {
   AuthenticationProvider? authProvider;
@@ -28,7 +27,7 @@ class OperacaoDeRemessaAPI with ChangeNotifier {
   Pacote? _pacoteDetalhe;
   Pacote? get pacoteDetalhe => _pacoteDetalhe;
 
-  set pacote(Pacote value) {
+  set pacote(Pacote? value) {
     _pacoteDetalhe = value;
   }
 

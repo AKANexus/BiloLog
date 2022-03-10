@@ -1,4 +1,4 @@
-import 'package:bilolog/providers/operacao_remessa_API.dart';
+import 'package:bilolog/providers/operacao_remessa_api.dart';
 import 'package:bilolog/widgets/pacotes_list.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -51,11 +51,11 @@ class _RemessaPacotesViewState extends State<RemessaPacotesView> {
                   height: 20,
                 ),
                 //Text("Aguardando confirmação do cliente"),
-                Text("Lista de pacotes"),
+                const Text("Lista de pacotes"),
               ],
             ),
           ),
-          Expanded(
+          const Expanded(
             child: RemessaPacotesList(),
           ),
         ]),
