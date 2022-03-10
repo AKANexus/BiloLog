@@ -1,28 +1,24 @@
-import 'package:bilolog/models/coleta.dart';
-import 'package:bilolog/models/recebimento.dart';
-import 'package:bilolog/providers/coletasProvider.dart';
-import 'package:bilolog/providers/coletaPacotesProvider.dart';
-import 'package:bilolog/widgets/coletaPacotesList%20copy.dart';
+import 'package:bilolog/providers/operacao_remessa_API.dart';
+import 'package:bilolog/widgets/pacotes_list.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import '../providers/recebimentoPacotesProvider.dart';
-import '../widgets/coletaPacotesList.dart';
-
-class RecebimentoPacotesView extends StatelessWidget {
-  RecebimentoPacotesView({Key? key}) : super(key: key);
-  static const String routeName = "/coletasView/pacotesView";
-
-  late Recebimento _recebimento;
+class RemessaPacotesView extends StatefulWidget {
+  const RemessaPacotesView({Key? key}) : super(key: key);
+  static String routeName = '/listaRemessas/pacotesDaRemessa';
 
   @override
+  State<RemessaPacotesView> createState() => _RemessaPacotesViewState();
+}
+
+class _RemessaPacotesViewState extends State<RemessaPacotesView> {
+  @override
   Widget build(BuildContext context) {
-    final entregasProvider = Provider.of<RecebimentoPacotesProvider>(context);
-    _recebimento = entregasProvider.recebimento!;
+    final operacaoRemessaProvider = Provider.of<OperacaoDeRemessaAPI>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text("Trilhogística"),
+        title: const Text("Pacotes na Remessa"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -33,22 +29,25 @@ class RecebimentoPacotesView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  DateFormat.yMd().format(_recebimento.dtColeta),
+                  DateFormat.yMd()
+                      .format(operacaoRemessaProvider.remessa!.dtRemessa),
                   textAlign: TextAlign.left,
                   style: Theme.of(context)
                       .textTheme
                       .bodyMedium!
                       .copyWith(color: Colors.grey),
                 ),
-                Text(_recebimento.nomeVendedor,
+                Text(
+                    operacaoRemessaProvider.remessa!.nomeVendedor ??
+                        "Múltiplos",
                     style: Theme.of(context).textTheme.headline5),
                 Text(
-                  "${_recebimento.pacotesColetados} pacotes coletados",
+                  "${operacaoRemessaProvider.remessa!.qtdPacotesProcessados} pacotes coletados",
                   style: Theme.of(context).textTheme.headline6!.copyWith(
                         color: Colors.grey,
                       ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 //Text("Aguardando confirmação do cliente"),
@@ -57,9 +56,7 @@ class RecebimentoPacotesView extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: RecebimentoPacotesList(
-                Provider.of<RecebimentoPacotesProvider>(context, listen: false)
-                    .pacotes),
+            child: RemessaPacotesList(),
           ),
         ]),
       ),

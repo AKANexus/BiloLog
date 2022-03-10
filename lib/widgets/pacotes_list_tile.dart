@@ -1,28 +1,7 @@
-import 'package:bilolog/main.dart';
-import 'package:bilolog/models/entrega.dart';
-import 'package:bilolog/models/pacote.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import '../providers/coletaPacotesProvider.dart';
-import '../views/ColetaPacoteDetalheView.dart';
-
-class RecebimentoPacotesList extends StatelessWidget {
-  const RecebimentoPacotesList(this._entregas, {Key? key}) : super(key: key);
-
-  final List<Pacote> _entregas;
-
-  @override
-  Widget build(BuildContext context) {
-    //final entregasProvider = Provider.of<EntregasProvider>(context);
-    return ListView.builder(
-      itemBuilder: (ctx, ix) {
-        return PacotesListTile(_entregas[ix]);
-      },
-      itemCount: _entregas.length,
-    );
-  }
-}
+import '../models/pacote.dart';
+import '../views/pacote_detalhe_view.dart';
 
 class PacotesListTile extends StatelessWidget {
   PacotesListTile(this._pacote, {Key? key}) : super(key: key);
@@ -122,8 +101,7 @@ class PacotesListTile extends StatelessWidget {
                     // final entregasProvider =
                     //     Provider.of<EntregasProvider>(context, listen: false);
                     // entregasProvider.entrega = _entrega;
-                    Navigator.of(context).pushNamed(
-                        ColetaPacoteDetalheView.routeName,
+                    Navigator.of(context).pushNamed(PacoteDetalheView.routeName,
                         arguments: {'entrega': _pacote});
                   },
                   child: Column(

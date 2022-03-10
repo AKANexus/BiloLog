@@ -2,26 +2,17 @@ import 'dart:io';
 
 import 'package:bilolog/models/cargo.dart';
 import 'package:bilolog/providers/authProvider.dart';
-import 'package:bilolog/providers/coletasProvider.dart';
-import 'package:bilolog/providers/coletaPacotesProvider.dart';
-import 'package:bilolog/providers/entregaPacotesProvider.dart';
-import 'package:bilolog/providers/entregasProvider.dart';
-import 'package:bilolog/providers/novaColetaProvider.dart';
-import 'package:bilolog/providers/novaEntregaProvider.dart';
-import 'package:bilolog/views/EntregaQRScanView.dart';
+import 'package:bilolog/providers/operacao_pacote_API.dart';
+import 'package:bilolog/providers/operacao_remessa_API.dart';
+import 'package:bilolog/providers/remessas_API.dart';
 import 'package:bilolog/views/authView.dart';
-import 'package:bilolog/views/coletasView.dart';
-import 'package:bilolog/views/coletaPacoteDetalheView.dart';
-import 'package:bilolog/views/coletaPacotesView.dart';
-import 'package:bilolog/views/ColetaQRScanView.dart';
-import 'package:bilolog/views/entregaPacote.dart';
-import 'package:bilolog/views/entregaPacotesView.dart';
-import 'package:bilolog/views/entregasView.dart';
-import 'package:bilolog/views/novaEntregaView.dart';
+import 'package:bilolog/views/lista_de_remessas.dart';
+import 'package:bilolog/views/nova_remessa_view.dart';
+import 'package:bilolog/views/pacote_detalhe_view.dart';
+import 'package:bilolog/views/pacotes_da_remessa_view.dart';
+import 'package:bilolog/views/remessa_QR_scan_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import 'views/novaColetaView.dart';
 
 void main() {
   //HttpOverrides.global = MyHttpOverrides();
@@ -46,13 +37,13 @@ class MyApp extends StatelessWidget {
     print("authorizationString: $authorizationString");
     switch (authorizationString) {
       case Cargo.Coletor:
-        return ColetasView();
+        return RemessasView();
       case Cargo.Administrador:
         return const Text("Falha ao obter autorização.");
       case Cargo.Motocorno:
-        return EntregasView();
+        return RemessasView();
       case Cargo.GaleraDoCD:
-        return ColetasView();
+        return RemessasView();
       default:
         return const Text("Falha ao obter autorização.");
     }
@@ -64,25 +55,20 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthenticationProvider()),
-        ChangeNotifierProxyProvider<AuthenticationProvider, NovaColetaProvider>(
-            create: (_) => NovaColetaProvider(),
-            update: (_, auth, previousProvider) => previousProvider!
-              ..authInfo = {'apiKey': auth.apiKey, 'uuid': auth.uuid}),
-        ChangeNotifierProxyProvider<AuthenticationProvider, ColetasProvider>(
-            create: (_) => ColetasProvider(),
+        ChangeNotifierProxyProvider<AuthenticationProvider, RemessasAPI>(
+            create: (_) => RemessasAPI(),
             update: (_, auth, previousProvider) =>
-                previousProvider!..apiKey = auth.apiKey),
-        ChangeNotifierProvider(create: (_) => ColetaPacotesProvider()),
+                previousProvider!..authProvider = auth),
         ChangeNotifierProxyProvider<AuthenticationProvider,
-                NovaEntregaProvider>(
-            create: (_) => NovaEntregaProvider(),
-            update: (_, auth, previousProvider) => previousProvider!
-              ..authInfo = {'apiKey': auth.apiKey, 'uuid': auth.uuid}),
-        ChangeNotifierProxyProvider<AuthenticationProvider, EntregasProvider>(
-            create: (_) => EntregasProvider(),
+                OperacaoDeRemessaAPI>(
+            create: (_) => OperacaoDeRemessaAPI(),
             update: (_, auth, previousProvider) =>
-                previousProvider!..apiKey = auth.apiKey),
-        ChangeNotifierProvider(create: (_) => EntregaPacotesProvider()),
+                previousProvider!..authProvider = auth),
+        ChangeNotifierProxyProvider<AuthenticationProvider,
+                OperacaoDePacoteAPI>(
+            create: (_) => OperacaoDePacoteAPI(),
+            update: (_, auth, previousProvider) =>
+                previousProvider!..authProvider = auth),
       ],
       child: MaterialApp(
         title: 'LogControl',
@@ -103,16 +89,11 @@ class MyApp extends StatelessWidget {
           },
         ),
         routes: {
-          ColetasView.routeName: (ctx) => ColetasView(),
-          EntregasView.routeName: (ctx) => EntregasView(),
-          ColetaPacotesView.routeName: (ctx) => ColetaPacotesView(),
-          EntregaPacotesView.routeName: (ctx) => EntregaPacotesView(),
-          ColetaPacoteDetalheView.routeName: (ctx) => ColetaPacoteDetalheView(),
-          ColetaQRScanView.routeName: (ctx) => ColetaQRScanView(),
-          EntregaQRScanView.routeName: (ctx) => EntregaQRScanView(),
-          NovaColetaView.routeName: (ctx) => NovaColetaView(),
-          NovaEntregaView.routeName: (ctx) => NovaEntregaView(),
-          EntregaPacoteView.routeName: (ctx) => EntregaPacoteView(),
+          RemessasView.routeName: (ctx) => RemessasView(),
+          RemessaPacotesView.routeName: (ctx) => RemessaPacotesView(),
+          PacoteDetalheView.routeName: (ctx) => PacoteDetalheView(),
+          RemessaQRScanView.routeName: (ctx) => RemessaQRScanView(),
+          NovaRemessaView.routeName: (ctx) => NovaRemessaView(),
         },
       ),
     );

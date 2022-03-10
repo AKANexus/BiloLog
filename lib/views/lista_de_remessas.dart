@@ -1,55 +1,32 @@
-import 'package:bilolog/providers/coletasProvider.dart';
-import 'package:bilolog/views/ColetaQRScanView.dart';
-import 'package:bilolog/widgets/coletasList.dart';
+import 'package:bilolog/providers/remessas_API.dart';
+import 'package:bilolog/views/remessa_QR_scan_view.dart';
+import 'package:bilolog/widgets/appDrawer.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import '../models/coleta.dart';
-import '../widgets/appDrawer.dart';
+import '../models/remessa.dart';
+import '../widgets/remessas_list.dart';
 
-class ColetasView extends StatefulWidget {
-  //Stateful pois enquanto está em "loading", é exibido um _CircleLoading_, então muda o state da tela.
-  ColetasView({Key? key}) : super(key: key);
-  static const String routeName = "/coletasView";
+class RemessasView extends StatefulWidget {
+  const RemessasView({Key? key}) : super(key: key);
+  static const String routeName = "/listaRemessas";
 
   @override
-  State<ColetasView> createState() => _ColetasViewState();
+  State<RemessasView> createState() => _RemessasViewState();
 }
 
-class _ColetasViewState extends State<ColetasView> {
+class _RemessasViewState extends State<RemessasView> {
   DateTime _startDate = DateTime.now();
   DateTime _endDate = DateTime.now();
 
-  List<Coleta>? _coletas;
-  bool _isLoading = false;
+  List<Remessa>? _remessas;
+  bool _isBusy = false;
   bool _isInit = true;
-
-  void _onError(String errorMessage) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(errorMessage)));
-  }
-
-  Future<void> _getColetas(BuildContext context) async {
-    setState(() {
-      _isLoading = true;
-    });
-    final coletasProvider =
-        Provider.of<ColetasProvider>(context, listen: false);
-    await coletasProvider.getColetas(_onError, _startDate, _endDate);
-    setState(() {
-      _coletas = coletasProvider.coletas;
-      _isLoading = false;
-    });
-  }
 
   @override
   void didChangeDependencies() {
-    if (_isInit) {
-      _getColetas(context);
-      _isInit = false;
-    }
-
+    if (_isInit) {}
     super.didChangeDependencies();
   }
 
@@ -62,7 +39,7 @@ class _ColetasViewState extends State<ColetasView> {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.of(context).pushNamed(ColetaQRScanView.routeName);
+              Navigator.of(context).pushNamed(RemessaQRScanView.routeName);
             },
             icon: Icon(Icons.add),
           ),
@@ -75,7 +52,7 @@ class _ColetasViewState extends State<ColetasView> {
           Text("Minhas coletas",
               style: Theme.of(context).textTheme.headline5,
               textAlign: TextAlign.left),
-          TextField(
+          const TextField(
             decoration: InputDecoration(
               label: Text("Pesquisar"),
             ),
@@ -83,23 +60,25 @@ class _ColetasViewState extends State<ColetasView> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Text("Lista de coletas"),
+              const Text("Lista de coletas"),
               TextButton.icon(
                 style: TextButton.styleFrom(
                   padding: EdgeInsets.zero,
                 ),
                 icon: Text(DateFormat('dd/MM/yyyy').format(_startDate)),
-                label: Icon(Icons.expand_more),
+                label: const Icon(Icons.expand_more),
                 onPressed: () async {
-                  final _selectedDate;
+                  final DateTime? _selectedDate;
                   _selectedDate = await showDatePicker(
                       context: context,
                       initialDate: _startDate,
                       firstDate: DateTime(2000),
                       lastDate: DateTime.now());
-                  setState(() {
-                    _startDate = _selectedDate;
-                  });
+                  if (_selectedDate != null) {
+                    setState(() {
+                      _startDate = _selectedDate!;
+                    });
+                  }
                 },
               ),
               TextButton.icon(
@@ -109,30 +88,50 @@ class _ColetasViewState extends State<ColetasView> {
                 icon: Text(DateFormat('dd/MM/yyyy').format(_endDate)),
                 label: Icon(Icons.expand_more),
                 onPressed: () async {
-                  final _selectedDate;
+                  final DateTime? _selectedDate;
                   _selectedDate = await showDatePicker(
                       context: context,
                       initialDate: _endDate,
                       firstDate: DateTime(2000),
                       lastDate: DateTime.now());
-                  setState(() {
-                    _endDate = _selectedDate;
-                  });
+                  if (_selectedDate != null) {
+                    setState(() {
+                      _endDate = _selectedDate!;
+                    });
+                  }
                 },
               )
             ],
           ),
           Expanded(
-            child: _isLoading
-                ? Center(
+            child: _isBusy
+                ? const Center(
                     child: CircularProgressIndicator(),
                   )
                 : RefreshIndicator(
-                    onRefresh: () => _getColetas(context),
-                    child: ColetasList(_coletas!)),
+                    onRefresh: () => _getRemessas(context),
+                    child: RemessasList()),
           ),
         ]),
       ),
     );
+  }
+
+  Future<void> _getRemessas(BuildContext context) async {
+    setState(() {
+      _isBusy = true;
+    });
+    final remessasProvider = Provider.of<RemessasAPI>(context, listen: false);
+    await remessasProvider.getRemessas(
+        onError: _onError, startDate: _startDate, endDate: _endDate);
+    setState(() {
+      _remessas = remessasProvider.remessas;
+      _isBusy = false;
+    });
+  }
+
+  void _onError(String errorMessage) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(errorMessage)));
   }
 }

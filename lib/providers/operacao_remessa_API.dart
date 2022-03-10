@@ -3,15 +3,17 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/pacote.dart';
 import '../models/pacote_escaneado.dart';
 import '../models/remessa.dart';
 import '../env/api_url.dart';
+import 'authProvider.dart';
 
-class OperacaoDeRemessaAPI {
-  Map<String, dynamic>? authInfo;
+class OperacaoDeRemessaAPI with ChangeNotifier {
+  AuthenticationProvider? authProvider;
 
   List<InfoPacoteEscaneado>? _pacotesEscaneados;
   List<InfoPacoteEscaneado> get pacotesEscaneados =>
@@ -34,6 +36,12 @@ class OperacaoDeRemessaAPI {
     if (value != null) {
       _remessa = value;
     }
+  }
+
+  String? jsonRetornado;
+
+  List<String> get vendedoresVerificados {
+    return pacotes.map((e) => e.vendedorName).toList();
   }
 
   ///Limpa a lista de pacotes escaneados
@@ -61,7 +69,7 @@ class OperacaoDeRemessaAPI {
       onError("Nenhum pacote escaneado");
       return false;
     }
-    if (authInfo == null) {
+    if (authProvider == null) {
       onError("Informação de autenticação estava em branco");
       return false;
     }
@@ -71,7 +79,7 @@ class OperacaoDeRemessaAPI {
       path: '',
     ); //TODO set up path
     final jsonBody = {
-      'transportadora_uuid': authInfo!['uuid'],
+      'transportadora_uuid': authProvider!.uuid,
       'pacotes': _pacotesEscaneados!
           .map((e) => {'id': e.id, 'sender_id': e.senderId, 'size': e.tamanho})
           .toList(),
@@ -80,7 +88,7 @@ class OperacaoDeRemessaAPI {
       final response = await http.post(
         url,
         headers: {
-          'apiKey': authInfo!['apiKey'] as String,
+          'apiKey': authProvider!.apiKey,
           'content-type': 'application/json',
         },
       ).timeout(const Duration(seconds: 10));

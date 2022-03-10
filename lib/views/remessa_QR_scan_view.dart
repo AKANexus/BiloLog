@@ -1,88 +1,44 @@
 import 'dart:convert';
-import 'dart:developer';
-import 'dart:io';
 
-import 'package:bilolog/providers/novaColetaProvider.dart';
-import 'package:flutter/foundation.dart';
+import 'package:bilolog/providers/operacao_remessa_API.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_beep/flutter_beep.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:provider/provider.dart';
 import 'package:vibration/vibration.dart';
 
-import 'novaColetaView.dart';
+import 'nova_remessa_view.dart';
 
-class ColetaQRScanView extends StatefulWidget {
-  ColetaQRScanView({Key? key}) : super(key: key);
-
-  static const String routeName = "/novaColeta";
+class RemessaQRScanView extends StatefulWidget {
+  const RemessaQRScanView({Key? key}) : super(key: key);
+  static const String routeName = "/novaRemessa";
 
   @override
-  State<ColetaQRScanView> createState() => _ColetaQRScanViewState();
+  State<RemessaQRScanView> createState() => _RemessaQRScanViewState();
 }
 
-class _ColetaQRScanViewState extends State<ColetaQRScanView> {
+class _RemessaQRScanViewState extends State<RemessaQRScanView> {
   bool _isBusy = false;
   bool _isGrande = false;
+  bool _isInit = true;
 
   String? _barcode;
-  MobileScannerController controller =
+  MobileScannerController _controller =
       MobileScannerController(torchEnabled: false, facing: CameraFacing.back);
-
-  void _processQRCode(String barcode) {
-    if (_barcode != barcode) {
-      _barcode = barcode;
-      print("QRCode detected>");
-      print(barcode);
-      Vibration.vibrate();
-      FlutterBeep.playSysSound(AndroidSoundIDs.TONE_CDMA_ABBR_ALERT);
-      final novaColetaProvider =
-          Provider.of<NovaColetaProvider>(context, listen: false);
-      final qrParsed = json.decode(barcode);
-      novaColetaProvider.addNovoPacote(qrParsed['id'], qrParsed['sender_id'],
-          _isGrande ? "grande" : "pequeno");
-    }
-  }
-
-  bool _isInit = true;
 
   @override
   void didChangeDependencies() {
     if (_isInit) {
       _isInit = false;
-      Provider.of<NovaColetaProvider>(context, listen: false).startNewColeta();
+      Provider.of<OperacaoDeRemessaAPI>(context, listen: false)
+          .startNewRemessa();
     }
     super.didChangeDependencies();
   }
 
-  void _onError(String errorMessage) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(errorMessage)));
-  }
-
-  void conferirColeta() async {
-    setState(() {
-      _isBusy = true;
-    });
-    controller.stop();
-    try {
-      await Provider.of<NovaColetaProvider>(context, listen: false)
-          .conferirColeta(_onError);
-    } on Exception catch (e) {
-      print("Falha ao conferirColeta()");
-    }
-    Navigator.of(context)
-        .pushNamed(NovaColetaView.routeName)
-        .then((value) => controller.start());
-    setState(() {
-      _isBusy = false;
-    });
-  }
-
   @override
   void dispose() {
-    controller.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -123,7 +79,7 @@ class _ColetaQRScanViewState extends State<ColetaQRScanView> {
                 onDetect: (barcode, args) {
                   _processQRCode(barcode.rawValue ?? "");
                 },
-                controller: controller,
+                controller: _controller,
                 //fit: BoxFit.fitHeight,
               ),
             ),
@@ -160,7 +116,7 @@ class _ColetaQRScanViewState extends State<ColetaQRScanView> {
                 ? Center(child: CircularProgressIndicator())
                 : ElevatedButton(
                     onPressed: () {
-                      conferirColeta();
+                      _conferirColeta();
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(10.0),
@@ -177,5 +133,44 @@ class _ColetaQRScanViewState extends State<ColetaQRScanView> {
         ],
       ),
     );
+  }
+
+  void _onError(String errorMessage) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(errorMessage)));
+  }
+
+  void _conferirColeta() async {
+    setState(() {
+      _isBusy = true;
+    });
+    _controller.stop();
+    try {
+      await Provider.of<OperacaoDeRemessaAPI>(context, listen: false)
+          .conferirRemessa(onError: _onError);
+    } on Exception catch (e) {
+      print("Falha ao conferirColeta()");
+    }
+    Navigator.of(context)
+        .pushNamed(NovaRemessaView.routeName)
+        .then((value) => _controller.start());
+    setState(() {
+      _isBusy = false;
+    });
+  }
+
+  void _processQRCode(String barcode) {
+    if (_barcode != barcode) {
+      _barcode = barcode;
+      print("QRCode detected>");
+      print(barcode);
+      Vibration.vibrate();
+      FlutterBeep.playSysSound(AndroidSoundIDs.TONE_CDMA_ABBR_ALERT);
+      final novaColetaProvider =
+          Provider.of<OperacaoDeRemessaAPI>(context, listen: false);
+      final qrParsed = json.decode(barcode);
+      novaColetaProvider.addNovoPacote(qrParsed['id'], qrParsed['sender_id'],
+          _isGrande ? "grande" : "pequeno");
+    }
   }
 }

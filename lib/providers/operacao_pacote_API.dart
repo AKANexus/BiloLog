@@ -4,14 +4,16 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bilolog/models/pacote.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/pacote_escaneado.dart';
 import '../models/remessa.dart';
 import '../env/api_url.dart';
+import 'authProvider.dart';
 
-class OperacaoDePacoteAPI {
-  Map<String, dynamic>? authInfo;
+class OperacaoDePacoteAPI with ChangeNotifier {
+  AuthenticationProvider? authProvider;
 
   Future<bool> entregaPacoteAoCliente({
     required Pacote pacote,
@@ -37,7 +39,7 @@ class OperacaoDePacoteAPI {
       final response = await http
           .post(url,
               headers: {
-                'apiKey': authInfo!['apiKey'],
+                'apiKey': authProvider!.apiKey,
                 'content-type': 'application/json'
               },
               body: json.encode(jsonBody))

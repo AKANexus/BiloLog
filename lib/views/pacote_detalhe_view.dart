@@ -1,22 +1,19 @@
+import 'package:bilolog/providers/operacao_remessa_API.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../models/pacote.dart';
 
-class ColetaPacoteDetalheView extends StatelessWidget {
-  ColetaPacoteDetalheView({Key? key}) : super(key: key);
-  static const String routeName = "/coletaPacoteDetalheView";
-
-  late Pacote _pacote;
-  //late String _vendedorName;
+class PacoteDetalheView extends StatelessWidget {
+  const PacoteDetalheView({Key? key}) : super(key: key);
+  static const String routeName =
+      "/listaRemessas/pacotesDaRemessa/detalhesPacote";
 
   @override
   Widget build(BuildContext context) {
-    final args =
-        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-    _pacote = args['entrega'];
-    //_vendedorName = args['vendedorName'];
+    final operacaoRemessaProvider = Provider.of<OperacaoDeRemessaAPI>(context);
+    Pacote _pacote = operacaoRemessaProvider.pacoteDetalhe!;
     return Scaffold(
       appBar: AppBar(
         title: Text("Trilhogística"),

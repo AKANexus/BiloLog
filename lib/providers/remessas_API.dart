@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:bilolog/providers/authProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -11,11 +12,9 @@ import '../models/remessa_type.dart';
 import '../env/api_url.dart';
 
 class RemessasAPI with ChangeNotifier {
-  set apiKey(String value) {
-    _apiKey = value;
-  }
+  String? get apiKey => authProvider?.apiKey;
 
-  String? _apiKey;
+  AuthenticationProvider? authProvider;
 
   // ignore: prefer_final_fields
   List<Remessa> _remessas = [];
@@ -37,7 +36,7 @@ class RemessasAPI with ChangeNotifier {
     try {
       final response = await http.get(
         url,
-        headers: {'apiKey': _apiKey!},
+        headers: {'apiKey': apiKey!},
       ).timeout(
         const Duration(seconds: 10),
       );
@@ -77,7 +76,7 @@ class RemessasAPI with ChangeNotifier {
       ); //TODO Set up path
       final response = await http.post(
         url,
-        headers: {'apiKey': _apiKey!, 'content-type': 'application/json'},
+        headers: {'apiKey': apiKey!, 'content-type': 'application/json'},
       ).timeout(
         const Duration(seconds: 10),
       );

@@ -1,5 +1,4 @@
 import 'package:bilolog/providers/authProvider.dart';
-import 'package:bilolog/views/coletasView.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
