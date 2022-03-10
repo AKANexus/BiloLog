@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.trilhainformatica.logcontrol">
    <application
-        android:label="bilolog"
+        android:label="Log Control"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
