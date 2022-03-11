@@ -4,7 +4,7 @@ import 'package:bilolog/models/pacote.dart';
 import 'package:flutter/material.dart';
 
 class Remessa with Comparable<Remessa> {
-  final int id;
+  final String uuid;
   final DateTime dtRemessa;
   final String? nomeVendedor;
   StatusRemessa? _estadoRemessa;
@@ -12,7 +12,7 @@ class Remessa with Comparable<Remessa> {
   final RemessaKind remessaKind;
 
   Remessa(
-      {required this.id,
+      {required this.uuid,
       required this.dtRemessa,
       this.nomeVendedor,
       required estadoRemessa,
@@ -64,10 +64,10 @@ class Remessa with Comparable<Remessa> {
           estado = "Entregue";
           break;
         }
-      case StatusRemessa.emAnalise:
+      case StatusRemessa.pendente:
         {
-          icon = Icons.question_mark;
-          estado = "Conferindo...";
+          icon = Icons.not_listed_location;
+          estado = "Pendente...";
           break;
         }
       default:

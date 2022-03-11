@@ -28,16 +28,19 @@ class _RemessasViewState extends State<RemessasView> {
 
   @override
   void didChangeDependencies() {
-    if (_isInit) {}
+    if (_isInit) {
+      _getRemessas(context);
+    }
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
+    print("Rebuilt");
     return Scaffold(
       drawer: AppDrawer(),
       appBar: AppBar(
-        title: Text("Trilhogística"),
+        title: Text("Remessas"),
         actions: [
           IconButton(
             onPressed: () {
@@ -112,7 +115,9 @@ class _RemessasViewState extends State<RemessasView> {
                   )
                 : RefreshIndicator(
                     onRefresh: () => _getRemessas(context),
-                    child: RemessasList()),
+                    child: RemessasList(
+                      remessas: _remessas ?? [],
+                    )),
           ),
         ]),
       ),

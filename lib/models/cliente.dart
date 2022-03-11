@@ -4,7 +4,7 @@ class Comprador {
   final String endereco;
   final String bairro;
   final String cep;
-  final String complemento;
+  final String? complemento;
 
   Comprador({
     required this.id,

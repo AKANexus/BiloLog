@@ -3,8 +3,8 @@ import 'package:bilolog/models/status_pacote.dart';
 import 'cliente.dart';
 
 class Pacote {
-  final int id;
-  final int codPacote;
+  final String id;
+  final String codPacote;
   final Comprador cliente;
   final List<StatusPacote> statusPacotes;
   final String vendedorName;

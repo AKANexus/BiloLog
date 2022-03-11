@@ -1,37 +1,30 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:flutter/material.dart';
 
 import '../models/remessa.dart';
 import 'remessa_list_tile.dart';
 
-class RemessasList extends StatefulWidget {
-  const RemessasList({Key? key}) : super(key: key);
+class RemessasList extends StatelessWidget {
+  final List<Remessa> remessas;
 
-  @override
-  State<RemessasList> createState() => _RemessasListState();
-}
-
-class _RemessasListState extends State<RemessasList> {
-  List<Remessa> _remessas = [];
+  const RemessasList({Key? key, required this.remessas}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final mqi = MediaQuery.of(context);
-    return _remessas.isEmpty
+    return remessas.isEmpty
         ? SingleChildScrollView(
-            physics: AlwaysScrollableScrollPhysics(),
+            physics: const AlwaysScrollableScrollPhysics(),
             child: SizedBox(
               height: mqi.size.height - 270,
-              child: Center(
+              child: const Center(
                 child: Text("Nenhuma remessa encontrada"),
               ),
             ))
         : ListView.builder(
             itemBuilder: (ctx, ix) {
-              return RemessaListTile(_remessas[ix]);
+              return RemessaListTile(remessas[ix]);
             },
-            itemCount: _remessas.length,
+            itemCount: remessas.length,
           );
   }
 }

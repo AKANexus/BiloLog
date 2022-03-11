@@ -61,7 +61,7 @@ class _NovaRemessaViewState extends State<NovaRemessaView> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(vendedorSelecionado,
+                    Text(operacaoRemessa.vendedoresVerificados[0],
                         style: Theme.of(context).textTheme.headline5),
                     Text(
                       "${operacaoRemessa.pacotes.length} pacote(s) coletados",

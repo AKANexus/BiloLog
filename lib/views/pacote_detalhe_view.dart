@@ -100,7 +100,7 @@ class PacoteDetalheView extends StatelessWidget {
                         ),
                       ],
                     ),
-                    if (_pacote.id > 0)
+                    if (_pacote.id != "0")
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -169,7 +169,7 @@ class PacoteDetalheView extends StatelessWidget {
                         style: Theme.of(context).textTheme.bodyText2,
                       ),
                       Text(
-                        _pacote.cliente.complemento,
+                        _pacote.cliente.complemento ?? "",
                         style: Theme.of(context).textTheme.bodyText2,
                       ),
                     ],

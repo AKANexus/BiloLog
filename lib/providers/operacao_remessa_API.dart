@@ -2,9 +2,13 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:bilolog/models/cliente.dart';
+import 'package:bilolog/models/remessa_type.dart';
+import 'package:bilolog/models/status_remessa.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
+import '../models/cargo.dart';
 import '../models/pacote.dart';
 import '../models/pacote_escaneado.dart';
 import '../models/remessa.dart';
@@ -18,11 +22,12 @@ class OperacaoDeRemessaAPI with ChangeNotifier {
   List<InfoPacoteEscaneado> get pacotesEscaneados =>
       [..._pacotesEscaneados ?? []];
 
-  Remessa? _remessaVerificada;
+  //Remessa? _remessaVerificada;
 
   Remessa? _remessa;
   Remessa? get remessa => _remessa;
   List<Pacote> get pacotes => _remessa!.pacotes;
+  //List<Pacote> get pacotesVerificados => _remessaVerificada!.pacotes;
 
   Pacote? _pacoteDetalhe;
   Pacote? get pacoteDetalhe => _pacoteDetalhe;
@@ -62,8 +67,22 @@ class OperacaoDeRemessaAPI with ChangeNotifier {
     }
   }
 
+  String get apiCheckPath {
+    if (authProvider == null) throw Exception("Sem informação de autenticação");
+    switch (authProvider!.authorization) {
+      case Cargo.coletor:
+        return "/coleta/check";
+      case Cargo.motocorno:
+        return "/entrega/check";
+      case Cargo.galeraDoCD:
+        return "/recebimento/check";
+      default:
+        throw Exception("Cargo inválido");
+    }
+  }
+
   Future<bool> conferirRemessa({required Function onError}) async {
-    _remessaVerificada = null;
+    _remessa = null;
     if (_pacotesEscaneados!.isEmpty) {
       onError("Nenhum pacote escaneado");
       return false;
@@ -75,8 +94,8 @@ class OperacaoDeRemessaAPI with ChangeNotifier {
     final url = Uri(
       scheme: 'https',
       host: ApiURL.apiAuthority,
-      path: '',
-    ); //TODO set up path
+      path: apiCheckPath,
+    );
     final jsonBody = {
       'transportadora_uuid': authProvider!.uuid,
       'pacotes': _pacotesEscaneados!
@@ -84,17 +103,39 @@ class OperacaoDeRemessaAPI with ChangeNotifier {
           .toList(),
     };
     try {
-      final response = await http.post(
-        url,
-        headers: {
-          'apiKey': authProvider!.apiKey,
-          'content-type': 'application/json',
-        },
-      ).timeout(const Duration(seconds: 10));
+      final response = await http
+          .post(url,
+              headers: {
+                'apiKey': authProvider!.apiKey,
+                'content-type': 'application/json',
+              },
+              body: json.encode(jsonBody))
+          .timeout(const Duration(seconds: 10));
       if (response.statusCode == 200 || response.statusCode == 201) {
+        jsonRetornado = response.body;
         final Map<String, dynamic> remessaRetornada =
             json.decode(response.body);
-        //TODO: Save [remessaRetornada];
+        _remessa = Remessa(
+            uuid: "-1",
+            dtRemessa: DateTime.now(),
+            estadoRemessa: StatusRemessa.emAnalise,
+            pacotes: [],
+            remessaKind: RemessaKind.coleta);
+        for (Map<String, dynamic> pacote in remessaRetornada['pacotes']) {
+          _remessa!.pacotes.add(Pacote(
+              id: pacote['idPacote'],
+              codPacote: pacote['idPacote'],
+              cliente: Comprador(
+                  id: -1,
+                  nome: pacote['destinatario'],
+                  endereco: pacote['logradouro'],
+                  bairro: pacote['bairro'],
+                  cep: pacote['CEP'],
+                  complemento: pacote['complemento']),
+              statusPacotes: [],
+              vendedorName: "ABELARDO"));
+        }
+        print("bunda");
         return true;
       } else {
         final Map<String, dynamic> remessaRetornada =

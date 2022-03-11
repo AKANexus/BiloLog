@@ -46,7 +46,7 @@ class _RemessaQRScanViewState extends State<RemessaQRScanView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Trilhogística"),
+        title: const Text("Escanear QR Code"),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -116,7 +116,7 @@ class _RemessaQRScanViewState extends State<RemessaQRScanView> {
                 ? const Center(child: CircularProgressIndicator())
                 : ElevatedButton(
                     onPressed: () {
-                      _conferirColeta();
+                      _conferirPacotes();
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(10.0),
@@ -140,7 +140,7 @@ class _RemessaQRScanViewState extends State<RemessaQRScanView> {
         .showSnackBar(SnackBar(content: Text(errorMessage)));
   }
 
-  void _conferirColeta() async {
+  void _conferirPacotes() async {
     setState(() {
       _isBusy = true;
     });

@@ -1,8 +1,12 @@
-//ignore_for_file: todo
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:bilolog/models/cargo.dart';
+import 'package:bilolog/models/cliente.dart';
+import 'package:bilolog/models/pacote.dart';
+import 'package:bilolog/models/status_pacote.dart';
+import 'package:bilolog/models/status_remessa.dart';
 import 'package:bilolog/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -20,6 +24,20 @@ class RemessasAPI with ChangeNotifier {
   List<Remessa> _remessas = [];
   List<Remessa> get remessas => [..._remessas];
 
+  String get apiGetPath {
+    if (authProvider == null) throw Exception("Sem informação de autenticação");
+    switch (authProvider!.authorization) {
+      case Cargo.coletor:
+        return "/coleta";
+      case Cargo.motocorno:
+        return "/entrega";
+      case Cargo.galeraDoCD:
+        return "/recebimento";
+      default:
+        throw Exception("Cargo inválido");
+    }
+  }
+
   Future<void> getRemessas({
     required Function onError,
     DateTime? startDate,
@@ -27,11 +45,15 @@ class RemessasAPI with ChangeNotifier {
     RemessaKind? remessaKind,
   }) async {
     _remessas.clear();
+
+    startDate ??= DateTime.now();
+    endDate ??= DateTime.now();
     final url = Uri(
       scheme: 'https',
       host: ApiURL.apiAuthority,
-      path: '/pathToAPI', //TODO Change URL Path
-      query: 'query', //TODO Change query
+      path: apiGetPath, //TODO Change URL Path
+      query:
+          'dateStart=${DateTime(startDate.year, startDate.month, startDate.day).toIso8601String()}&dateEnd=${DateTime(endDate.year, endDate.month, endDate.day).add(const Duration(days: 1)).toIso8601String()}',
     );
     try {
       final response = await http.get(
@@ -41,10 +63,45 @@ class RemessasAPI with ChangeNotifier {
         const Duration(seconds: 10),
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
-        // ignore: unused_local_variable
         final content = json.decode(response.body);
-        //TODO: Converter objeto JSON em Remessa
-        notifyListeners();
+
+        for (Map<String, dynamic> coleta in content) {
+          Remessa novaRemessa = Remessa(
+            uuid: coleta['uuid'],
+            dtRemessa: DateTime.parse(coleta['createdAt']),
+            estadoRemessa: ColetaStateConverter.convert(coleta['status']),
+            pacotes: [],
+            remessaKind: RemessaKindConverter.convert(coleta['type']),
+            nomeVendedor: coleta['vendedor'][0]['contact_name'],
+          );
+          for (Map<String, dynamic> pacote in coleta['pacotes']) {
+            Pacote novoPacote = Pacote(
+                id: pacote['id'],
+                codPacote: pacote['id'],
+                cliente: Comprador(
+                    id: -1,
+                    nome: pacote['destinatario'],
+                    endereco: pacote['logradouro'],
+                    bairro: pacote['bairro'],
+                    cep: pacote['CEP'],
+                    complemento: pacote['complemento']),
+                statusPacotes: [],
+                vendedorName: coleta['vendedor'][0]['contact_name']);
+            for (Map<String, dynamic> status in pacote['status']) {
+              novoPacote.statusPacotes.add(StatusPacote(
+                  timestamp: DateTime.parse(status['createdAt']),
+                  funcionarioResponsavel: status['colaborador']['name'],
+                  colaboradorId: status['colaborador']['uuid'],
+                  descricaoStatus: status['status']));
+            }
+            novaRemessa.pacotes.add(novoPacote);
+          }
+          _remessas.add(novaRemessa);
+        }
+        _remessas.sort();
+        _remessas = _remessas.reversed.toList();
+        //notifyListeners();
+
         return;
       }
       if (response.statusCode == 204) {
@@ -66,24 +123,38 @@ class RemessasAPI with ChangeNotifier {
     }
   }
 
+  String get apiPostPath {
+    if (authProvider == null) throw Exception("Sem informação de autenticação");
+    switch (authProvider!.authorization) {
+      case Cargo.coletor:
+        return "/coleta/create";
+      case Cargo.motocorno:
+        return "/entrega/create";
+      case Cargo.galeraDoCD:
+        return "/recebimento/create";
+      default:
+        throw Exception("Cargo inválido");
+    }
+  }
+
   Future<bool> postNovaRemessaJson(
       {required String jsonBody, required Function onError}) async {
     try {
       final url = Uri(
         scheme: 'https',
         host: ApiURL.apiAuthority,
-        path: '',
-      ); //TODO Set up path
-      final response = await http.post(
-        url,
-        headers: {'apiKey': apiKey!, 'content-type': 'application/json'},
-      ).timeout(
-        const Duration(seconds: 10),
+        path: apiPostPath,
       );
+      final response = await http
+          .post(url,
+              headers: {'apiKey': apiKey!, 'content-type': 'application/json'},
+              body: jsonBody)
+          .timeout(
+            const Duration(seconds: 10),
+          );
       if (response.statusCode == 200 || response.statusCode == 201) {
-        // ignore: unused_local_variable
         final content = json.decode(response.body);
-        //TODO: Converter objeto JSON em Remessa
+        print('não sou pago o bastante pra isso');
         notifyListeners();
         return true;
       }

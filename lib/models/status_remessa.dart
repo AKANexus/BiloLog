@@ -4,13 +4,16 @@ enum StatusRemessa {
   recebido,
   emRota,
   entregue,
-  emAnalise
+  emAnalise,
+  pendente
 }
 
 class ColetaStateConverter {
   static StatusRemessa convert(String state) {
     // StatusRemessa convertido;
     switch (state.toLowerCase()) {
+      case "pendente":
+        return StatusRemessa.pendente;
       case "recebido":
         return StatusRemessa.recebido;
       case "confirmado":
