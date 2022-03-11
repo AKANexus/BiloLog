@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:bilolog/providers/auth_provider.dart';
 import 'package:bilolog/providers/remessas_api.dart';
 import 'package:bilolog/views/remessa_qr_scan_view.dart';
 import 'package:bilolog/widgets/app_drawer.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../models/cargo.dart';
 import '../models/remessa.dart';
 import '../widgets/remessas_list.dart';
 
@@ -34,13 +36,29 @@ class _RemessasViewState extends State<RemessasView> {
     super.didChangeDependencies();
   }
 
+  String get title {
+    switch (Provider.of<AuthenticationProvider>(context, listen: false)
+        .authorization) {
+      case Cargo.invalid:
+        return "ERRO";
+      case Cargo.motocorno:
+        return "Entregas";
+      case Cargo.coletor:
+        return "Coletas";
+      case Cargo.galeraDoCD:
+        return "Recebimentos";
+      case Cargo.administrador:
+        return "A poha toda";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     print("Rebuilt");
     return Scaffold(
       drawer: AppDrawer(),
       appBar: AppBar(
-        title: Text("Remessas"),
+        title: Text(title),
         actions: [
           IconButton(
             onPressed: () {
@@ -54,7 +72,7 @@ class _RemessasViewState extends State<RemessasView> {
         padding: const EdgeInsets.all(20),
         child:
             Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          Text("Minhas coletas",
+          Text("Minhas remessas",
               style: Theme.of(context).textTheme.headline5,
               textAlign: TextAlign.left),
           const TextField(
@@ -65,7 +83,7 @@ class _RemessasViewState extends State<RemessasView> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              const Text("Lista de coletas"),
+              Text("Lista de remessas"),
               TextButton.icon(
                 style: TextButton.styleFrom(
                   padding: EdgeInsets.zero,

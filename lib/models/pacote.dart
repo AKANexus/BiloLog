@@ -24,6 +24,7 @@ class Pacote {
 
   String get ultimoStatus {
     if (statusPacotes.isEmpty) return "";
-    return statusPacotes.last.descricaoStatus;
+    return statusPacotes.first.descricaoStatus[0].toUpperCase() +
+        statusPacotes.first.descricaoStatus.substring(1).toLowerCase();
   }
 }

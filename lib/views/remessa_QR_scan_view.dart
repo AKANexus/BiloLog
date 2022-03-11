@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:bilolog/models/cargo.dart';
+import 'package:bilolog/providers/auth_provider.dart';
 import 'package:bilolog/providers/operacao_remessa_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_beep/flutter_beep.dart';
@@ -87,26 +89,30 @@ class _RemessaQRScanViewState extends State<RemessaQRScanView> {
           const SizedBox(
             height: 50,
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "Pacote Pequeno",
-                style: Theme.of(context).textTheme.headline6,
-              ),
-              Switch(
-                  value: _isGrande,
-                  onChanged: (value) {
-                    setState(() {
-                      _isGrande = value;
-                    });
-                  }),
-              Text(
-                "Pacote Grande",
-                style: Theme.of(context).textTheme.headline6,
-              ),
-            ],
-          ),
+          Provider.of<AuthenticationProvider>(context, listen: false)
+                      .authorization ==
+                  Cargo.coletor
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Pacote Pequeno",
+                      style: Theme.of(context).textTheme.headline6,
+                    ),
+                    Switch(
+                        value: _isGrande,
+                        onChanged: (value) {
+                          setState(() {
+                            _isGrande = value;
+                          });
+                        }),
+                    Text(
+                      "Pacote Grande",
+                      style: Theme.of(context).textTheme.headline6,
+                    ),
+                  ],
+                )
+              : Container(),
           const SizedBox(
             height: 50,
           ),

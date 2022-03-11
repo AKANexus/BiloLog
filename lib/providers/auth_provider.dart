@@ -24,6 +24,8 @@ class AuthenticationProvider with ChangeNotifier {
         return Cargo.motocorno;
       case "coletor":
         return Cargo.coletor;
+      case "interno":
+        return Cargo.galeraDoCD;
       default:
         return Cargo.invalid;
     }

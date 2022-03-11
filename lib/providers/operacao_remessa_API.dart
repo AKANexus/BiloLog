@@ -123,8 +123,8 @@ class OperacaoDeRemessaAPI with ChangeNotifier {
             remessaKind: RemessaKind.coleta);
         for (Map<String, dynamic> pacote in remessaRetornada['pacotes']) {
           _remessa!.pacotes.add(Pacote(
-              id: pacote['idPacote'],
-              codPacote: pacote['idPacote'],
+              id: pacote['id'],
+              codPacote: pacote['id'],
               cliente: Comprador(
                   id: -1,
                   nome: pacote['destinatario'],

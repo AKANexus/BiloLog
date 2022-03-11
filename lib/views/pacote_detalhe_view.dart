@@ -16,17 +16,17 @@ class PacoteDetalheView extends StatelessWidget {
     Pacote _pacote = operacaoRemessaProvider.pacoteDetalhe!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Trilhogística"),
+        title: const Text("Detalhes do Pacote"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              "Informações do Pacote",
-              style: Theme.of(context).textTheme.headline5,
-            ),
+            // Text(
+            //   "Informações do Pacote",
+            //   style: Theme.of(context).textTheme.headline5,
+            // ),
             const SizedBox(
               height: 35,
             ),
@@ -195,7 +195,11 @@ class PacoteDetalheView extends StatelessWidget {
                               .format(_pacote.statusPacotes[ix].timestamp)),
                           const SizedBox(width: 15),
                           Text(
-                            _pacote.statusPacotes[ix].descricaoStatus,
+                            _pacote.statusPacotes[ix].descricaoStatus[0]
+                                    .toUpperCase() +
+                                _pacote.statusPacotes[ix].descricaoStatus
+                                    .substring(1)
+                                    .toLowerCase(),
                             style: Theme.of(context).textTheme.bodyText1,
                           )
                         ],

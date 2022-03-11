@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:bilolog/models/cargo.dart';
+import 'package:bilolog/providers/auth_provider.dart';
 import 'package:bilolog/providers/operacao_remessa_api.dart';
 import 'package:bilolog/providers/remessas_api.dart';
 import 'package:bilolog/views/lista_de_remessas.dart';
@@ -43,12 +45,28 @@ class _NovaRemessaViewState extends State<NovaRemessaView> {
     });
   }
 
+  String get title {
+    switch (Provider.of<AuthenticationProvider>(context, listen: false)
+        .authorization) {
+      case Cargo.invalid:
+        return "ERRO";
+      case Cargo.motocorno:
+        return "Nova Entrega";
+      case Cargo.coletor:
+        return "Nova Coleta";
+      case Cargo.galeraDoCD:
+        return "Novo Recebimento";
+      case Cargo.administrador:
+        return "Nova poha toda";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final operacaoRemessa = Provider.of<OperacaoDeRemessaAPI>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text("Trilhogística"),
+        title: Text(title),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -76,7 +94,7 @@ class _NovaRemessaViewState extends State<NovaRemessaView> {
                   height: 20,
                 ),
                 //Text("Aguardando confirmação do cliente"),
-                Text("Lista de entregas"),
+                Text("Lista de pacotes"),
               ],
             ),
           ),
