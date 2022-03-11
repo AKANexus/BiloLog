@@ -1,4 +1,5 @@
 import 'package:bilolog/providers/operacao_remessa_api.dart';
+import 'package:bilolog/providers/remessas_api.dart';
 import 'package:bilolog/widgets/pacotes_list.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -15,7 +16,10 @@ class RemessaPacotesView extends StatefulWidget {
 class _RemessaPacotesViewState extends State<RemessaPacotesView> {
   @override
   Widget build(BuildContext context) {
-    final operacaoRemessaProvider = Provider.of<OperacaoDeRemessaAPI>(context);
+    //final remessaAPI = Provider.of<RemessasAPI>(context);
+    final operacaoRemessaProvider =
+        Provider.of<OperacaoDeRemessaAPI>(context, listen: false);
+    print("pacotesRemessaView built");
     return Scaffold(
       appBar: AppBar(
         title: const Text("Pacotes na Remessa"),

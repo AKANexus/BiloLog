@@ -3,16 +3,22 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bilolog/models/pacote.dart';
+import 'package:bilolog/providers/operacao_remessa_api.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 import '../env/api_url.dart';
+import '../models/remessa.dart';
 import 'auth_provider.dart';
 
 class OperacaoDePacoteAPI with ChangeNotifier {
   AuthenticationProvider? authProvider;
 
+  late Pacote pacote;
+
   Future<bool> entregaPacoteAoCliente({
+    required Remessa remessa,
     required Pacote pacote,
     required String nomeRecebedor,
     required String documentoRecebedor,
@@ -21,10 +27,11 @@ class OperacaoDePacoteAPI with ChangeNotifier {
     final url = Uri(
       scheme: 'https',
       host: ApiURL.apiAuthority,
-      path: '', //TODO: Definir path
+      path: 'entrega/entregar',
     );
     final jsonPacote = {
-      'id': pacote.id.toString(),
+      'pacote': pacote.id.toString(),
+      'operacao': remessa.uuid,
       'ml_user_id': pacote.mlUserID,
       'receiver_name': nomeRecebedor,
       'receiver_doc': documentoRecebedor,

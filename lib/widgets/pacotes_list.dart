@@ -9,8 +9,7 @@ class RemessaPacotesList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final entregasProvider =
-        Provider.of<OperacaoDeRemessaAPI>(context, listen: false);
+    final entregasProvider = Provider.of<OperacaoDeRemessaAPI>(context);
     return ListView.builder(
       itemBuilder: (ctx, ix) {
         return PacotesListTile(entregasProvider.pacotes[ix]);

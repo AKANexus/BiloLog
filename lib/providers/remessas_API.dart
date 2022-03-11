@@ -78,6 +78,7 @@ class RemessasAPI with ChangeNotifier {
             Pacote novoPacote = Pacote(
                 id: pacote['id'],
                 codPacote: pacote['id'],
+                mlUserID: pacote['ml_user_id'],
                 cliente: Comprador(
                     id: -1,
                     nome: pacote['destinatario'],
@@ -100,7 +101,7 @@ class RemessasAPI with ChangeNotifier {
         }
         _remessas.sort();
         _remessas = _remessas.reversed.toList();
-        //notifyListeners();
+        notifyListeners();
 
         return;
       }

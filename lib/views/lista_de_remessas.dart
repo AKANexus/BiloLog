@@ -24,7 +24,6 @@ class _RemessasViewState extends State<RemessasView> {
   DateTime _startDate = DateTime.now();
   DateTime _endDate = DateTime.now();
 
-  List<Remessa>? _remessas;
   bool _isBusy = false;
   bool _isInit = true;
 
@@ -32,6 +31,7 @@ class _RemessasViewState extends State<RemessasView> {
   void didChangeDependencies() {
     if (_isInit) {
       _getRemessas(context);
+      _isInit = false;
     }
     super.didChangeDependencies();
   }
@@ -90,19 +90,22 @@ class _RemessasViewState extends State<RemessasView> {
                 ),
                 icon: Text(DateFormat('dd/MM/yyyy').format(_startDate)),
                 label: const Icon(Icons.expand_more),
-                onPressed: () async {
-                  final DateTime? _selectedDate;
-                  _selectedDate = await showDatePicker(
-                      context: context,
-                      initialDate: _startDate,
-                      firstDate: DateTime(2000),
-                      lastDate: DateTime.now());
-                  if (_selectedDate != null) {
-                    setState(() {
-                      _startDate = _selectedDate!;
-                    });
-                  }
-                },
+                onPressed: !_isBusy
+                    ? () async {
+                        final DateTime? _selectedDate;
+                        _selectedDate = await showDatePicker(
+                            context: context,
+                            initialDate: _startDate,
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime.now());
+                        if (_selectedDate != null) {
+                          setState(() {
+                            _startDate = _selectedDate!;
+                            _getRemessas(context);
+                          });
+                        }
+                      }
+                    : null,
               ),
               TextButton.icon(
                 style: TextButton.styleFrom(
@@ -110,19 +113,22 @@ class _RemessasViewState extends State<RemessasView> {
                 ),
                 icon: Text(DateFormat('dd/MM/yyyy').format(_endDate)),
                 label: Icon(Icons.expand_more),
-                onPressed: () async {
-                  final DateTime? _selectedDate;
-                  _selectedDate = await showDatePicker(
-                      context: context,
-                      initialDate: _endDate,
-                      firstDate: DateTime(2000),
-                      lastDate: DateTime.now());
-                  if (_selectedDate != null) {
-                    setState(() {
-                      _endDate = _selectedDate!;
-                    });
-                  }
-                },
+                onPressed: !_isBusy
+                    ? () async {
+                        final DateTime? _selectedDate;
+                        _selectedDate = await showDatePicker(
+                            context: context,
+                            initialDate: _endDate,
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime.now());
+                        if (_selectedDate != null) {
+                          setState(() {
+                            _endDate = _selectedDate!;
+                            _getRemessas(context);
+                          });
+                        }
+                      }
+                    : null,
               )
             ],
           ),
@@ -134,7 +140,7 @@ class _RemessasViewState extends State<RemessasView> {
                 : RefreshIndicator(
                     onRefresh: () => _getRemessas(context),
                     child: RemessasList(
-                      remessas: _remessas ?? [],
+                      remessas: Provider.of<RemessasAPI>(context).remessas,
                     )),
           ),
         ]),
@@ -150,7 +156,6 @@ class _RemessasViewState extends State<RemessasView> {
     await remessasProvider.getRemessas(
         onError: _onError, startDate: _startDate, endDate: _endDate);
     setState(() {
-      _remessas = remessasProvider.remessas;
       _isBusy = false;
     });
   }

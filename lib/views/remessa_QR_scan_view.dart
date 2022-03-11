@@ -54,7 +54,7 @@ class _RemessaQRScanViewState extends State<RemessaQRScanView> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const SizedBox(
-            height: 70,
+            height: 59,
           ),
           Text(
             "Escaneie os QR Codes",
@@ -86,8 +86,16 @@ class _RemessaQRScanViewState extends State<RemessaQRScanView> {
               ),
             ),
           ),
+          Center(
+            child: TextButton(
+                onPressed: () {},
+                child: const Text(
+                  "Entrada manual",
+                  style: TextStyle(fontSize: 18),
+                )),
+          ),
           const SizedBox(
-            height: 50,
+            height: 10,
           ),
           Provider.of<AuthenticationProvider>(context, listen: false)
                       .authorization ==
@@ -169,7 +177,7 @@ class _RemessaQRScanViewState extends State<RemessaQRScanView> {
     if (_barcode != barcode) {
       _barcode = barcode;
       //print("QRCode detected>");
-      //print(barcode);
+      print(barcode);
       Vibration.vibrate();
       FlutterBeep.playSysSound(AndroidSoundIDs.TONE_CDMA_ABBR_ALERT);
       final novaColetaProvider =

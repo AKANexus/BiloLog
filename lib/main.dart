@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bilolog/views/entrega_pacote_ao_cliente_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -22,14 +23,14 @@ void main() {
 }
 
 //TODO: REMOVE BEFORE PRODUCTION!!!!!
-class MyHttpOverrides extends HttpOverrides {
-  @override
-  HttpClient createHttpClient(SecurityContext? context) {
-    return super.createHttpClient(context)
-      ..badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
-  }
-}
+// class MyHttpOverrides extends HttpOverrides {
+//   @override
+//   HttpClient createHttpClient(SecurityContext? context) {
+//     return super.createHttpClient(context)
+//       ..badCertificateCallback =
+//           (X509Certificate cert, String host, int port) => true;
+//   }
+// }
 //TODO: REMOVE BEFORE PRODUCTION!!!!!
 
 class MyApp extends StatelessWidget {
@@ -98,6 +99,7 @@ class MyApp extends StatelessWidget {
           PacoteDetalheView.routeName: (ctx) => const PacoteDetalheView(),
           RemessaQRScanView.routeName: (ctx) => const RemessaQRScanView(),
           NovaRemessaView.routeName: (ctx) => const NovaRemessaView(),
+          EntregaPacoteView.routeName: (ctx) => const EntregaPacoteView(),
         },
       ),
     );

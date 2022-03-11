@@ -39,6 +39,7 @@ class OperacaoDeRemessaAPI with ChangeNotifier {
   set remessa(Remessa? value) {
     if (value != null) {
       _remessa = value;
+      notifyListeners();
     }
   }
 
@@ -79,6 +80,11 @@ class OperacaoDeRemessaAPI with ChangeNotifier {
       default:
         throw Exception("Cargo inválido");
     }
+  }
+
+  void atualizaStatusPacote(Pacote pacote) {
+    _remessa!.pacotes.indexOf(pacote);
+    print("sldkjf");
   }
 
   Future<bool> conferirRemessa({required Function onError}) async {

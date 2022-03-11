@@ -8,6 +8,8 @@ class RemessaKindConverter {
         return RemessaKind.coleta;
       case "operacaoReceba":
         return RemessaKind.recebimento;
+      case "operacaoEntrega":
+        return RemessaKind.entrega;
       default:
         // print("State was $state");
         throw ArgumentError("O argumento informado não era esperado", "kind");

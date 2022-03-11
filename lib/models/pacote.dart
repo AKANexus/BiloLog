@@ -8,7 +8,7 @@ class Pacote {
   final Comprador cliente;
   final List<StatusPacote> statusPacotes;
   final String vendedorName;
-  int? mlUserID;
+  String? mlUserID;
   String? errorMessage;
 
   Pacote(
