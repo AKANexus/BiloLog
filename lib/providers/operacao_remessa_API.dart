@@ -128,25 +128,43 @@ class OperacaoDeRemessaAPI with ChangeNotifier {
             pacotes: [],
             remessaKind: RemessaKind.coleta);
         for (Map<String, dynamic> pacote in remessaRetornada['pacotes']) {
-          _remessa!.pacotes.add(Pacote(
-              id: pacote['id'],
-              codPacote: pacote['id'],
-              cliente: Comprador(
-                  id: -1,
-                  nome: pacote['destinatario'],
-                  endereco: pacote['logradouro'],
-                  bairro: pacote['bairro'],
-                  cep: pacote['CEP'],
-                  complemento: pacote['complemento']),
-              statusPacotes: [],
-              vendedorName: "ABELARDO"));
+          if (pacote['error'] != null) {
+            _remessa!.pacotes.add(
+              Pacote(
+                id: "N/A",
+                codPacote: "N/A",
+                cliente: Comprador(
+                    id: -1,
+                    nome: "",
+                    endereco: "",
+                    bairro: "",
+                    cep: "",
+                    complemento: ""),
+                statusPacotes: [],
+                vendedorName: "",
+                errorMessage: pacote['error'],
+              ),
+            );
+          } else {
+            _remessa!.pacotes.add(Pacote(
+                id: pacote['id'],
+                codPacote: pacote['id'],
+                cliente: Comprador(
+                    id: -1,
+                    nome: pacote['destinatario'],
+                    endereco: pacote['logradouro'],
+                    bairro: pacote['bairro'],
+                    cep: pacote['CEP'],
+                    complemento: pacote['complemento']),
+                statusPacotes: [],
+                vendedorName: "ABELARDO"));
+          }
         }
-        print("bunda");
         return true;
       } else {
         final Map<String, dynamic> remessaRetornada =
             json.decode(response.body);
-        onError(remessaRetornada['error'] ?? "Erro ao conferirRemessa");
+        onError(remessaRetornada['error']['code'] ?? "Erro ao conferirRemessa");
         return false;
       }
     } on SocketException catch (_) {

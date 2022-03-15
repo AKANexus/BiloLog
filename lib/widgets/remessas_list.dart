@@ -15,7 +15,7 @@ class RemessasList extends StatelessWidget {
         ? SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             child: SizedBox(
-              height: mqi.size.height - 270,
+              height: mqi.size.height - 200,
               child: const Center(
                 child: Text("Nenhuma remessa encontrada"),
               ),

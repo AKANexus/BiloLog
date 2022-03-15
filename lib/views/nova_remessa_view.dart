@@ -30,7 +30,45 @@ class _NovaRemessaViewState extends State<NovaRemessaView> {
     setState(() {
       _isBusy = true;
     });
-
+    final entregasProvider =
+        Provider.of<OperacaoDeRemessaAPI>(context, listen: false);
+    if (entregasProvider.pacotes.any((element) => element.hasError)) {
+      final proceed = await showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (ctx) => AlertDialog(
+          content: Container(
+            height: 150,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: const [
+                Text(
+                    "Um ou mais pacotes não foram corretamente identificados e não serão coletados."),
+                SizedBox(
+                  height: 10,
+                ),
+                Text("Deseja prosseguir?"),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: const Text("SIM"),
+              onPressed: () => Navigator.of(context).pop(true),
+            ),
+            TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text("NÃO"))
+          ],
+        ),
+      );
+      if (!proceed) {
+        setState(() {
+          _isBusy = false;
+        });
+        return;
+      }
+    }
     if (await Provider.of<RemessasAPI>(context, listen: false)
         .postNovaRemessaJson(
             jsonBody: Provider.of<OperacaoDeRemessaAPI>(context, listen: false)

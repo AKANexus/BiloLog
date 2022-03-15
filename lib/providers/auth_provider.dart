@@ -26,6 +26,8 @@ class AuthenticationProvider with ChangeNotifier {
         return Cargo.coletor;
       case "interno":
         return Cargo.galeraDoCD;
+      case "supervisor":
+        return Cargo.galeraDoCD;
       default:
         return Cargo.invalid;
     }
@@ -70,10 +72,10 @@ class AuthenticationProvider with ChangeNotifier {
         _uuid = content['transportadora']['uuid'];
         _authorization = content['authorization'];
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('apiKey', _apiKey!);
-        await prefs.setString('uuid', _uuid!); //Alterar para int
-        await prefs.setString('name', _name!);
-        await prefs.setString('authorization', _authorization!);
+        prefs.setString('apiKey', _apiKey!);
+        prefs.setString('uuid', _uuid!); //Alterar para int
+        prefs.setString('name', _name!);
+        prefs.setString('authorization', _authorization!);
         notifyListeners();
         return;
       } else {

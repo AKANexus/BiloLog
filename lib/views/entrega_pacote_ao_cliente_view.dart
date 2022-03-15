@@ -18,6 +18,7 @@ class EntregaPacoteView extends StatefulWidget {
 
 class _EntregaPacoteViewState extends State<EntregaPacoteView> {
   //bool _isInit = true;
+  bool _isBusy = false;
   late Pacote _pacote;
 
   // @override
@@ -34,7 +35,7 @@ class _EntregaPacoteViewState extends State<EntregaPacoteView> {
             remessa: Provider.of<OperacaoDeRemessaAPI>(context, listen: false)
                 .remessa!,
             pacote: _pacote,
-            nomeRecebedor: _recipientNameController.text,
+            nomeRecebedor: _recipientNameController.text.trim(),
             documentoRecebedor: _recipientIDController.text,
             onError: (value) => {}) ==
         true) {
@@ -111,18 +112,20 @@ class _EntregaPacoteViewState extends State<EntregaPacoteView> {
                 const SizedBox(
                   height: 75,
                 ),
-                TextButton(
-                  style: ButtonStyle(
-                    foregroundColor: MaterialStateProperty.all(
-                        Theme.of(context).colorScheme.onPrimary),
-                    backgroundColor: MaterialStateProperty.all(
-                        Theme.of(context).colorScheme.primary),
-                  ),
-                  onPressed: () {
-                    _confirmarEntrega();
-                  },
-                  child: const Text("Confirmar entrega"),
-                ),
+                _isBusy
+                    ? Center(child: CircularProgressIndicator())
+                    : TextButton(
+                        style: ButtonStyle(
+                          foregroundColor: MaterialStateProperty.all(
+                              Theme.of(context).colorScheme.onPrimary),
+                          backgroundColor: MaterialStateProperty.all(
+                              Theme.of(context).colorScheme.primary),
+                        ),
+                        onPressed: () {
+                          _confirmarEntrega();
+                        },
+                        child: const Text("Confirmar entrega"),
+                      ),
               ],
             ),
           ),

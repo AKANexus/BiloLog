@@ -51,7 +51,7 @@ class RemessasAPI with ChangeNotifier {
     final url = Uri(
       scheme: 'https',
       host: ApiURL.apiAuthority,
-      path: apiGetPath, //TODO Change URL Path
+      path: apiGetPath,
       query:
           'dateStart=${DateTime(startDate.year, startDate.month, startDate.day).toIso8601String()}&dateEnd=${DateTime(endDate.year, endDate.month, endDate.day).add(const Duration(days: 1)).toIso8601String()}',
     );
@@ -68,7 +68,8 @@ class RemessasAPI with ChangeNotifier {
         for (Map<String, dynamic> coleta in content) {
           Remessa novaRemessa = Remessa(
             uuid: coleta['uuid'],
-            dtRemessa: DateTime.parse(coleta['createdAt']),
+            dtRemessa: DateTime.parse(
+                (coleta['createdAt'] as String).replaceAll("Z", "+03")),
             estadoRemessa: ColetaStateConverter.convert(coleta['status']),
             pacotes: [],
             remessaKind: RemessaKindConverter.convert(coleta['type']),
@@ -90,7 +91,8 @@ class RemessasAPI with ChangeNotifier {
                 vendedorName: coleta['vendedor'][0]['contact_name']);
             for (Map<String, dynamic> status in pacote['status']) {
               novoPacote.statusPacotes.add(StatusPacote(
-                  timestamp: DateTime.parse(status['createdAt']),
+                  timestamp: DateTime.parse(
+                      (status['createdAt'] as String).replaceAll("Z", "+03")),
                   funcionarioResponsavel: status['colaborador']['name'],
                   colaboradorId: status['colaborador']['uuid'],
                   descricaoStatus: status['status']));
@@ -155,7 +157,7 @@ class RemessasAPI with ChangeNotifier {
           );
       if (response.statusCode == 200 || response.statusCode == 201) {
         final content = json.decode(response.body);
-        print('não sou pago o bastante pra isso');
+
         notifyListeners();
         return true;
       }

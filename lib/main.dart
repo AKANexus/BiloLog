@@ -42,13 +42,13 @@ class MyApp extends StatelessWidget {
       case Cargo.coletor:
         return const RemessasView();
       case Cargo.administrador:
-        return const Text("Falha ao obter autorização.");
+        return const Text("Administrador has no view.");
       case Cargo.motocorno:
         return const RemessasView();
       case Cargo.galeraDoCD:
         return const RemessasView();
       default:
-        return const Text("Falha ao obter autorização.");
+        return const Text("authorizationString returned an invalid value");
     }
   }
 

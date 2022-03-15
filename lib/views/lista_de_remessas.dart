@@ -54,6 +54,7 @@ class _RemessasViewState extends State<RemessasView> {
 
   @override
   Widget build(BuildContext context) {
+    final deviceSize = MediaQuery.of(context).size;
     print("Rebuilt");
     return Scaffold(
       drawer: AppDrawer(),
@@ -75,15 +76,16 @@ class _RemessasViewState extends State<RemessasView> {
           Text("Minhas remessas",
               style: Theme.of(context).textTheme.headline5,
               textAlign: TextAlign.left),
-          const TextField(
-            decoration: InputDecoration(
-              label: Text("Pesquisar"),
-            ),
-          ),
+          // const TextField(
+          //   decoration: InputDecoration(
+          //     label: Text("Pesquisar"),
+          //   ),
+          // ),
+          // Text("Lista de remessas"),
+
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Text("Lista de remessas"),
               TextButton.icon(
                 style: TextButton.styleFrom(
                   padding: EdgeInsets.zero,

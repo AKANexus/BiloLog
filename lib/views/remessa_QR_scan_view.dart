@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:bilolog/models/cargo.dart';
 import 'package:bilolog/providers/auth_provider.dart';
 import 'package:bilolog/providers/operacao_remessa_api.dart';
+import 'package:bilolog/widgets/manual_qr_entry.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_beep/flutter_beep.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -25,7 +27,8 @@ class _RemessaQRScanViewState extends State<RemessaQRScanView> {
   bool _isInit = true;
 
   String? _barcode;
-  MobileScannerController _controller =
+  Map<String, dynamic>? _data;
+  final _controller =
       MobileScannerController(torchEnabled: false, facing: CameraFacing.back);
 
   @override
@@ -46,32 +49,36 @@ class _RemessaQRScanViewState extends State<RemessaQRScanView> {
 
   @override
   Widget build(BuildContext context) {
+    final deviceSize = MediaQuery.of(context).size;
+    print(deviceSize.width);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Escanear QR Code"),
       ),
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const SizedBox(
-            height: 59,
+          SizedBox(
+            height: 10 * (deviceSize.height / 850.90),
           ),
           Text(
             "Escaneie os QR Codes",
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.headline5,
           ),
-          const SizedBox(
-            height: 10,
+          SizedBox(
+            height: 10 * (deviceSize.height / 850.90),
           ),
           const Text(
             "São aceitos apenas códigos do Mercado Envios Flex",
             textAlign: TextAlign.center,
           ),
-          Container(
-            margin: const EdgeInsets.all(50),
-            height: 300,
-            width: 300,
+          SizedBox(
+            height: 10 * (deviceSize.height / 850.90),
+          ),
+          SizedBox(
+            height: 300 * (deviceSize.height / 850.90),
+            width: 300 * (deviceSize.height / 850.90),
             child: Container(
               padding: const EdgeInsets.all(15),
               decoration: BoxDecoration(
@@ -88,44 +95,65 @@ class _RemessaQRScanViewState extends State<RemessaQRScanView> {
           ),
           Center(
             child: TextButton(
-                onPressed: () {},
+                onPressed: () async {
+                  _controller.stop();
+                  final collectedInfo = await showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    builder: (_) {
+                      return ManualQRDataEntry();
+                    },
+                  );
+                  if (collectedInfo != null &&
+                      collectedInfo['id'] != '' &&
+                      int.tryParse(collectedInfo['sender_id']) != null) {
+                    _processManualData(collectedInfo);
+                  }
+                  _controller.start();
+                },
                 child: const Text(
                   "Entrada manual",
                   style: TextStyle(fontSize: 18),
                 )),
           ),
-          const SizedBox(
-            height: 10,
+          SizedBox(
+            height: 10 * (deviceSize.height / 850.90),
           ),
           Provider.of<AuthenticationProvider>(context, listen: false)
                       .authorization ==
                   Cargo.coletor
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Pacote Pequeno",
-                      style: Theme.of(context).textTheme.headline6,
+              ? Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: FittedBox(
+                    fit: BoxFit.fitWidth,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Pacote Pequeno",
+                          style: Theme.of(context).textTheme.headline6,
+                        ),
+                        Switch(
+                            value: _isGrande,
+                            onChanged: (value) {
+                              setState(() {
+                                _isGrande = value;
+                              });
+                            }),
+                        Text(
+                          "Pacote Grande",
+                          style: Theme.of(context).textTheme.headline6,
+                        ),
+                      ],
                     ),
-                    Switch(
-                        value: _isGrande,
-                        onChanged: (value) {
-                          setState(() {
-                            _isGrande = value;
-                          });
-                        }),
-                    Text(
-                      "Pacote Grande",
-                      style: Theme.of(context).textTheme.headline6,
-                    ),
-                  ],
+                  ),
                 )
               : Container(),
-          const SizedBox(
-            height: 50,
+          SizedBox(
+            height: 50 * (deviceSize.height / 850.90),
           ),
           Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20),
+            margin: const EdgeInsets.symmetric(horizontal: 10),
             child: _isBusy
                 ? const Center(child: CircularProgressIndicator())
                 : ElevatedButton(
@@ -160,14 +188,20 @@ class _RemessaQRScanViewState extends State<RemessaQRScanView> {
     });
     _controller.stop();
     try {
-      await Provider.of<OperacaoDeRemessaAPI>(context, listen: false)
-          .conferirRemessa(onError: _onError);
+      final success =
+          await Provider.of<OperacaoDeRemessaAPI>(context, listen: false)
+              .conferirRemessa(onError: _onError);
+      if (success) {
+        Navigator.of(context)
+            .pushNamed(NovaRemessaView.routeName)
+            .then((value) => _controller.start());
+      } else {
+        _controller.start();
+      }
     } on Exception {
       //print("Falha ao conferirColeta()");
     }
-    Navigator.of(context)
-        .pushNamed(NovaRemessaView.routeName)
-        .then((value) => _controller.start());
+
     setState(() {
       _isBusy = false;
     });
@@ -176,14 +210,24 @@ class _RemessaQRScanViewState extends State<RemessaQRScanView> {
   void _processQRCode(String barcode) {
     if (_barcode != barcode) {
       _barcode = barcode;
-      //print("QRCode detected>");
-      print(barcode);
       Vibration.vibrate();
       FlutterBeep.playSysSound(AndroidSoundIDs.TONE_CDMA_ABBR_ALERT);
       final novaColetaProvider =
           Provider.of<OperacaoDeRemessaAPI>(context, listen: false);
       final qrParsed = json.decode(barcode);
       novaColetaProvider.addNovoPacote(qrParsed['id'], qrParsed['sender_id'],
+          _isGrande ? "grande" : "pequeno");
+    }
+  }
+
+  void _processManualData(Map<String, dynamic> data) {
+    if (_data != data) {
+      _data = data;
+      Vibration.vibrate();
+      FlutterBeep.playSysSound(AndroidSoundIDs.TONE_CDMA_ABBR_ALERT);
+      final novaColetaProvider =
+          Provider.of<OperacaoDeRemessaAPI>(context, listen: false);
+      novaColetaProvider.addNovoPacote(data['id'], int.parse(data['sender_id']),
           _isGrande ? "grande" : "pequeno");
     }
   }
