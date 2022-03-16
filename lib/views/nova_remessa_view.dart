@@ -94,7 +94,7 @@ class _NovaRemessaViewState extends State<NovaRemessaView> {
         return "Nova Coleta";
       case Cargo.galeraDoCD:
         return "Novo Recebimento";
-      case Cargo.administrador:
+      case Cargo.supervisor:
         return "Nova poha toda";
     }
   }

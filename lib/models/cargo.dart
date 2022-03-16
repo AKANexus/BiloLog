@@ -1,1 +1,1 @@
-enum Cargo { invalid, motocorno, coletor, galeraDoCD, administrador }
+enum Cargo { invalid, motocorno, coletor, galeraDoCD, supervisor }

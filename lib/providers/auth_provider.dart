@@ -27,7 +27,7 @@ class AuthenticationProvider with ChangeNotifier {
       case "interno":
         return Cargo.galeraDoCD;
       case "supervisor":
-        return Cargo.galeraDoCD;
+        return Cargo.supervisor;
       default:
         return Cargo.invalid;
     }

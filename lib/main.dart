@@ -41,8 +41,8 @@ class MyApp extends StatelessWidget {
     switch (authorizationString) {
       case Cargo.coletor:
         return const RemessasView();
-      case Cargo.administrador:
-        return const Text("Administrador has no view.");
+      case Cargo.supervisor:
+        return const RemessasView();
       case Cargo.motocorno:
         return const RemessasView();
       case Cargo.galeraDoCD:

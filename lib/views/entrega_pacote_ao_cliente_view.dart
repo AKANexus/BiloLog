@@ -1,3 +1,4 @@
+import 'package:bilolog/models/cliente.dart';
 import 'package:bilolog/models/pacote.dart';
 import 'package:bilolog/models/status_pacote.dart';
 import 'package:bilolog/providers/operacao_pacote_api.dart';
@@ -6,6 +7,8 @@ import 'package:bilolog/providers/remessas_api.dart';
 import 'package:bilolog/views/pacotes_da_remessa_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+enum TipoDoc { RG, CNH, CPF, CNPJ }
 
 class EntregaPacoteView extends StatefulWidget {
   const EntregaPacoteView({Key? key}) : super(key: key);
@@ -18,6 +21,7 @@ class EntregaPacoteView extends StatefulWidget {
 
 class _EntregaPacoteViewState extends State<EntregaPacoteView> {
   //bool _isInit = true;
+  String selectedItem = "RG";
   bool _isBusy = false;
   late Pacote _pacote;
 
@@ -35,7 +39,8 @@ class _EntregaPacoteViewState extends State<EntregaPacoteView> {
             remessa: Provider.of<OperacaoDeRemessaAPI>(context, listen: false)
                 .remessa!,
             pacote: _pacote,
-            nomeRecebedor: _recipientNameController.text.trim(),
+            nomeRecebedor:
+                "$selectedItem${_recipientNameController.text.trim()}",
             documentoRecebedor: _recipientIDController.text,
             onError: (value) => {}) ==
         true) {
@@ -56,6 +61,104 @@ class _EntregaPacoteViewState extends State<EntregaPacoteView> {
         RemessaPacotesView.routeName,
         ModalRoute.withName('/'),
       );
+    }
+  }
+
+  bool _validaRGCPFCNPJCNH() {
+    final entrada = _recipientIDController.text.trim();
+    TipoDoc tipoDoc;
+    switch (selectedItem) {
+      case "RG":
+        tipoDoc = TipoDoc.RG;
+        break;
+      case "CPF":
+        tipoDoc = TipoDoc.CPF;
+        break;
+      case "CNPJ":
+        tipoDoc = TipoDoc.CNPJ;
+        break;
+      default:
+        return false;
+    }
+    if (tipoDoc == TipoDoc.RG) {
+      var rgSemDV = entrada.substring(0, entrada.length - 1);
+      var digitos = [];
+      int tabela = 2;
+      for (var item in rgSemDV.characters) {
+        digitos.add(int.parse(item) * tabela++);
+      }
+      int verificacao = (11 - (digitos.reduce((a, b) => a + b) % 11)).round();
+      if (verificacao == 10 &&
+          entrada.substring(entrada.toLowerCase().length - 1) == 'x') {
+        return true;
+      } else if (verificacao ==
+          int.parse(entrada.substring(entrada.length - 1))) {
+        return true;
+      } else {
+        return false;
+      }
+    } else if (tipoDoc == TipoDoc.CPF) {
+      var cpfSemDV = entrada.substring(0, entrada.length - 2);
+      var digitos = [];
+      int tabela = 1;
+      for (var item in cpfSemDV.characters) {
+        digitos.add(int.parse(item) * tabela++);
+      }
+      int modulo1 = (digitos.reduce((a, b) => a + b) % 11).round();
+      if (modulo1 == 10) {
+        modulo1 == 0;
+      }
+      cpfSemDV = "$cpfSemDV$modulo1";
+
+      tabela = 0;
+      digitos.clear();
+
+      for (var item in cpfSemDV.characters) {
+        digitos.add(int.parse(item) * tabela++);
+      }
+      modulo1 = (digitos.reduce((a, b) => a + b) % 11).round();
+      if (modulo1 == 10) {
+        modulo1 == 0;
+      }
+      cpfSemDV = "$cpfSemDV$modulo1";
+
+      return (cpfSemDV == entrada);
+    } else if (tipoDoc == TipoDoc.CNPJ) {
+      var cpfSemDV = entrada.substring(0, entrada.length - 2);
+      var digitos = [];
+      int tabela = 6;
+      for (var item in cpfSemDV.characters) {
+        digitos.add(int.parse(item) * tabela++);
+        if (tabela == 10) {
+          tabela = 2;
+        }
+      }
+      int modulo1 = (digitos.reduce((a, b) => a + b) % 11).round();
+      if (modulo1 == 10) {
+        modulo1 == 0;
+      }
+      cpfSemDV = "$cpfSemDV$modulo1";
+
+      tabela = 5;
+      digitos.clear();
+
+      for (var item in cpfSemDV.characters) {
+        digitos.add(int.parse(item) * tabela++);
+        if (tabela == 10) {
+          tabela = 2;
+        }
+      }
+      modulo1 = (digitos.reduce((a, b) => a + b) % 11).round();
+      if (modulo1 == 10) {
+        modulo1 == 0;
+      }
+      cpfSemDV = "$cpfSemDV$modulo1";
+
+      return (cpfSemDV == entrada);
+    } else if (tipoDoc == TipoDoc.CNH) {
+      return false;
+    } else {
+      return false;
     }
   }
 
@@ -103,10 +206,32 @@ class _EntregaPacoteViewState extends State<EntregaPacoteView> {
                       const InputDecoration(labelText: "Nome do Recipiente"),
                   controller: _recipientNameController,
                 ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  padding: EdgeInsets.only(left: 5),
+                  alignment: Alignment.centerLeft,
+                  child: DropdownButton(
+                      value: selectedItem,
+                      items: <String>["RG", "CPF", "CNPJ"]
+                          .map(
+                            (e) => DropdownMenuItem(
+                              child: Text(e),
+                              value: e,
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedItem = value as String;
+                        });
+                      }),
+                ),
                 TextField(
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                      labelText: "Documento do Recipiente"),
+                  //keyboardType: TextInputType.number,
+                  decoration:
+                      InputDecoration(labelText: "$selectedItem do Recipiente"),
                   controller: _recipientIDController,
                 ),
                 const SizedBox(
@@ -122,7 +247,13 @@ class _EntregaPacoteViewState extends State<EntregaPacoteView> {
                               Theme.of(context).colorScheme.primary),
                         ),
                         onPressed: () {
-                          _confirmarEntrega();
+                          if (!_validaRGCPFCNPJCNH()) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Text(
+                                    "O $selectedItem não é válido. Tente novamente.")));
+                          } else {
+                            _confirmarEntrega();
+                          }
                         },
                         child: const Text("Confirmar entrega"),
                       ),

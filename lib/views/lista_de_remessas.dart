@@ -47,7 +47,7 @@ class _RemessasViewState extends State<RemessasView> {
         return "Coletas";
       case Cargo.galeraDoCD:
         return "Recebimentos";
-      case Cargo.administrador:
+      case Cargo.supervisor:
         return "A poha toda";
     }
   }
@@ -69,84 +69,89 @@ class _RemessasViewState extends State<RemessasView> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child:
-            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          Text("Minhas remessas",
-              style: Theme.of(context).textTheme.headline5,
-              textAlign: TextAlign.left),
-          // const TextField(
-          //   decoration: InputDecoration(
-          //     label: Text("Pesquisar"),
-          //   ),
-          // ),
-          // Text("Lista de remessas"),
+      body: title == "A poha toda"
+          ? Center(child: Text("Acesso negado"))
+          : Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text("Minhas remessas",
+                        style: Theme.of(context).textTheme.headline5,
+                        textAlign: TextAlign.left),
+                    // const TextField(
+                    //   decoration: InputDecoration(
+                    //     label: Text("Pesquisar"),
+                    //   ),
+                    // ),
+                    // Text("Lista de remessas"),
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              TextButton.icon(
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                ),
-                icon: Text(DateFormat('dd/MM/yyyy').format(_startDate)),
-                label: const Icon(Icons.expand_more),
-                onPressed: !_isBusy
-                    ? () async {
-                        final DateTime? _selectedDate;
-                        _selectedDate = await showDatePicker(
-                            context: context,
-                            initialDate: _startDate,
-                            firstDate: DateTime(2000),
-                            lastDate: DateTime.now());
-                        if (_selectedDate != null) {
-                          setState(() {
-                            _startDate = _selectedDate!;
-                            _getRemessas(context);
-                          });
-                        }
-                      }
-                    : null,
-              ),
-              TextButton.icon(
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                ),
-                icon: Text(DateFormat('dd/MM/yyyy').format(_endDate)),
-                label: Icon(Icons.expand_more),
-                onPressed: !_isBusy
-                    ? () async {
-                        final DateTime? _selectedDate;
-                        _selectedDate = await showDatePicker(
-                            context: context,
-                            initialDate: _endDate,
-                            firstDate: DateTime(2000),
-                            lastDate: DateTime.now());
-                        if (_selectedDate != null) {
-                          setState(() {
-                            _endDate = _selectedDate!;
-                            _getRemessas(context);
-                          });
-                        }
-                      }
-                    : null,
-              )
-            ],
-          ),
-          Expanded(
-            child: _isBusy
-                ? const Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : RefreshIndicator(
-                    onRefresh: () => _getRemessas(context),
-                    child: RemessasList(
-                      remessas: Provider.of<RemessasAPI>(context).remessas,
-                    )),
-          ),
-        ]),
-      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        TextButton.icon(
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                          ),
+                          icon:
+                              Text(DateFormat('dd/MM/yyyy').format(_startDate)),
+                          label: const Icon(Icons.expand_more),
+                          onPressed: !_isBusy
+                              ? () async {
+                                  final DateTime? _selectedDate;
+                                  _selectedDate = await showDatePicker(
+                                      context: context,
+                                      initialDate: _startDate,
+                                      firstDate: DateTime(2000),
+                                      lastDate: DateTime.now());
+                                  if (_selectedDate != null) {
+                                    setState(() {
+                                      _startDate = _selectedDate!;
+                                      _getRemessas(context);
+                                    });
+                                  }
+                                }
+                              : null,
+                        ),
+                        TextButton.icon(
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                          ),
+                          icon: Text(DateFormat('dd/MM/yyyy').format(_endDate)),
+                          label: Icon(Icons.expand_more),
+                          onPressed: !_isBusy
+                              ? () async {
+                                  final DateTime? _selectedDate;
+                                  _selectedDate = await showDatePicker(
+                                      context: context,
+                                      initialDate: _endDate,
+                                      firstDate: DateTime(2000),
+                                      lastDate: DateTime.now());
+                                  if (_selectedDate != null) {
+                                    setState(() {
+                                      _endDate = _selectedDate!;
+                                      _getRemessas(context);
+                                    });
+                                  }
+                                }
+                              : null,
+                        )
+                      ],
+                    ),
+                    Expanded(
+                      child: _isBusy
+                          ? const Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : RefreshIndicator(
+                              onRefresh: () => _getRemessas(context),
+                              child: RemessasList(
+                                remessas:
+                                    Provider.of<RemessasAPI>(context).remessas,
+                              )),
+                    ),
+                  ]),
+            ),
     );
   }
 
