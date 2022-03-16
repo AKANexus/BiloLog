@@ -1,24 +1,19 @@
-import 'package:bilolog/models/remessaState.dart';
-import 'package:bilolog/models/statusEntrega.dart';
+import 'package:bilolog/models/status_pacote.dart';
 
 import 'cliente.dart';
 
 class Pacote {
-  final int id;
-  final int codPacote;
-  // final ColetaState statusEntrega;
-  // final String numColeta;
+  final String id;
+  final String codPacote;
   final Comprador cliente;
   final List<StatusPacote> statusPacotes;
   final String vendedorName;
-  int? mlUserID;
+  String? mlUserID;
   String? errorMessage;
 
   Pacote(
       {required this.id,
       required this.codPacote,
-      // required this.statusEntrega,
-      // required this.numColeta,
       required this.cliente,
       required this.statusPacotes,
       required this.vendedorName,
@@ -28,7 +23,8 @@ class Pacote {
   bool get hasError => errorMessage != null;
 
   String get ultimoStatus {
-    if (statusPacotes.length < 1) return "";
-    return statusPacotes.last.descricaoStatus;
+    if (statusPacotes.isEmpty) return "";
+    return statusPacotes.first.descricaoStatus[0].toUpperCase() +
+        statusPacotes.first.descricaoStatus.substring(1).toLowerCase();
   }
 }

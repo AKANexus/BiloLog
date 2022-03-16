@@ -1,27 +1,21 @@
 import 'dart:io';
 
-import 'package:bilolog/models/cargo.dart';
-import 'package:bilolog/providers/authProvider.dart';
-import 'package:bilolog/providers/coletasProvider.dart';
-import 'package:bilolog/providers/coletaPacotesProvider.dart';
-import 'package:bilolog/providers/entregaPacotesProvider.dart';
-import 'package:bilolog/providers/entregasProvider.dart';
-import 'package:bilolog/providers/novaColetaProvider.dart';
-import 'package:bilolog/providers/novaEntregaProvider.dart';
-import 'package:bilolog/views/EntregaQRScanView.dart';
-import 'package:bilolog/views/authView.dart';
-import 'package:bilolog/views/coletasView.dart';
-import 'package:bilolog/views/coletaPacoteDetalheView.dart';
-import 'package:bilolog/views/coletaPacotesView.dart';
-import 'package:bilolog/views/ColetaQRScanView.dart';
-import 'package:bilolog/views/entregaPacote.dart';
-import 'package:bilolog/views/entregaPacotesView.dart';
-import 'package:bilolog/views/entregasView.dart';
-import 'package:bilolog/views/novaEntregaView.dart';
+import 'package:bilolog/views/entrega_pacote_ao_cliente_view.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'views/novaColetaView.dart';
+import 'package:bilolog/models/cargo.dart';
+import 'package:bilolog/providers/auth_provider.dart';
+import 'package:bilolog/providers/operacao_pacote_api.dart';
+import 'package:bilolog/providers/operacao_remessa_api.dart';
+import 'package:bilolog/providers/remessas_api.dart';
+import 'package:bilolog/views/authView.dart';
+import 'package:bilolog/views/lista_de_remessas.dart';
+import 'package:bilolog/views/nova_remessa_view.dart';
+import 'package:bilolog/views/pacote_detalhe_view.dart';
+import 'package:bilolog/views/pacotes_da_remessa_view.dart';
+import 'package:bilolog/views/remessa_qr_scan_view.dart';
 
 void main() {
   //HttpOverrides.global = MyHttpOverrides();
@@ -29,32 +23,32 @@ void main() {
 }
 
 //TODO: REMOVE BEFORE PRODUCTION!!!!!
-class MyHttpOverrides extends HttpOverrides {
-  @override
-  HttpClient createHttpClient(SecurityContext? context) {
-    return super.createHttpClient(context)
-      ..badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
-  }
-}
+// class MyHttpOverrides extends HttpOverrides {
+//   @override
+//   HttpClient createHttpClient(SecurityContext? context) {
+//     return super.createHttpClient(context)
+//       ..badCertificateCallback =
+//           (X509Certificate cert, String host, int port) => true;
+//   }
+// }
 //TODO: REMOVE BEFORE PRODUCTION!!!!!
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   Widget selectStartingWidget(Cargo authorizationString) {
-    print("authorizationString: $authorizationString");
+    //print("authorizationString: $authorizationString");
     switch (authorizationString) {
-      case Cargo.Coletor:
-        return ColetasView();
-      case Cargo.Administrador:
-        return const Text("Falha ao obter autorização.");
-      case Cargo.Motocorno:
-        return EntregasView();
-      case Cargo.GaleraDoCD:
-        return ColetasView();
+      case Cargo.coletor:
+        return const RemessasView();
+      case Cargo.supervisor:
+        return const RemessasView();
+      case Cargo.motocorno:
+        return const RemessasView();
+      case Cargo.galeraDoCD:
+        return const RemessasView();
       default:
-        return const Text("Falha ao obter autorização.");
+        return const Text("authorizationString returned an invalid value");
     }
   }
 
@@ -64,31 +58,26 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthenticationProvider()),
-        ChangeNotifierProxyProvider<AuthenticationProvider, NovaColetaProvider>(
-            create: (_) => NovaColetaProvider(),
-            update: (_, auth, previousProvider) => previousProvider!
-              ..authInfo = {'apiKey': auth.apiKey, 'uuid': auth.uuid}),
-        ChangeNotifierProxyProvider<AuthenticationProvider, ColetasProvider>(
-            create: (_) => ColetasProvider(),
+        ChangeNotifierProxyProvider<AuthenticationProvider, RemessasAPI>(
+            create: (_) => RemessasAPI(),
             update: (_, auth, previousProvider) =>
-                previousProvider!..apiKey = auth.apiKey),
-        ChangeNotifierProvider(create: (_) => ColetaPacotesProvider()),
+                previousProvider!..authProvider = auth),
         ChangeNotifierProxyProvider<AuthenticationProvider,
-                NovaEntregaProvider>(
-            create: (_) => NovaEntregaProvider(),
-            update: (_, auth, previousProvider) => previousProvider!
-              ..authInfo = {'apiKey': auth.apiKey, 'uuid': auth.uuid}),
-        ChangeNotifierProxyProvider<AuthenticationProvider, EntregasProvider>(
-            create: (_) => EntregasProvider(),
+                OperacaoDeRemessaAPI>(
+            create: (_) => OperacaoDeRemessaAPI(),
             update: (_, auth, previousProvider) =>
-                previousProvider!..apiKey = auth.apiKey),
-        ChangeNotifierProvider(create: (_) => EntregaPacotesProvider()),
+                previousProvider!..authProvider = auth),
+        ChangeNotifierProxyProvider<AuthenticationProvider,
+                OperacaoDePacoteAPI>(
+            create: (_) => OperacaoDePacoteAPI(),
+            update: (_, auth, previousProvider) =>
+                previousProvider!..authProvider = auth),
       ],
       child: MaterialApp(
         title: 'LogControl',
         theme: ThemeData(
             // primarySwatch: Colors.blue,
-            colorScheme: ColorScheme.light(
+            colorScheme: const ColorScheme.light(
                 primary: Colors.blue,
                 secondary: Colors.lightBlueAccent,
                 tertiary: Colors.blueGrey,
@@ -96,23 +85,21 @@ class MyApp extends StatelessWidget {
                 errorContainer: Color.fromARGB(255, 255, 190, 190))),
         home: Consumer<AuthenticationProvider>(
           builder: (context, auth, _) {
-            print("auth.isLoggedIn: ${auth.isLoggedIn}");
+            if (kDebugMode) {
+              print("auth.isLoggedIn: ${auth.isLoggedIn}");
+            }
             return auth.isLoggedIn
                 ? selectStartingWidget(auth.authorization)
-                : AuthenticationView();
+                : const AuthenticationView();
           },
         ),
         routes: {
-          ColetasView.routeName: (ctx) => ColetasView(),
-          EntregasView.routeName: (ctx) => EntregasView(),
-          ColetaPacotesView.routeName: (ctx) => ColetaPacotesView(),
-          EntregaPacotesView.routeName: (ctx) => EntregaPacotesView(),
-          ColetaPacoteDetalheView.routeName: (ctx) => ColetaPacoteDetalheView(),
-          ColetaQRScanView.routeName: (ctx) => ColetaQRScanView(),
-          EntregaQRScanView.routeName: (ctx) => EntregaQRScanView(),
-          NovaColetaView.routeName: (ctx) => NovaColetaView(),
-          NovaEntregaView.routeName: (ctx) => NovaEntregaView(),
-          EntregaPacoteView.routeName: (ctx) => EntregaPacoteView(),
+          RemessasView.routeName: (ctx) => const RemessasView(),
+          RemessaPacotesView.routeName: (ctx) => const RemessaPacotesView(),
+          PacoteDetalheView.routeName: (ctx) => const PacoteDetalheView(),
+          RemessaQRScanView.routeName: (ctx) => const RemessaQRScanView(),
+          NovaRemessaView.routeName: (ctx) => const NovaRemessaView(),
+          EntregaPacoteView.routeName: (ctx) => const EntregaPacoteView(),
         },
       ),
     );

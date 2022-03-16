@@ -1,36 +1,33 @@
+import 'package:bilolog/providers/operacao_remessa_api.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../models/pacote.dart';
 
-class ColetaPacoteDetalheView extends StatelessWidget {
-  ColetaPacoteDetalheView({Key? key}) : super(key: key);
-  static const String routeName = "/coletaPacoteDetalheView";
-
-  late Pacote _pacote;
-  //late String _vendedorName;
+class PacoteDetalheView extends StatelessWidget {
+  const PacoteDetalheView({Key? key}) : super(key: key);
+  static const String routeName =
+      "/listaRemessas/pacotesDaRemessa/detalhesPacote";
 
   @override
   Widget build(BuildContext context) {
-    final args =
-        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-    _pacote = args['entrega'];
-    //_vendedorName = args['vendedorName'];
+    final operacaoRemessaProvider = Provider.of<OperacaoDeRemessaAPI>(context);
+    Pacote _pacote = operacaoRemessaProvider.pacoteDetalhe!;
     return Scaffold(
       appBar: AppBar(
-        title: Text("Trilhogística"),
+        title: const Text("Detalhes do Pacote"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              "Informações do Pacote",
-              style: Theme.of(context).textTheme.headline5,
-            ),
-            SizedBox(
+            // Text(
+            //   "Informações do Pacote",
+            //   style: Theme.of(context).textTheme.headline5,
+            // ),
+            const SizedBox(
               height: 35,
             ),
             Column(
@@ -48,11 +45,11 @@ class ColetaPacoteDetalheView extends StatelessWidget {
                               .bodyText2!
                               .copyWith(color: Colors.grey),
                         ),
-                        SizedBox(height: 5),
+                        const SizedBox(height: 5),
                         Row(
                           children: [
-                            Icon(Icons.add_box),
-                            SizedBox(width: 5),
+                            const Icon(Icons.add_box),
+                            const SizedBox(width: 5),
                             Text(_pacote.codPacote.toString()),
                           ],
                         ),
@@ -68,11 +65,11 @@ class ColetaPacoteDetalheView extends StatelessWidget {
                               .bodyText2!
                               .copyWith(color: Colors.grey),
                         ),
-                        SizedBox(height: 5),
+                        const SizedBox(height: 5),
                         Row(
                           children: [
-                            Icon(Icons.share),
-                            SizedBox(width: 5),
+                            const Icon(Icons.share),
+                            const SizedBox(width: 5),
                             Text(_pacote.ultimoStatus),
                           ],
                         ),
@@ -80,7 +77,7 @@ class ColetaPacoteDetalheView extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 25,
                 ),
                 Row(
@@ -96,14 +93,14 @@ class ColetaPacoteDetalheView extends StatelessWidget {
                               .bodyText2!
                               .copyWith(color: Colors.grey),
                         ),
-                        SizedBox(height: 5),
+                        const SizedBox(height: 5),
                         Text(
                           _pacote.vendedorName,
                           style: Theme.of(context).textTheme.bodyText1,
                         ),
                       ],
                     ),
-                    if (_pacote.id > 0)
+                    if (_pacote.id != "0")
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -111,7 +108,7 @@ class ColetaPacoteDetalheView extends StatelessWidget {
                             "Nº Coleta",
                             style: Theme.of(context).textTheme.bodyText1,
                           ),
-                          SizedBox(height: 5),
+                          const SizedBox(height: 5),
                           Text(_pacote.id.toString()),
                         ],
                       ),
@@ -119,38 +116,36 @@ class ColetaPacoteDetalheView extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 10),
-            Divider(),
+            const SizedBox(height: 10),
+            const Divider(),
             Row(
               children: [
-                Container(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Destinatário",
-                        style: Theme.of(context).textTheme.bodyText1,
-                      ),
-                      Text(
-                        "Endereço",
-                        style: Theme.of(context).textTheme.bodyText1,
-                      ),
-                      Text(
-                        "Bairro",
-                        style: Theme.of(context).textTheme.bodyText1,
-                      ),
-                      Text(
-                        "CEP",
-                        style: Theme.of(context).textTheme.bodyText1,
-                      ),
-                      Text(
-                        "Complemento",
-                        style: Theme.of(context).textTheme.bodyText1,
-                      ),
-                    ],
-                  ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Destinatário",
+                      style: Theme.of(context).textTheme.bodyText1,
+                    ),
+                    Text(
+                      "Endereço",
+                      style: Theme.of(context).textTheme.bodyText1,
+                    ),
+                    Text(
+                      "Bairro",
+                      style: Theme.of(context).textTheme.bodyText1,
+                    ),
+                    Text(
+                      "CEP",
+                      style: Theme.of(context).textTheme.bodyText1,
+                    ),
+                    Text(
+                      "Complemento",
+                      style: Theme.of(context).textTheme.bodyText1,
+                    ),
+                  ],
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 15,
                 ),
                 Flexible(
@@ -174,7 +169,7 @@ class ColetaPacoteDetalheView extends StatelessWidget {
                         style: Theme.of(context).textTheme.bodyText2,
                       ),
                       Text(
-                        _pacote.cliente.complemento,
+                        _pacote.cliente.complemento ?? "",
                         style: Theme.of(context).textTheme.bodyText2,
                       ),
                     ],
@@ -182,8 +177,8 @@ class ColetaPacoteDetalheView extends StatelessWidget {
                 )
               ],
             ),
-            Divider(),
-            SizedBox(height: 25),
+            const Divider(),
+            const SizedBox(height: 25),
             Text("Últimos status",
                 style: Theme.of(context).textTheme.headline6),
             Expanded(
@@ -198,24 +193,29 @@ class ColetaPacoteDetalheView extends StatelessWidget {
                           Text(DateFormat.yMd()
                               .add_Hm()
                               .format(_pacote.statusPacotes[ix].timestamp)),
-                          SizedBox(width: 15),
+                          const SizedBox(width: 15),
                           Text(
-                            _pacote.statusPacotes[ix].descricaoStatus,
+                            _pacote.statusPacotes[ix].descricaoStatus[0]
+                                    .toUpperCase() +
+                                _pacote.statusPacotes[ix].descricaoStatus
+                                    .substring(1)
+                                    .toLowerCase(),
                             style: Theme.of(context).textTheme.bodyText1,
                           )
                         ],
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       Row(
                         children: [
-                          Text("Funcionário Responsável:"),
-                          SizedBox(width: 15),
+                          const Text("Funcionário Responsável:"),
+                          const SizedBox(width: 15),
                           Text(
                             _pacote.statusPacotes[ix].funcionarioResponsavel,
                           )
                         ],
                       ),
-                      if (ix != _pacote.statusPacotes.length - 1) Divider()
+                      if (ix != _pacote.statusPacotes.length - 1)
+                        const Divider()
                     ]),
                   ),
                   itemCount: _pacote.statusPacotes.length,

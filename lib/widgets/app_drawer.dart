@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../providers/authProvider.dart';
+import '../providers/auth_provider.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({Key? key}) : super(key: key);
@@ -13,24 +13,25 @@ class AppDrawer extends StatelessWidget {
           child: Column(
         children: [
           ListTile(
-            leading: Icon(Icons.hail),
-            title: Text("Opção 1"),
+            leading: const Icon(Icons.hail),
+            title: const Text("Opção 1"),
             onTap: () {},
           ),
           ListTile(
-            leading: Icon(Icons.hail),
-            title: Text("Opção 2"),
+            leading: const Icon(Icons.hail),
+            title: const Text("Opção 2"),
             onTap: () {},
           ),
-          Divider(),
+          const Divider(),
           ListTile(
-            leading: Icon(Icons.logout),
-            title: Text("Logout"),
+            leading: const Icon(Icons.logout),
+            title: const Text("Logout"),
             onTap: () {
               final authProvider =
                   Provider.of<AuthenticationProvider>(context, listen: false);
-              authProvider.LogOut();
-              Navigator.of(context).pop();
+              authProvider.logOut();
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                  '/', (Route<dynamic> route) => false);
             },
           )
         ],
