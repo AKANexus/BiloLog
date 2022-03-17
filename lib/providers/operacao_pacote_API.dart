@@ -3,10 +3,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bilolog/models/pacote.dart';
-import 'package:bilolog/providers/operacao_remessa_api.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
 
 import '../env/api_url.dart';
 import '../models/remessa.dart';
@@ -52,6 +50,7 @@ class OperacaoDePacoteAPI with ChangeNotifier {
           );
 
       if (response.statusCode >= 200 && response.statusCode <= 299) {
+        // ignore: unused_local_variable
         final content = json.decode(response.body);
         return true;
       } else {

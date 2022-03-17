@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:bilolog/providers/auth_provider.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -30,7 +31,9 @@ class _AuthenticationViewState extends State<AuthenticationView> {
     if (_isInit) {
       final authProvider =
           Provider.of<AuthenticationProvider>(context, listen: false);
+      if (kDebugMode) _password = "trilha123";
       authProvider.checkForLogIn();
+
       _isInit = false;
     }
     super.didChangeDependencies();
@@ -62,22 +65,35 @@ class _AuthenticationViewState extends State<AuthenticationView> {
   }
 
   Future<void> _submit() async {
-    //print("Attempting to login");
-    if (_formKey.currentState?.validate() == false) {
-      return;
-    } else {
-      _formKey.currentState?.save();
-      if (_username == null || _password == null) return;
+    if (kDebugMode) {
       setState(() {
         _isBusy = true;
       });
+      _formKey.currentState?.save();
       final authProvider =
           Provider.of<AuthenticationProvider>(context, listen: false);
       final normalizedUsername = _username!.toLowerCase().trim();
-      await authProvider.logIn(normalizedUsername, _password!, _onError);
+      await authProvider.logIn(normalizedUsername, "trilha123", _onError);
       setState(() {
         _isBusy = false;
       });
+    } else {
+      if (_formKey.currentState?.validate() == false) {
+        return;
+      } else {
+        _formKey.currentState?.save();
+        if (_username == null || _password == null) return;
+        setState(() {
+          _isBusy = true;
+        });
+        final authProvider =
+            Provider.of<AuthenticationProvider>(context, listen: false);
+        final normalizedUsername = _username!.toLowerCase().trim();
+        await authProvider.logIn(normalizedUsername, _password!, _onError);
+        setState(() {
+          _isBusy = false;
+        });
+      }
     }
   }
 

@@ -156,6 +156,7 @@ class RemessasAPI with ChangeNotifier {
             const Duration(seconds: 10),
           );
       if (response.statusCode == 200 || response.statusCode == 201) {
+        // ignore: unused_local_variable
         final content = json.decode(response.body);
 
         notifyListeners();

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ffi';
 
 import 'package:bilolog/models/cargo.dart';
 import 'package:bilolog/providers/auth_provider.dart';
@@ -50,7 +49,6 @@ class _RemessaQRScanViewState extends State<RemessaQRScanView> {
   @override
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
-    print(deviceSize.width);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Escanear QR Code"),
@@ -101,7 +99,7 @@ class _RemessaQRScanViewState extends State<RemessaQRScanView> {
                     context: context,
                     isScrollControlled: true,
                     builder: (_) {
-                      return ManualQRDataEntry();
+                      return const ManualQRDataEntry();
                     },
                   );
                   if (collectedInfo != null &&

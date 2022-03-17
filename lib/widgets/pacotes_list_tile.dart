@@ -197,8 +197,8 @@ class PacotesListTile extends StatelessWidget {
                                   : null,
                               child: _pacote.ultimoStatus.toLowerCase() ==
                                       "em rota"
-                                  ? Text("Entregar")
-                                  : Text("Entregue"),
+                                  ? const Text("Entregar")
+                                  : const Text("Entregue"),
                             ),
                           )
                         ],
@@ -503,8 +503,8 @@ class PacotesListTile extends StatelessWidget {
                                   : null,
                               child: _pacote.ultimoStatus.toLowerCase() ==
                                       "em rota"
-                                  ? Text("Entregar")
-                                  : Text("Entregue"),
+                                  ? const Text("Entregar")
+                                  : const Text("Entregue"),
                             ),
                           )
                         ],

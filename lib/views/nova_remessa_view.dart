@@ -19,6 +19,8 @@ class NovaRemessaView extends StatefulWidget {
 
 class _NovaRemessaViewState extends State<NovaRemessaView> {
   bool _isBusy = false;
+  bool _showDialog = true;
+
   late String vendedorSelecionado;
 
   void _onError(String errorMessage) {
@@ -37,7 +39,7 @@ class _NovaRemessaViewState extends State<NovaRemessaView> {
         barrierDismissible: false,
         context: context,
         builder: (ctx) => AlertDialog(
-          content: Container(
+          content: SizedBox(
             height: 150,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -101,50 +103,104 @@ class _NovaRemessaViewState extends State<NovaRemessaView> {
 
   @override
   Widget build(BuildContext context) {
-    final operacaoRemessa = Provider.of<OperacaoDeRemessaAPI>(context);
+    final operacaoRemessa =
+        Provider.of<OperacaoDeRemessaAPI>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(children: [
+      body: Stack(
+        children: [
           Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Column(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(children: [
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(operacaoRemessa.vendedoresVerificados[0],
-                        style: Theme.of(context).textTheme.headline5),
-                    Text(
-                      "${operacaoRemessa.pacotes.length} pacote(s) coletados",
-                      style: Theme.of(context).textTheme.headline6!.copyWith(
-                            color: Colors.grey,
-                          ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(operacaoRemessa.vendedoresVerificados[0],
+                            style: Theme.of(context).textTheme.headline5),
+                        Text(
+                          "${operacaoRemessa.pacotes.length} pacote(s) coletados",
+                          style:
+                              Theme.of(context).textTheme.headline6!.copyWith(
+                                    color: Colors.grey,
+                                  ),
+                        ),
+                      ],
                     ),
+                    //Mais de um sender
+                    SizedBox(
+                      height: 20,
+                    ),
+                    //Text("Aguardando confirmação do cliente"),
+                    Text("Lista de pacotes"),
                   ],
                 ),
-                //Mais de um sender
-                SizedBox(
-                  height: 20,
-                ),
-                //Text("Aguardando confirmação do cliente"),
-                Text("Lista de pacotes"),
-              ],
-            ),
+              ),
+              Expanded(child: RemessaPacotesList()),
+              _isBusy
+                  ? Center(child: CircularProgressIndicator())
+                  : ElevatedButton(
+                      onPressed: () {
+                        _conferirEEnviar();
+                      },
+                      child: Text("Conferir e enviar"))
+            ]),
           ),
-          Expanded(child: RemessaPacotesList()),
-          _isBusy
-              ? Center(child: CircularProgressIndicator())
-              : ElevatedButton(
-                  onPressed: () {
-                    _conferirEEnviar();
-                  },
-                  child: Text("Conferir e enviar"))
-        ]),
+          if (_showDialog &&
+              operacaoRemessa.pacotes.any((element) => element.hasError))
+            Container(
+              color: Colors.black45,
+            ),
+          if (_showDialog &&
+              operacaoRemessa.pacotes.any((element) => element.hasError))
+            Container(
+              margin: EdgeInsets.all(20),
+              child: Center(
+                child: Card(
+                    child: Container(
+                  margin: EdgeInsets.all(15),
+                  height: 250,
+                  child: Column(
+                    children: [
+                      Text(
+                        "Os pacotes a seguir estão inválidos e não poderão ser adicionados à remessa",
+                        style: Theme.of(context).textTheme.headline6!.copyWith(
+                            color: Theme.of(context).colorScheme.error),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Expanded(
+                        child: ListView.builder(
+                          itemBuilder: (ctx, ix) => ListTile(
+                            //title: Text(operacaoRemessa.pacotes[ix].id),
+                            subtitle: Text(
+                                operacaoRemessa.pacotes[ix].errorMessage ??
+                                    "Erro genérico"),
+                            leading: Icon(Icons.error),
+                          ),
+                          itemCount: operacaoRemessa.pacotes.length,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () => setState(() {
+                          _showDialog = false;
+                        }),
+                        child: Text("ENTENDI"),
+                      ),
+                    ],
+                  ),
+                )),
+              ),
+            )
+        ],
       ),
     );
   }

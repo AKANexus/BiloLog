@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ManualQRDataEntry extends StatefulWidget {
-  ManualQRDataEntry({Key? key}) : super(key: key);
+  const ManualQRDataEntry({Key? key}) : super(key: key);
 
   @override
   State<ManualQRDataEntry> createState() => _ManualQRDataEntryState();

@@ -9,7 +9,6 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../models/cargo.dart';
-import '../models/remessa.dart';
 import '../widgets/remessas_list.dart';
 
 class RemessasView extends StatefulWidget {
@@ -54,8 +53,8 @@ class _RemessasViewState extends State<RemessasView> {
 
   @override
   Widget build(BuildContext context) {
-    final deviceSize = MediaQuery.of(context).size;
-    print("Rebuilt");
+    // final deviceSize = MediaQuery.of(context).size;
+    // print("Rebuilt");
     return Scaffold(
       drawer: AppDrawer(),
       appBar: AppBar(

@@ -84,7 +84,6 @@ class OperacaoDeRemessaAPI with ChangeNotifier {
 
   void atualizaStatusPacote(Pacote pacote) {
     _remessa!.pacotes.indexOf(pacote);
-    print("sldkjf");
   }
 
   Future<bool> conferirRemessa({required Function onError}) async {
@@ -142,7 +141,9 @@ class OperacaoDeRemessaAPI with ChangeNotifier {
                     complemento: ""),
                 statusPacotes: [],
                 vendedorName: "",
-                errorMessage: pacote['error'],
+                errorMessage: (pacote['error'] is String)
+                    ? "${pacote['error']}"
+                    : "${pacote['error']['message']}, status atual: ${pacote['error']['statusPacote']}",
               ),
             );
           } else {

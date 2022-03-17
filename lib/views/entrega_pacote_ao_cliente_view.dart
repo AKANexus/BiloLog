@@ -1,4 +1,3 @@
-import 'package:bilolog/models/cliente.dart';
 import 'package:bilolog/models/pacote.dart';
 import 'package:bilolog/models/status_pacote.dart';
 import 'package:bilolog/providers/operacao_pacote_api.dart';
@@ -8,6 +7,7 @@ import 'package:bilolog/views/pacotes_da_remessa_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+// ignore: constant_identifier_names
 enum TipoDoc { RG, CNH, CPF, CNPJ }
 
 class EntregaPacoteView extends StatefulWidget {
@@ -33,6 +33,9 @@ class _EntregaPacoteViewState extends State<EntregaPacoteView> {
 
   void _confirmarEntrega() async {
     //_pacote = pacote;
+    setState(() {
+      _isBusy = true;
+    });
     final operacaoPacoteProvider =
         Provider.of<OperacaoDePacoteAPI>(context, listen: false);
     if (await operacaoPacoteProvider.entregaPacoteAoCliente(
@@ -62,6 +65,9 @@ class _EntregaPacoteViewState extends State<EntregaPacoteView> {
         ModalRoute.withName('/'),
       );
     }
+    setState(() {
+      _isBusy = false;
+    });
   }
 
   bool _validaRGCPFCNPJCNH() {
@@ -210,7 +216,7 @@ class _EntregaPacoteViewState extends State<EntregaPacoteView> {
                   height: 20,
                 ),
                 Container(
-                  padding: EdgeInsets.only(left: 5),
+                  padding: const EdgeInsets.only(left: 5),
                   alignment: Alignment.centerLeft,
                   child: DropdownButton(
                       value: selectedItem,
@@ -238,7 +244,7 @@ class _EntregaPacoteViewState extends State<EntregaPacoteView> {
                   height: 75,
                 ),
                 _isBusy
-                    ? Center(child: CircularProgressIndicator())
+                    ? const Center(child: CircularProgressIndicator())
                     : TextButton(
                         style: ButtonStyle(
                           foregroundColor: MaterialStateProperty.all(
