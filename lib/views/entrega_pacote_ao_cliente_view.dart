@@ -105,6 +105,9 @@ class _EntregaPacoteViewState extends State<EntregaPacoteView> {
       }
     } else if (tipoDoc == TipoDoc.CPF) {
       var cpfSemDV = entrada.substring(0, entrada.length - 2);
+      if ({...cpfSemDV.characters}.length == 1) {
+        return false;
+      }
       var digitos = [];
       int tabela = 1;
       for (var item in cpfSemDV.characters) {
@@ -127,13 +130,15 @@ class _EntregaPacoteViewState extends State<EntregaPacoteView> {
         modulo1 == 0;
       }
       cpfSemDV = "$cpfSemDV$modulo1";
-
       return (cpfSemDV == entrada);
     } else if (tipoDoc == TipoDoc.CNPJ) {
-      var cpfSemDV = entrada.substring(0, entrada.length - 2);
+      var cnpjSemDV = entrada.substring(0, entrada.length - 2);
+      if ({...cnpjSemDV.characters}.length == 1) {
+        return false;
+      }
       var digitos = [];
       int tabela = 6;
-      for (var item in cpfSemDV.characters) {
+      for (var item in cnpjSemDV.characters) {
         digitos.add(int.parse(item) * tabela++);
         if (tabela == 10) {
           tabela = 2;
@@ -143,12 +148,12 @@ class _EntregaPacoteViewState extends State<EntregaPacoteView> {
       if (modulo1 == 10) {
         modulo1 == 0;
       }
-      cpfSemDV = "$cpfSemDV$modulo1";
+      cnpjSemDV = "$cnpjSemDV$modulo1";
 
       tabela = 5;
       digitos.clear();
 
-      for (var item in cpfSemDV.characters) {
+      for (var item in cnpjSemDV.characters) {
         digitos.add(int.parse(item) * tabela++);
         if (tabela == 10) {
           tabela = 2;
@@ -158,9 +163,9 @@ class _EntregaPacoteViewState extends State<EntregaPacoteView> {
       if (modulo1 == 10) {
         modulo1 == 0;
       }
-      cpfSemDV = "$cpfSemDV$modulo1";
+      cnpjSemDV = "$cnpjSemDV$modulo1";
 
-      return (cpfSemDV == entrada);
+      return (cnpjSemDV == entrada);
     } else if (tipoDoc == TipoDoc.CNH) {
       return false;
     } else {
@@ -207,10 +212,22 @@ class _EntregaPacoteViewState extends State<EntregaPacoteView> {
                 const SizedBox(
                   height: 50,
                 ),
-                TextField(
-                  decoration:
-                      const InputDecoration(labelText: "Nome do Recipiente"),
-                  controller: _recipientNameController,
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        decoration: const InputDecoration(
+                            labelText: "Nome do Recipiente"),
+                        controller: _recipientNameController,
+                      ),
+                    ),
+                    TextButton(
+                      child: Text("Copiar"),
+                      onPressed: () {
+                        _recipientNameController.text = _pacote.cliente.nome;
+                      },
+                    )
+                  ],
                 ),
                 const SizedBox(
                   height: 20,
