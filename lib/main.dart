@@ -8,7 +8,7 @@ import 'package:bilolog/providers/auth_provider.dart';
 import 'package:bilolog/providers/operacao_pacote_api.dart';
 import 'package:bilolog/providers/operacao_remessa_api.dart';
 import 'package:bilolog/providers/remessas_api.dart';
-import 'package:bilolog/views/authView.dart';
+import 'package:bilolog/views/auth_view.dart';
 import 'package:bilolog/views/lista_de_remessas.dart';
 import 'package:bilolog/views/nova_remessa_view.dart';
 import 'package:bilolog/views/pacote_detalhe_view.dart';

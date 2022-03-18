@@ -15,12 +15,70 @@ class OperacaoDePacoteAPI with ChangeNotifier {
 
   late Pacote pacote;
 
+  Future<bool> problemaAoEntregarPacote(
+      {required Remessa remessa,
+      required Pacote pacote,
+      required String observacao,
+      required double latitude,
+      required double longitude,
+      required Function onError}) async {
+    final url = Uri(
+      scheme: 'https',
+      host: ApiURL.apiAuthority,
+      path: 'entrega/problemas',
+    );
+    final jsonPacote = {
+      'pacote': pacote.id.toString(),
+      'operacao': remessa.uuid,
+      'ml_user_id': pacote.mlUserID,
+      'observacoes': observacao,
+      'latitude': latitude,
+      'longitude': longitude
+    };
+    final jsonBody = {
+      'pacotes': [jsonPacote]
+    };
+    try {
+      final response = await http
+          .post(url,
+              headers: {
+                'apiKey': authProvider!.apiKey,
+                'content-type': 'application/json'
+              },
+              body: json.encode(jsonBody))
+          .timeout(
+            const Duration(seconds: 10),
+          );
+
+      if (response.statusCode >= 200 && response.statusCode <= 299) {
+        // ignore: unused_local_variable
+        final content = json.decode(response.body);
+        return true;
+      } else {
+        final content = json.decode(response.body);
+        onError(content['error']);
+        return false;
+      }
+    } on SocketException catch (_) {
+      onError("Falha de conexão.\nVerifique sua conexão à internet.");
+      return false;
+    } on TimeoutException catch (_) {
+      onError("Falha na conexão. Tente novamente mais tarde.");
+      return false;
+    } on Exception catch (e) {
+      onError(e.toString());
+      return false;
+    }
+  }
+
   Future<bool> entregaPacoteAoCliente({
     required Remessa remessa,
     required Pacote pacote,
     required String nomeRecebedor,
     required String documentoRecebedor,
     required Function onError,
+    double latitude = 43.645074,
+    double longitude = -115.993081,
   }) async {
     final url = Uri(
       scheme: 'https',
@@ -33,6 +91,8 @@ class OperacaoDePacoteAPI with ChangeNotifier {
       'ml_user_id': pacote.mlUserID,
       'receiver_name': nomeRecebedor,
       'receiver_doc': documentoRecebedor,
+      'latitude': latitude,
+      'longitude': longitude
     };
     final jsonBody = {
       'pacotes': [jsonPacote],
@@ -50,7 +110,6 @@ class OperacaoDePacoteAPI with ChangeNotifier {
           );
 
       if (response.statusCode >= 200 && response.statusCode <= 299) {
-        // ignore: unused_local_variable
         final content = json.decode(response.body);
         return true;
       } else {

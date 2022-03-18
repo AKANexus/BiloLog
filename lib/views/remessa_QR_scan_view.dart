@@ -6,7 +6,6 @@ import 'package:bilolog/providers/auth_provider.dart';
 import 'package:bilolog/providers/operacao_remessa_api.dart';
 import 'package:bilolog/widgets/manual_qr_entry.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_beep/flutter_beep.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:provider/provider.dart';
 import 'package:vibration/vibration.dart';

@@ -9,7 +9,6 @@ import 'package:bilolog/models/remessa_type.dart';
 import 'package:bilolog/models/status_remessa.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:location/location.dart';
 
 import '../models/cargo.dart';
 import '../models/pacote.dart';

@@ -1,9 +1,13 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:bilolog/models/pacote.dart';
 import 'package:bilolog/models/status_pacote.dart';
+import 'package:bilolog/providers/locationProvider.dart';
 import 'package:bilolog/providers/operacao_pacote_api.dart';
 import 'package:bilolog/providers/operacao_remessa_api.dart';
 import 'package:bilolog/providers/remessas_api.dart';
 import 'package:bilolog/views/pacotes_da_remessa_view.dart';
+import 'package:bilolog/widgets/observacao_pacote_entry.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -24,12 +28,51 @@ class _EntregaPacoteViewState extends State<EntregaPacoteView> {
   String selectedItem = "RG";
   bool _isBusy = false;
   late Pacote _pacote;
+  final location = LocationProvider();
 
   // @override
   // void didChangeDependencies() {
   //   if (_isInit) {}
   //   super.didChangeDependencies();
   // }
+
+  void _naoEntrega(String observacao) async {
+    setState(() {
+      _isBusy = true;
+    });
+    final operacaoPacoteProvider =
+        Provider.of<OperacaoDePacoteAPI>(context, listen: false);
+    if (await operacaoPacoteProvider.problemaAoEntregarPacote(
+            remessa: Provider.of<OperacaoDeRemessaAPI>(context, listen: false)
+                .remessa!,
+            pacote: _pacote,
+            observacao: observacao,
+            latitude: (await location.getCurrentLocation()).latitude ?? 0,
+            longitude: (await location.getCurrentLocation()).longitude ?? 0,
+            onError: (value) => {}) ==
+        true) {
+      final remessaAPI = Provider.of<RemessasAPI>(context, listen: false);
+      final operacaoRemessa =
+          Provider.of<OperacaoDeRemessaAPI>(context, listen: false);
+
+      await remessaAPI.getRemessas(onError: () {});
+      operacaoRemessa.remessa = remessaAPI.remessas.firstWhere(
+          (element) => element.uuid == operacaoRemessa.remessa!.uuid);
+
+      _pacote.statusPacotes.add(StatusPacote(
+          timestamp: DateTime.now(),
+          funcionarioResponsavel: "",
+          colaboradorId: "",
+          descricaoStatus: "entregue"));
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        RemessaPacotesView.routeName,
+        ModalRoute.withName('/'),
+      );
+    }
+    setState(() {
+      _isBusy = false;
+    });
+  }
 
   void _confirmarEntrega() async {
     //_pacote = pacote;
@@ -285,7 +328,19 @@ class _EntregaPacoteViewState extends State<EntregaPacoteView> {
                           ),
                           TextButton(
                             child: Text("Não consegui entregar"),
-                            onPressed: () {},
+                            onPressed: () async {
+                              final collectedInfo = await showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                builder: (_) {
+                                  return const ObservacaoPacoteEntry();
+                                },
+                              );
+                              if (collectedInfo != null &&
+                                  collectedInfo != '') {
+                                _naoEntrega(collectedInfo);
+                              }
+                            },
                           ),
                         ],
                       ),

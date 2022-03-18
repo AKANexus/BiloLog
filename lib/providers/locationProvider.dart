@@ -1,7 +1,7 @@
 import 'package:location/location.dart';
 
 class LocationProvider {
-  DeviceLocation() {
+  LocationProvider() {
     location.hasPermission().then((value) => {_permissionStatus = value});
     location.serviceEnabled().then((value) => {_serviceEnabled = value});
   }
