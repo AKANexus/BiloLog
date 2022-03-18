@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:bilolog/models/cargo.dart';
 import 'package:bilolog/providers/auth_provider.dart';
 import 'package:bilolog/providers/operacao_remessa_api.dart';
@@ -29,6 +30,8 @@ class _RemessaQRScanViewState extends State<RemessaQRScanView> {
   Map<String, dynamic>? _data;
   final _controller =
       MobileScannerController(torchEnabled: false, facing: CameraFacing.back);
+  // final _audioPlayer = AudioPlayer();
+  final _player = AudioCache(prefix: 'lib/assets/audio/');
 
   @override
   void didChangeDependencies() {
@@ -209,7 +212,8 @@ class _RemessaQRScanViewState extends State<RemessaQRScanView> {
     if (_barcode != barcode) {
       _barcode = barcode;
       Vibration.vibrate();
-      FlutterBeep.playSysSound(AndroidSoundIDs.TONE_CDMA_ABBR_ALERT);
+      //FlutterBeep.playSysSound(AndroidSoundIDs.TONE_CDMA_ABBR_ALERT);
+      _player.play("beep.wav");
       final novaColetaProvider =
           Provider.of<OperacaoDeRemessaAPI>(context, listen: false);
       final qrParsed = json.decode(barcode);
@@ -221,8 +225,6 @@ class _RemessaQRScanViewState extends State<RemessaQRScanView> {
   void _processManualData(Map<String, dynamic> data) {
     if (_data != data) {
       _data = data;
-      Vibration.vibrate();
-      FlutterBeep.playSysSound(AndroidSoundIDs.TONE_CDMA_ABBR_ALERT);
       final novaColetaProvider =
           Provider.of<OperacaoDeRemessaAPI>(context, listen: false);
       novaColetaProvider.addNovoPacote(data['id'], int.parse(data['sender_id']),
