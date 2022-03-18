@@ -5,15 +5,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "bilolog",
-            "request": "launch",
-            "type": "dart"
-        },
-        {
-            "name": "bilolog (profile mode)",
+            "name": "bilolog (debug mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "profile"
+            "flutterMode": "debug"
         },
         {
             "name": "bilolog (release mode)",
