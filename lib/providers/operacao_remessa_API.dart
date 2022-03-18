@@ -3,10 +3,13 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bilolog/models/cliente.dart';
+import 'package:bilolog/models/locationCoords.dart';
+import 'package:bilolog/providers/locationProvider.dart';
 import 'package:bilolog/models/remessa_type.dart';
 import 'package:bilolog/models/status_remessa.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:location/location.dart';
 
 import '../models/cargo.dart';
 import '../models/pacote.dart';
@@ -23,7 +26,7 @@ class OperacaoDeRemessaAPI with ChangeNotifier {
       [..._pacotesEscaneados ?? []];
 
   //Remessa? _remessaVerificada;
-
+  final location = LocationProvider();
   Remessa? _remessa;
   Remessa? get remessa => _remessa;
   List<Pacote> get pacotes => _remessa!.pacotes;
@@ -141,6 +144,7 @@ class OperacaoDeRemessaAPI with ChangeNotifier {
                     complemento: ""),
                 statusPacotes: [],
                 vendedorName: "",
+                location: LocationCoords(0, 0),
                 errorMessage: (pacote['error'] is String)
                     ? "${pacote['error']}"
                     : "${pacote['error']['message']}, status atual: ${pacote['error']['statusPacote']}",
@@ -158,6 +162,7 @@ class OperacaoDeRemessaAPI with ChangeNotifier {
                     cep: pacote['CEP'],
                     complemento: pacote['complemento']),
                 statusPacotes: [],
+                location: LocationCoords(0, 0),
                 vendedorName: "ABELARDO"));
           }
         }

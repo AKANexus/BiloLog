@@ -41,6 +41,7 @@ dependencies:
   mobile_scanner: ^1.0.0
   vibration: ^1.7.4-nullsafety.0
   flutter_beep: ^1.0.0
+  location: ^4.3.0
 
 dev_dependencies:
   flutter_test:

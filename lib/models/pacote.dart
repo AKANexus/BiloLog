@@ -1,3 +1,4 @@
+import 'package:bilolog/models/locationCoords.dart';
 import 'package:bilolog/models/status_pacote.dart';
 
 import 'cliente.dart';
@@ -8,7 +9,8 @@ class Pacote {
   final Comprador cliente;
   final List<StatusPacote> statusPacotes;
   final String vendedorName;
-  String? mlUserID;
+  final LocationCoords location;
+  final String? mlUserID;
   String? errorMessage;
 
   Pacote(
@@ -17,6 +19,7 @@ class Pacote {
       required this.cliente,
       required this.statusPacotes,
       required this.vendedorName,
+      required this.location,
       this.mlUserID,
       this.errorMessage});
 
