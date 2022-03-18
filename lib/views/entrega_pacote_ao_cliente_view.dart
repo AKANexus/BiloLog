@@ -262,23 +262,32 @@ class _EntregaPacoteViewState extends State<EntregaPacoteView> {
                 ),
                 _isBusy
                     ? const Center(child: CircularProgressIndicator())
-                    : TextButton(
-                        style: ButtonStyle(
-                          foregroundColor: MaterialStateProperty.all(
-                              Theme.of(context).colorScheme.onPrimary),
-                          backgroundColor: MaterialStateProperty.all(
-                              Theme.of(context).colorScheme.primary),
-                        ),
-                        onPressed: () {
-                          if (!_validaRGCPFCNPJCNH()) {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                content: Text(
-                                    "O $selectedItem não é válido. Tente novamente.")));
-                          } else {
-                            _confirmarEntrega();
-                          }
-                        },
-                        child: const Text("Confirmar entrega"),
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          TextButton(
+                            style: ButtonStyle(
+                              foregroundColor: MaterialStateProperty.all(
+                                  Theme.of(context).colorScheme.onPrimary),
+                              backgroundColor: MaterialStateProperty.all(
+                                  Theme.of(context).colorScheme.primary),
+                            ),
+                            onPressed: () {
+                              if (!_validaRGCPFCNPJCNH()) {
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                    content: Text(
+                                        "O $selectedItem não é válido. Tente novamente.")));
+                              } else {
+                                _confirmarEntrega();
+                              }
+                            },
+                            child: const Text("Confirmar entrega"),
+                          ),
+                          TextButton(
+                            child: Text("Não consegui entregar"),
+                            onPressed: () {},
+                          ),
+                        ],
                       ),
               ],
             ),

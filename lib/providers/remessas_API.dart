@@ -5,12 +5,14 @@ import 'dart:io';
 
 import 'package:bilolog/models/cargo.dart';
 import 'package:bilolog/models/cliente.dart';
+import 'package:bilolog/models/locationCoords.dart';
 import 'package:bilolog/models/pacote.dart';
 import 'package:bilolog/models/status_pacote.dart';
 import 'package:bilolog/models/status_remessa.dart';
 import 'package:bilolog/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'dart:developer';
 
 import '../models/remessa.dart';
 import '../models/remessa_type.dart';
@@ -45,6 +47,8 @@ class RemessasAPI with ChangeNotifier {
     DateTime? endDate,
     RemessaKind? remessaKind,
   }) async {
+    debugger();
+
     _remessas.clear();
 
     startDate ??= DateTime.now();
@@ -89,6 +93,7 @@ class RemessasAPI with ChangeNotifier {
                     cep: pacote['CEP'],
                     complemento: pacote['complemento']),
                 statusPacotes: [],
+                location: LocationCoords(0, 0),
                 vendedorName: coleta['vendedor'][0]['contact_name']);
             for (Map<String, dynamic> status in pacote['status']) {
               novoPacote.statusPacotes.add(StatusPacote(
