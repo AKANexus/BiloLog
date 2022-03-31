@@ -1,3 +1,4 @@
+import 'package:bilolog/models/remessa_type.dart';
 import 'package:bilolog/providers/operacao_remessa_api.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -42,7 +43,9 @@ class RemessaListTile extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(2),
                       child: Text(
-                        _remessa.nomeVendedor ?? "Múltiplos",
+                        (_remessa.remessaKind == RemessaKind.coleta)
+                            ? _remessa.nomeVendedor ?? "null"
+                            : _remessa.nomeColaborador,
                         style: Theme.of(context)
                             .textTheme
                             .bodyText1!

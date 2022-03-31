@@ -3,8 +3,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bilolog/models/cliente.dart';
-import 'package:bilolog/models/locationCoords.dart';
-import 'package:bilolog/providers/locationProvider.dart';
+import 'package:bilolog/models/location_coords.dart';
+import 'package:bilolog/models/status_pacote.dart';
+import 'package:bilolog/providers/location_provider.dart';
 import 'package:bilolog/models/remessa_type.dart';
 import 'package:bilolog/models/status_remessa.dart';
 import 'package:flutter/foundation.dart';
@@ -29,6 +30,8 @@ class OperacaoDeRemessaAPI with ChangeNotifier {
   Remessa? _remessa;
   Remessa? get remessa => _remessa;
   List<Pacote> get pacotes => _remessa!.pacotes;
+  List<Pacote> get pacotesComErro =>
+      _remessa!.pacotes.where((element) => element.hasError).toList();
   //List<Pacote> get pacotesVerificados => _remessaVerificada!.pacotes;
 
   Pacote? _pacoteDetalhe;
@@ -84,8 +87,10 @@ class OperacaoDeRemessaAPI with ChangeNotifier {
     }
   }
 
-  void atualizaStatusPacote(Pacote pacote) {
-    _remessa!.pacotes.indexOf(pacote);
+  void atualizaStatusPacote(Pacote pacote, StatusPacote status) {
+    final pacoteIx = _remessa!.pacotes.indexOf(pacote);
+    _remessa!.pacotes[pacoteIx].statusPacotes.insert(0, status);
+    notifyListeners();
   }
 
   Future<bool> conferirRemessa({required Function onError}) async {
@@ -102,12 +107,15 @@ class OperacaoDeRemessaAPI with ChangeNotifier {
       scheme: 'https',
       host: ApiURL.apiAuthority,
       path: apiCheckPath,
+      // port: 5200,
     );
     final jsonBody = {
       'transportadora_uuid': authProvider!.uuid,
       'pacotes': _pacotesEscaneados!
           .map((e) => {'id': e.id, 'sender_id': e.senderId, 'size': e.tamanho})
           .toList(),
+      'latitude': (await location.getCurrentLocation()).latitude,
+      'longitude': (await location.getCurrentLocation()).longitude,
     };
     try {
       final response = await http
@@ -127,6 +135,7 @@ class OperacaoDeRemessaAPI with ChangeNotifier {
             dtRemessa: DateTime.now(),
             estadoRemessa: StatusRemessa.emAnalise,
             pacotes: [],
+            nomeColaborador: "",
             remessaKind: RemessaKind.coleta);
         for (Map<String, dynamic> pacote in remessaRetornada['pacotes']) {
           if (pacote['error'] != null) {
@@ -144,9 +153,9 @@ class OperacaoDeRemessaAPI with ChangeNotifier {
                 statusPacotes: [],
                 vendedorName: "",
                 location: LocationCoords(0, 0),
-                errorMessage: (pacote['error'] is String)
-                    ? "${pacote['error']}"
-                    : "${pacote['error']['message']}, status atual: ${pacote['error']['statusPacote']}",
+                errorMessage: (pacote['message'] is String)
+                    ? "${pacote['message']}"
+                    : "${pacote['error']}, status atual: ${pacote['statusPacote']}",
               ),
             );
           } else {
@@ -169,7 +178,7 @@ class OperacaoDeRemessaAPI with ChangeNotifier {
       } else {
         final Map<String, dynamic> remessaRetornada =
             json.decode(response.body);
-        onError(remessaRetornada['error']['code'] ?? "Erro ao conferirRemessa");
+        onError(remessaRetornada['code'] ?? "Erro ao conferirRemessa");
         return false;
       }
     } on SocketException catch (_) {

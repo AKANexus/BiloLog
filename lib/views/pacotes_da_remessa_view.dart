@@ -16,8 +16,7 @@ class _RemessaPacotesViewState extends State<RemessaPacotesView> {
   @override
   Widget build(BuildContext context) {
     //final remessaAPI = Provider.of<RemessasAPI>(context);
-    final operacaoRemessaProvider =
-        Provider.of<OperacaoDeRemessaAPI>(context, listen: false);
+    final operacaoRemessaProvider = Provider.of<OperacaoDeRemessaAPI>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Pacotes na Remessa"),
@@ -57,8 +56,8 @@ class _RemessaPacotesViewState extends State<RemessaPacotesView> {
               ],
             ),
           ),
-          const Expanded(
-            child: RemessaPacotesList(),
+          Expanded(
+            child: RemessaPacotesList(operacaoRemessaProvider.pacotes),
           ),
         ]),
       ),

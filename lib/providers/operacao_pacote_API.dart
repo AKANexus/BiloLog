@@ -1,10 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+import 'dart:developer';
+import 'dart:io' as io;
+import 'dart:typed_data';
 
 import 'package:bilolog/models/pacote.dart';
+import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../env/api_url.dart';
 import '../models/remessa.dart';
@@ -18,65 +24,119 @@ class OperacaoDePacoteAPI with ChangeNotifier {
   Future<bool> problemaAoEntregarPacote(
       {required Remessa remessa,
       required Pacote pacote,
-      required String observacao,
       required double latitude,
       required double longitude,
+      required Map<String, dynamic> dados,
       required Function onError}) async {
     final url = Uri(
       scheme: 'https',
       host: ApiURL.apiAuthority,
       path: 'entrega/problemas',
+      // port: 5200,
     );
-    final jsonPacote = {
+    final mpPacote = {
       'pacote': pacote.id.toString(),
       'operacao': remessa.uuid,
       'ml_user_id': pacote.mlUserID,
-      'observacoes': observacao,
       'latitude': latitude,
-      'longitude': longitude
+      'longitude': longitude,
     };
-    final jsonBody = {
-      'pacotes': [jsonPacote]
+    if (dados != null) {
+      mpPacote['observacoes'] = dados['observacao'];
+    }
+    final mpBody = {
+      'pacotes': [mpPacote],
     };
-    try {
-      final response = await http
-          .post(url,
-              headers: {
-                'apiKey': authProvider!.apiKey,
-                'content-type': 'application/json'
-              },
-              body: json.encode(jsonBody))
-          .timeout(
-            const Duration(seconds: 10),
-          );
+    //debugger();
 
-      if (response.statusCode >= 200 && response.statusCode <= 299) {
-        // ignore: unused_local_variable
-        final content = json.decode(response.body);
+    //final picture = await rootBundle.load('lib/assets/test_RemoveMe/test.jpg');
+
+    // final teste1 = await getExternalStorageDirectory();
+    // String _localPath = teste1!.path;
+    // String filePath = _localPath + "/lady.jpeg";
+
+    // final newFile =
+    //     await io.File(filePath).copy(filePath.replaceAll(".jpeg", ".jpg"));
+
+    try {
+      var headers = {'apiKey': authProvider!.apiKey};
+      var request = http.MultipartRequest('POST', url);
+      request.fields.addAll({'pacote': json.encode(mpBody)});
+      if (dados != null && dados['images'] != null) {
+        for (var file in dados['images'] as List<XFile>) {
+          final mpFile = await http.MultipartFile.fromPath('photos', file.path);
+          request.files.add(mpFile);
+        }
+      }
+      // final mpFile = await http.MultipartFile.fromPath('photos', newFile.path);
+      // request.files.add(mpFile);
+
+      request.headers.addAll(headers);
+
+      http.StreamedResponse response = await request.send();
+
+      if (response.statusCode == 200) {
+        //debugger();
+        print(await response.stream.bytesToString());
         return true;
       } else {
-        final content = json.decode(response.body);
-        onError(content['error']);
+        //debugger();
+        print(response.reasonPhrase);
+        final errorMessage = await response.stream.bytesToString();
+        print(errorMessage);
+        onError(errorMessage);
         return false;
       }
-    } on SocketException catch (_) {
+    }
+    // try {
+    //   final request = http.MultipartRequest('POST', url);
+    //   request.fields['pacote'] = json.encode(mpBody);
+
+    //   if (dados != null) {
+    //     for (var photo in dados['images'] as List<XFile>) {
+    //       request.files
+    //           .add(await http.MultipartFile.fromPath('photos', photo.path));
+    //     }
+    //   }
+    //   final header = {
+    //     'apiKey': authProvider!.apiKey,
+    //   };
+    //   request.headers.addAll(header);
+    //   debugger();
+    //   final response =
+    //       await request.send().timeout(const Duration(seconds: 10));
+    //   if (response.statusCode >= 200 && response.statusCode <= 299) {
+    //     return true;
+    //   } else {
+    //     debugger();
+    //     final sifuder = await response.stream.bytesToString();
+    //     final content = json.decode(sifuder);
+    //     onError("content['error']");
+    //     return false;
+    //   }
+    // }
+    on io.SocketException catch (_) {
+      //debugger();
       onError("Falha de conexão.\nVerifique sua conexão à internet.");
       return false;
     } on TimeoutException catch (_) {
+      //debugger();
       onError("Falha na conexão. Tente novamente mais tarde.");
       return false;
     } on Exception catch (e) {
+      //debugger();
       onError(e.toString());
       return false;
     }
   }
 
-  Future<bool> entregaPacoteAoCliente({
+  Future<bool> entregaPacoteAoClienteMP({
     required Remessa remessa,
     required Pacote pacote,
     required String nomeRecebedor,
     required String documentoRecebedor,
     required Function onError,
+    Map<String, dynamic>? dados,
     double latitude = 43.645074,
     double longitude = -115.993081,
   }) async {
@@ -84,48 +144,179 @@ class OperacaoDePacoteAPI with ChangeNotifier {
       scheme: 'https',
       host: ApiURL.apiAuthority,
       path: 'entrega/entregar',
+      // port: 5200,
     );
-    final jsonPacote = {
+    final mpPacote = {
       'pacote': pacote.id.toString(),
       'operacao': remessa.uuid,
       'ml_user_id': pacote.mlUserID,
       'receiver_name': nomeRecebedor,
       'receiver_doc': documentoRecebedor,
       'latitude': latitude,
-      'longitude': longitude
+      'longitude': longitude,
     };
-    final jsonBody = {
-      'pacotes': [jsonPacote],
+    if (dados != null) {
+      mpPacote['observacoes'] = dados['observacao'];
+    }
+    final mpBody = {
+      'pacotes': [mpPacote],
     };
-    try {
-      final response = await http
-          .post(url,
-              headers: {
-                'apiKey': authProvider!.apiKey,
-                'content-type': 'application/json'
-              },
-              body: json.encode(jsonBody))
-          .timeout(
-            const Duration(seconds: 10),
-          );
+    //debugger();
 
-      if (response.statusCode >= 200 && response.statusCode <= 299) {
-        final content = json.decode(response.body);
+    //final picture = await rootBundle.load('lib/assets/test_RemoveMe/test.jpg');
+
+    // final teste1 = await getExternalStorageDirectory();
+    // String _localPath = teste1!.path;
+    // String filePath = _localPath + "/lady.jpeg";
+
+    // final newFile =
+    //     await io.File(filePath).copy(filePath.replaceAll(".jpeg", ".jpg"));
+
+    try {
+      var headers = {'apiKey': authProvider!.apiKey};
+      var request = http.MultipartRequest('POST', url);
+      request.fields.addAll({'pacote': json.encode(mpBody)});
+      if (dados != null && dados['images'] != null) {
+        for (var file in dados['images'] as List<XFile>) {
+          final mpFile = await http.MultipartFile.fromPath('photos', file.path);
+          request.files.add(mpFile);
+        }
+      }
+      // final mpFile = await http.MultipartFile.fromPath('photos', newFile.path);
+      // request.files.add(mpFile);
+
+      request.headers.addAll(headers);
+
+      http.StreamedResponse response = await request.send();
+
+      if (response.statusCode == 200) {
+        //debugger();
+        print(await response.stream.bytesToString());
         return true;
       } else {
-        final content = json.decode(response.body);
-        onError(content['error']);
+        //debugger();
+        final errorMessage = await response.stream.bytesToString();
+        print(errorMessage);
+        onError(errorMessage);
         return false;
       }
-    } on SocketException catch (_) {
+    }
+    // try {
+    //   final request = http.MultipartRequest('POST', url);
+    //   request.fields['pacote'] = json.encode(mpBody);
+
+    //   if (dados != null) {
+    //     for (var photo in dados['images'] as List<XFile>) {
+    //       request.files
+    //           .add(await http.MultipartFile.fromPath('photos', photo.path));
+    //     }
+    //   }
+    //   final header = {
+    //     'apiKey': authProvider!.apiKey,
+    //   };
+    //   request.headers.addAll(header);
+    //   debugger();
+    //   final response =
+    //       await request.send().timeout(const Duration(seconds: 10));
+    //   if (response.statusCode >= 200 && response.statusCode <= 299) {
+    //     return true;
+    //   } else {
+    //     debugger();
+    //     final sifuder = await response.stream.bytesToString();
+    //     final content = json.decode(sifuder);
+    //     onError("content['error']");
+    //     return false;
+    //   }
+    // }
+    on io.SocketException catch (_) {
+      //debugger();
       onError("Falha de conexão.\nVerifique sua conexão à internet.");
       return false;
     } on TimeoutException catch (_) {
+      //debugger();
       onError("Falha na conexão. Tente novamente mais tarde.");
       return false;
     } on Exception catch (e) {
+      //debugger();
       onError(e.toString());
       return false;
     }
   }
+
+  // Future<bool> entregaPacoteAoCliente({
+  //   required Remessa remessa,
+  //   required Pacote pacote,
+  //   required String nomeRecebedor,
+  //   required String documentoRecebedor,
+  //   required Function onError,
+  //   Map<String, dynamic>? dados,
+  //   double latitude = 43.645074,
+  //   double longitude = -115.993081,
+  // }) async {
+  //   final url = Uri(
+  //     scheme: 'https',
+  //     host: ApiURL.apiAuthority,
+  //     path: 'entrega/entregar',
+  //   );
+  //   final jsonPacote = {
+  //     'pacote': pacote.id.toString(),
+  //     'operacao': remessa.uuid,
+  //     'ml_user_id': pacote.mlUserID,
+  //     'receiver_name': nomeRecebedor,
+  //     'receiver_doc': documentoRecebedor,
+  //     'latitude': latitude,
+  //     'longitude': longitude,
+  //   };
+  //   if (dados != null) {
+  //     jsonPacote['observacoes'] = dados['observacao'];
+  //   }
+
+  //   final jsonBody = {
+  //     'pacotes': [jsonPacote],
+  //   };
+  //   //debugger();
+  //   try {
+  //     final mpRequest = http.MultipartRequest('POST', url);
+  //     mpRequest.fields['pacotes'] = json.encode(jsonBody);
+  //     if (dados != null &&
+  //         dados['images'] != null &&
+  //         (dados['images'] as List<XFile>).isNotEmpty) {
+  //       for (XFile xFile in (dados['images'] as List<XFile>)) {
+  //         mpRequest.files
+  //             .add(await http.MultipartFile.fromPath('photos', xFile.path));
+  //       }
+  //     }
+  //     final response =
+  //         await mpRequest.send().timeout(const Duration(seconds: 30));
+  //     final responseBody = await response.stream.bytesToString();
+  //     // final response = await http
+  //     //     .post(url,
+  //     //         headers: {
+  //     //           'apiKey': authProvider!.apiKey,
+  //     //           'content-type': 'application/json'
+  //     //         },
+  //     //         body: json.encode(jsonBody))
+  //     //     .timeout(
+  //     //       const Duration(seconds: 10),
+  //     //     );
+
+  //     if (response.statusCode >= 200 && response.statusCode <= 299) {
+  //       final _ = json.decode(responseBody);
+  //       return true;
+  //     } else {
+  //       final content = json.decode(responseBody);
+  //       onError(content['error']);
+  //       return false;
+  //     }
+  //   } on io.SocketException catch (se) {
+  //     onError("Falha de conexão.\nVerifique sua conexão à internet.");
+  //     return false;
+  //   } on TimeoutException catch (toe) {
+  //     onError("Falha na conexão. Tente novamente mais tarde.");
+  //     return false;
+  //   } on Exception catch (e) {
+  //     onError(e.toString());
+  //     return false;
+  //   }
+  // }
 }

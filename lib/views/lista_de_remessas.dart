@@ -75,7 +75,8 @@ class _RemessasViewState extends State<RemessasView> {
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text("Minhas remessas",
+                    Text(
+                        "Minhas remessas (${Provider.of<RemessasAPI>(context).remessas.fold(0, (int sum, x) => sum + x.qtdPacotesProcessados)})",
                         style: Theme.of(context).textTheme.headline5,
                         textAlign: TextAlign.left),
                     // const TextField(

@@ -122,8 +122,8 @@ class _NovaRemessaViewState extends State<NovaRemessaView> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text(operacaoRemessa.vendedoresVerificados[0],
-                            style: Theme.of(context).textTheme.headline5),
+                        // Text(operacaoRemessa.vendedoresVerificados[0],
+                        //     style: Theme.of(context).textTheme.headline5),
                         Text(
                           "${operacaoRemessa.pacotes.length} pacote(s) coletados",
                           style:
@@ -142,7 +142,7 @@ class _NovaRemessaViewState extends State<NovaRemessaView> {
                   ],
                 ),
               ),
-              Expanded(child: RemessaPacotesList()),
+              Expanded(child: RemessaPacotesList(operacaoRemessa.pacotes)),
               _isBusy
                   ? Center(child: CircularProgressIndicator())
                   : ElevatedButton(
@@ -181,12 +181,12 @@ class _NovaRemessaViewState extends State<NovaRemessaView> {
                         child: ListView.builder(
                           itemBuilder: (ctx, ix) => ListTile(
                             //title: Text(operacaoRemessa.pacotes[ix].id),
-                            subtitle: Text(
-                                operacaoRemessa.pacotes[ix].errorMessage ??
-                                    "Erro genérico"),
+                            subtitle: Text(operacaoRemessa
+                                    .pacotesComErro[ix].errorMessage ??
+                                "Erro genérico"),
                             leading: Icon(Icons.error),
                           ),
-                          itemCount: operacaoRemessa.pacotes.length,
+                          itemCount: operacaoRemessa.pacotesComErro.length,
                         ),
                       ),
                       TextButton(

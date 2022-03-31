@@ -1,12 +1,20 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:bilolog/env/api_url.dart';
 import 'package:bilolog/models/cargo.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:http_parser/http_parser.dart';
 
 class AuthenticationProvider with ChangeNotifier {
   String? _apiKey;
@@ -55,6 +63,55 @@ class AuthenticationProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> teste(BuildContext context) async {
+    final url = Uri(
+      scheme: 'https',
+      host: ApiURL.apiAuthority,
+      path: 'entrega/entregar',
+      // port: 5200,
+    );
+    final mpPacote = {
+      'pacote': "potaria",
+      'operacao': "remessa.uuid",
+      'ml_user_id': "pacote.mlUserID",
+      'receiver_name': "nomeRecebedor",
+      'receiver_doc': "documentoRecebedor",
+      'latitude': 1,
+      'longitude': -1,
+    };
+
+    mpPacote['observacoes'] = "dados['observacao']";
+    final picture = await rootBundle.load('lib/assets/test_RemoveMe/test.jpg');
+
+    final teste1 = await getExternalStorageDirectory();
+    String _localPath = teste1!.path;
+    String filePath = _localPath + "/arquivoDeTeste".trim() + "_" + ".jpeg";
+
+    final mpBody = {
+      'pacotes': [mpPacote],
+    };
+    try {
+      final request = http.MultipartRequest('POST', url);
+      request.fields['pacote'] = json.encode(mpBody);
+      for (var i = 0; i < 5; i++) {
+        request.files
+            .add(await http.MultipartFile.fromPath('photos', filePath));
+      }
+
+      //debugger();
+      final response =
+          await request.send().timeout(const Duration(seconds: 1000));
+      //     );
+      //debugger();
+      final responseBody = await response.stream.bytesToString();
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Response code: ${response.statusCode}")));
+    } on Exception catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Exception: ${e.toString()}")));
+    }
+  }
+
   Future<void> logIn(String username, String password, Function onError) async {
     final loginUrl =
         Uri.https(ApiURL.apiAuthority, "/transcolaboradores/login");
@@ -86,8 +143,8 @@ class AuthenticationProvider with ChangeNotifier {
     } on SocketException catch (_) {
       onError("Falha de conexão");
       return;
-    } on Exception catch (_) {
-      onError("Erro inesperado");
+    } on Exception catch (e) {
+      onError("Erro inesperado: ${e.toString()}");
       return;
     }
   }

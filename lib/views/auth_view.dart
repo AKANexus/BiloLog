@@ -3,6 +3,7 @@
 import 'package:bilolog/providers/auth_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
 class AuthenticationView extends StatefulWidget {
@@ -29,8 +30,15 @@ class _AuthenticationViewState extends State<AuthenticationView> {
   @override
   void didChangeDependencies() {
     if (_isInit) {
+      PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
+        setState(() {
+          version = packageInfo.version;
+          buildNumber = packageInfo.buildNumber;
+        });
+      });
       final authProvider =
           Provider.of<AuthenticationProvider>(context, listen: false);
+
       if (kDebugMode) _password = "trilha123";
       authProvider.checkForLogIn();
 
@@ -65,6 +73,15 @@ class _AuthenticationViewState extends State<AuthenticationView> {
   }
 
   Future<void> _submit() async {
+    // setState(() {
+    //   _isBusy = true;
+    // });
+    // await Provider.of<AuthenticationProvider>(context, listen: false)
+    //     .teste(context);
+    // setState(() {
+    //   _isBusy = false;
+    // });
+    // return;
     if (kDebugMode) {
       setState(() {
         _isBusy = true;
@@ -97,6 +114,9 @@ class _AuthenticationViewState extends State<AuthenticationView> {
     }
   }
 
+  String version = "";
+  String buildNumber = "";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -124,6 +144,7 @@ class _AuthenticationViewState extends State<AuthenticationView> {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             TextFormField(
+                              key: const Key("usernameField"),
                               textInputAction: TextInputAction.next,
                               onFieldSubmitted: (_) {
                                 FocusScope.of(context)
@@ -147,6 +168,7 @@ class _AuthenticationViewState extends State<AuthenticationView> {
                               height: 15,
                             ),
                             TextFormField(
+                              key: Key("passwordField"),
                               focusNode: _passwordFocusNode,
                               onSaved: (value) {
                                 _password = value;
@@ -175,7 +197,16 @@ class _AuthenticationViewState extends State<AuthenticationView> {
                                 _submit();
                               },
                               child: Text("Login"),
-                            )
+                            ),
+                            SizedBox(height: 40),
+                            Text(
+                              "$version+$buildNumber",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 8,
+                              ),
+                            ),
                           ]),
                     ),
                   )
@@ -190,7 +221,7 @@ class _AuthenticationViewState extends State<AuthenticationView> {
                     width: 250,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
+                      children: const [
                         CircularProgressIndicator(),
                       ],
                     ),

@@ -1,7 +1,7 @@
 enum StatusRemessa {
   confirmado,
   coletado,
-  recebido,
+  finalizado,
   emRota,
   entregue,
   emAnalise,
@@ -14,8 +14,8 @@ class ColetaStateConverter {
     switch (state.toLowerCase()) {
       case "pendente":
         return StatusRemessa.pendente;
-      case "recebido":
-        return StatusRemessa.recebido;
+      case "finalizado":
+        return StatusRemessa.finalizado;
       case "confirmado":
         return StatusRemessa.confirmado;
       case "coletado":

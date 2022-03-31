@@ -7,6 +7,7 @@ class Remessa with Comparable<Remessa> {
   final String uuid;
   final DateTime dtRemessa;
   final String? nomeVendedor;
+  final String nomeColaborador;
   StatusRemessa? _estadoRemessa;
   List<Pacote> pacotes;
   final RemessaKind remessaKind;
@@ -15,6 +16,7 @@ class Remessa with Comparable<Remessa> {
       {required this.uuid,
       required this.dtRemessa,
       this.nomeVendedor,
+      required this.nomeColaborador,
       required estadoRemessa,
       required this.pacotes,
       required this.remessaKind}) {
@@ -34,10 +36,10 @@ class Remessa with Comparable<Remessa> {
     IconData icon;
     String estado;
     switch (_estadoRemessa) {
-      case StatusRemessa.recebido:
+      case StatusRemessa.finalizado:
         {
           icon = Icons.call_received;
-          estado = "Recebido";
+          estado = "Finalizado";
           break;
         }
       case StatusRemessa.confirmado:

@@ -1,4 +1,4 @@
-import 'package:bilolog/models/locationCoords.dart';
+import 'package:bilolog/models/location_coords.dart';
 import 'package:bilolog/models/status_pacote.dart';
 
 import 'cliente.dart';

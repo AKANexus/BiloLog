@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:bilolog/models/cargo.dart';
 import 'package:bilolog/models/cliente.dart';
-import 'package:bilolog/models/locationCoords.dart';
+import 'package:bilolog/models/location_coords.dart';
 import 'package:bilolog/models/pacote.dart';
 import 'package:bilolog/models/status_pacote.dart';
 import 'package:bilolog/models/status_remessa.dart';
@@ -45,17 +46,19 @@ class RemessasAPI with ChangeNotifier {
     DateTime? endDate,
     RemessaKind? remessaKind,
   }) async {
+    //debugger();
     _remessas.clear();
-
     startDate ??= DateTime.now();
     endDate ??= DateTime.now();
     final url = Uri(
       scheme: 'https',
       host: ApiURL.apiAuthority,
       path: apiGetPath,
+      // port: 5200,
       query:
-          'dateStart=${DateTime(startDate.year, startDate.month, startDate.day).toIso8601String()}&dateEnd=${DateTime(endDate.year, endDate.month, endDate.day).add(const Duration(days: 1)).toIso8601String()}',
+          'dateStart=${DateTime(startDate.year, startDate.month, startDate.day).toUtc().toIso8601String()}&dateEnd=${DateTime(endDate.year, endDate.month, endDate.day).toUtc().add(const Duration(days: 1)).toIso8601String()}',
     );
+    //debugger();
     try {
       final response = await http.get(
         url,
@@ -68,14 +71,14 @@ class RemessasAPI with ChangeNotifier {
 
         for (Map<String, dynamic> coleta in content) {
           Remessa novaRemessa = Remessa(
-            uuid: coleta['uuid'],
-            dtRemessa: DateTime.parse(
-                (coleta['createdAt'] as String).replaceAll("Z", "+03")),
-            estadoRemessa: ColetaStateConverter.convert(coleta['status']),
-            pacotes: [],
-            remessaKind: RemessaKindConverter.convert(coleta['type']),
-            nomeVendedor: coleta['vendedor'][0]['contact_name'],
-          );
+              uuid: coleta['uuid'],
+              dtRemessa: DateTime.parse(
+                  (coleta['createdAt'] as String).replaceAll("Z", "+03")),
+              estadoRemessa: ColetaStateConverter.convert(coleta['status']),
+              pacotes: [],
+              remessaKind: RemessaKindConverter.convert(coleta['type']),
+              nomeVendedor: coleta['vendedor'][0]['company_name'],
+              nomeColaborador: coleta['colaborador'][0]['name']);
           for (Map<String, dynamic> pacote in coleta['pacotes']) {
             Pacote novoPacote = Pacote(
                 id: pacote['id'],
@@ -115,13 +118,14 @@ class RemessasAPI with ChangeNotifier {
         return;
       } else {
         final content = json.decode(response.body);
-        onError(content['error']);
+        onError(content['message'] ?? content['code']);
         notifyListeners();
         return;
       }
     } on SocketException catch (_) {
       onError("Falha de conexão.\nVerifique sua conexão à internet.");
-    } on TimeoutException catch (_) {
+    } on TimeoutException catch (nhanha) {
+      //debugger();
       onError("Falha na conexão. Tente novamente mais tarde.");
     } on Exception catch (e) {
       onError(e.toString());
@@ -149,6 +153,7 @@ class RemessasAPI with ChangeNotifier {
         scheme: 'https',
         host: ApiURL.apiAuthority,
         path: apiPostPath,
+        // port: 5200,
       );
       final response = await http
           .post(url,
@@ -170,7 +175,7 @@ class RemessasAPI with ChangeNotifier {
         return true;
       } else {
         final content = json.decode(response.body);
-        onError(content['error']);
+        onError(content['message']);
         notifyListeners();
         return false;
       }
