@@ -72,9 +72,6 @@ class MyApp extends StatelessWidget {
                 errorContainer: Color.fromARGB(255, 255, 190, 190))),
         home: Consumer<AuthenticationProvider>(
           builder: (context, auth, _) {
-            if (kDebugMode) {
-              print("auth.isLoggedIn: ${auth.isLoggedIn}");
-            }
             return auth.isLoggedIn
                 ? selectStartingWidget(auth.authorization)
                 : const AuthenticationView();

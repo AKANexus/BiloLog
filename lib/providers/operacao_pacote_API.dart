@@ -38,6 +38,7 @@ class OperacaoDePacoteAPI with ChangeNotifier {
       'pacote': pacote.id.toString(),
       'operacao': remessa.uuid,
       'ml_user_id': pacote.mlUserID,
+      'receiver_name': 'Não Entregue',
       'latitude': latitude,
       'longitude': longitude,
     };
@@ -73,7 +74,8 @@ class OperacaoDePacoteAPI with ChangeNotifier {
 
       request.headers.addAll(headers);
 
-      http.StreamedResponse response = await request.send();
+      http.StreamedResponse response =
+          await request.send().timeout(const Duration(seconds: 30));
 
       if (response.statusCode == 200) {
         //debugger();
@@ -187,7 +189,8 @@ class OperacaoDePacoteAPI with ChangeNotifier {
 
       request.headers.addAll(headers);
 
-      http.StreamedResponse response = await request.send();
+      http.StreamedResponse response =
+          await request.send().timeout(const Duration(seconds: 30));
 
       if (response.statusCode == 200) {
         //debugger();

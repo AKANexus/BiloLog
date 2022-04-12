@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:bilolog/exceptions/location_denied_exception.dart';
 import 'package:bilolog/models/cliente.dart';
 import 'package:bilolog/models/location_coords.dart';
 import 'package:bilolog/models/status_pacote.dart';
@@ -10,6 +11,7 @@ import 'package:bilolog/models/remessa_type.dart';
 import 'package:bilolog/models/status_remessa.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:location/location.dart';
 
 import '../models/cargo.dart';
 import '../models/pacote.dart';
@@ -109,13 +111,22 @@ class OperacaoDeRemessaAPI with ChangeNotifier {
       path: apiCheckPath,
       // port: 5200,
     );
+    late LocationData userLocation;
+    try {
+      userLocation = await location.getCurrentLocation();
+    } on LocationDeniedException catch (lde) {
+      onError(lde.deniedForever
+          ? "A localização do dispositivo é necessária para a utilização desse aplicativo. Altere as permissões no app de Configurações e tente novamente."
+          : "A localização do dispositivo é necessária para a utilização desse aplicativo. Tente novamente.");
+      return false;
+    }
     final jsonBody = {
       'transportadora_uuid': authProvider!.uuid,
       'pacotes': _pacotesEscaneados!
           .map((e) => {'id': e.id, 'sender_id': e.senderId, 'size': e.tamanho})
           .toList(),
-      'latitude': (await location.getCurrentLocation()).latitude,
-      'longitude': (await location.getCurrentLocation()).longitude,
+      'latitude': userLocation.latitude,
+      'longitude': userLocation.longitude,
     };
     try {
       final response = await http
@@ -125,7 +136,7 @@ class OperacaoDeRemessaAPI with ChangeNotifier {
                 'content-type': 'application/json',
               },
               body: json.encode(jsonBody))
-          .timeout(const Duration(seconds: 10));
+          .timeout(const Duration(seconds: 30));
       if (response.statusCode == 200 || response.statusCode == 201) {
         jsonRetornado = response.body;
         final Map<String, dynamic> remessaRetornada =
@@ -178,13 +189,16 @@ class OperacaoDeRemessaAPI with ChangeNotifier {
       } else {
         final Map<String, dynamic> remessaRetornada =
             json.decode(response.body);
-        onError(remessaRetornada['code'] ?? "Erro ao conferirRemessa");
+        onError(remessaRetornada['code'] ??
+            remessaRetornada['message'] ??
+            remessaRetornada['error'] ??
+            "Erro ao retornar remessa");
         return false;
       }
     } on SocketException catch (_) {
       onError("Falha de conexão.\nVerifique sua conexão à internet.");
       return false;
-    } on TimeoutException catch (_) {
+    } on TimeoutException catch (toe) {
       onError("Falha na conexão. Tente novamente mais tarde.");
       return false;
     } catch (e) {

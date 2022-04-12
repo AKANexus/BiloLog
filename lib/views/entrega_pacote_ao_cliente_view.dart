@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:typed_data';
 
+import 'package:bilolog/exceptions/location_denied_exception.dart';
 import 'package:bilolog/models/pacote.dart';
 import 'package:bilolog/models/status_pacote.dart';
 import 'package:bilolog/providers/location_provider.dart';
@@ -11,6 +12,7 @@ import 'package:bilolog/views/pacotes_da_remessa_view.dart';
 import 'package:bilolog/widgets/observacao_pacote_entry.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 
 // ignore: constant_identifier_names
@@ -44,13 +46,25 @@ class _EntregaPacoteViewState extends State<EntregaPacoteView> {
     });
     final operacaoPacoteProvider =
         Provider.of<OperacaoDePacoteAPI>(context, listen: false);
+    late LocationData userLocation;
+    try {
+      userLocation = await location.getCurrentLocation();
+    } on LocationDeniedException catch (lde) {
+      _onError(lde.deniedForever
+          ? "A localização do dispositivo é necessária para a utilização desse aplicativo. Altere as permissões no app de Configurações e tente novamente."
+          : "A localização do dispositivo é necessária para a utilização desse aplicativo. Tente novamente.");
+      setState(() {
+        _isBusy = false;
+      });
+      return;
+    }
     if (await operacaoPacoteProvider.problemaAoEntregarPacote(
             remessa: Provider.of<OperacaoDeRemessaAPI>(context, listen: false)
                 .remessa!,
             pacote: _pacote,
             dados: dados,
-            latitude: (await location.getCurrentLocation()).latitude ?? 0,
-            longitude: (await location.getCurrentLocation()).longitude ?? 0,
+            latitude: userLocation.latitude ?? 0,
+            longitude: userLocation.longitude ?? 0,
             onError: (value) => {}) ==
         true) {
       final remessaAPI = Provider.of<RemessasAPI>(context, listen: false);
@@ -84,13 +98,25 @@ class _EntregaPacoteViewState extends State<EntregaPacoteView> {
     });
     final operacaoPacoteProvider =
         Provider.of<OperacaoDePacoteAPI>(context, listen: false);
+    late LocationData userLocation;
+    try {
+      userLocation = await location.getCurrentLocation();
+    } on LocationDeniedException catch (lde) {
+      _onError(lde.deniedForever
+          ? "A localização do dispositivo é necessária para a utilização desse aplicativo. Altere as permissões no app de Configurações e tente novamente."
+          : "A localização do dispositivo é necessária para a utilização desse aplicativo. Tente novamente.");
+      setState(() {
+        _isBusy = false;
+      });
+      return;
+    }
     if (await operacaoPacoteProvider.entregaPacoteAoClienteMP(
             remessa: Provider.of<OperacaoDeRemessaAPI>(context, listen: false)
                 .remessa!,
             pacote: _pacote,
             dados: dados,
-            latitude: (await location.getCurrentLocation()).latitude ?? 0,
-            longitude: (await location.getCurrentLocation()).longitude ?? 0,
+            latitude: userLocation.latitude ?? 0,
+            longitude: userLocation.longitude ?? 0,
             nomeRecebedor: "${_recipientNameController.text.trim()}",
             documentoRecebedor: "$selectedItem:${_recipientIDController.text}",
             onError: _onError) ==

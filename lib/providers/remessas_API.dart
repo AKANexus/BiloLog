@@ -64,7 +64,7 @@ class RemessasAPI with ChangeNotifier {
         url,
         headers: {'apiKey': apiKey!},
       ).timeout(
-        const Duration(seconds: 10),
+        const Duration(seconds: 30),
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
         final content = json.decode(response.body);
@@ -160,7 +160,7 @@ class RemessasAPI with ChangeNotifier {
               headers: {'apiKey': apiKey!, 'content-type': 'application/json'},
               body: jsonBody)
           .timeout(
-            const Duration(seconds: 10),
+            const Duration(seconds: 30),
           );
       if (response.statusCode == 200 || response.statusCode == 201) {
         // ignore: unused_local_variable

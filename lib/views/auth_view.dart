@@ -39,7 +39,6 @@ class _AuthenticationViewState extends State<AuthenticationView> {
       final authProvider =
           Provider.of<AuthenticationProvider>(context, listen: false);
 
-      if (kDebugMode) _password = "trilha123";
       authProvider.checkForLogIn();
 
       _isInit = false;
