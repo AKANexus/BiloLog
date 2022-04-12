@@ -113,15 +113,19 @@ class AuthenticationProvider with ChangeNotifier {
   }
 
   Future<void> logIn(String username, String password, Function onError) async {
-    final loginUrl =
-        Uri.https(ApiURL.apiAuthority, "/transcolaboradores/login");
+    final url = Uri(
+      scheme: 'https',
+      host: ApiURL.apiAuthority,
+      path: 'transcolaboradores/login',
+      // port: 5200,
+    );
     try {
       final apiBody = {
         'username': username,
         'password': password,
       };
       final response = await http
-          .post(loginUrl, body: apiBody)
+          .post(url, body: apiBody)
           .timeout(const Duration(seconds: 5));
       final content = json.decode(response.body) as Map<String, dynamic>;
       if (response.statusCode == 200 || response.statusCode == 201) {

@@ -2,5 +2,5 @@ import 'package:flutter/foundation.dart';
 
 class ApiURL {
   static const apiAuthority =
-      (kDebugMode) ? "bilolog30cm.herokuapp.com" : "bilolog.herokuapp.com";
+      (kDebugMode) ? "192.168.10.116" : "bilolog.herokuapp.com";
 }
