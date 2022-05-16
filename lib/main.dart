@@ -1,6 +1,7 @@
+import 'package:bilolog/providers/error_api.dart';
 import 'package:bilolog/views/entrega_pacote_ao_cliente_view.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 
 import 'package:bilolog/models/cargo.dart';
@@ -17,6 +18,7 @@ import 'package:bilolog/views/remessa_qr_scan_view.dart';
 
 void main() {
   //HttpOverrides.global = MyHttpOverrides();
+  initializeDateFormatting('pt-BR');
   runApp(const MyApp());
 }
 
@@ -25,18 +27,18 @@ class MyApp extends StatelessWidget {
 
   Widget selectStartingWidget(Cargo authorizationString) {
     //print("authorizationString: $authorizationString");
-    switch (authorizationString) {
-      case Cargo.coletor:
-        return const RemessasView();
-      case Cargo.supervisor:
-        return const RemessasView();
-      case Cargo.motocorno:
-        return const RemessasView();
-      case Cargo.galeraDoCD:
-        return const RemessasView();
-      default:
-        return const Text("authorizationString returned an invalid value");
-    }
+    // switch (authorizationString) {
+    //   case Cargo.coletor:
+    //     return const RemessasView();
+    //   case Cargo.supervisor:
+    //     return const RemessasView();
+    //   case Cargo.motocorno:
+    //     return const RemessasView();
+    //   case Cargo.galeraDoCD:
+    //     return const RemessasView();
+    //   default:
+    return const RemessasView();
+    //}
   }
 
   // This widget is the root of your application.

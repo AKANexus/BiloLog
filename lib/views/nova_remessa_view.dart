@@ -98,6 +98,8 @@ class _NovaRemessaViewState extends State<NovaRemessaView> {
         return "Novo Recebimento";
       case Cargo.supervisor:
         return "Nova poha toda";
+      case Cargo.administrador:
+        return "Nova poha toda";
     }
   }
 

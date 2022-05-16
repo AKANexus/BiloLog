@@ -1,5 +1,3 @@
-import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:bilolog/widgets/take_picture.dart';
@@ -7,7 +5,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
 class ObservacaoPacoteEntry extends StatefulWidget {
-  ObservacaoPacoteEntry({Key? key}) : super(key: key);
+  const ObservacaoPacoteEntry({Key? key}) : super(key: key);
 
   @override
   State<ObservacaoPacoteEntry> createState() => _ObservacaoPacoteEntryState();
@@ -85,33 +83,31 @@ class _ObservacaoPacoteEntryState extends State<ObservacaoPacoteEntry> {
             const SizedBox(
               height: 25,
             ),
-            Container(
-              child: Column(
-                children: [
-                  Text("Envie as fotos"),
-                  SizedBox(
-                    height: 58,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (ctx, ix) {
-                        return Container(
-                          margin: EdgeInsets.all(2),
-                          height: 60,
-                          width: 60,
-                          child: Image.file(File(_images[ix].path)),
-                        );
-                      },
-                      itemCount: _images.length,
-                    ),
-                  ),
-                  TextButton(
-                    child: Text("Tirar foto..."),
-                    onPressed: () {
-                      _addImageToCarousel();
+            Column(
+              children: [
+                const Text("Envie as fotos"),
+                SizedBox(
+                  height: 58,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (ctx, ix) {
+                      return Container(
+                        margin: const EdgeInsets.all(2),
+                        height: 60,
+                        width: 60,
+                        child: Image.file(File(_images[ix].path)),
+                      );
                     },
+                    itemCount: _images.length,
                   ),
-                ],
-              ),
+                ),
+                TextButton(
+                  child: const Text("Tirar foto..."),
+                  onPressed: () {
+                    _addImageToCarousel();
+                  },
+                ),
+              ],
             ),
             Container(
               alignment: Alignment.centerRight,

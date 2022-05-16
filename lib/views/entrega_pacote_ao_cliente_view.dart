@@ -1,13 +1,9 @@
-import 'dart:developer';
-import 'dart:typed_data';
-
 import 'package:bilolog/exceptions/location_denied_exception.dart';
 import 'package:bilolog/models/pacote.dart';
 import 'package:bilolog/models/status_pacote.dart';
 import 'package:bilolog/providers/location_provider.dart';
 import 'package:bilolog/providers/operacao_pacote_api.dart';
 import 'package:bilolog/providers/operacao_remessa_api.dart';
-import 'package:bilolog/providers/remessas_api.dart';
 import 'package:bilolog/views/pacotes_da_remessa_view.dart';
 import 'package:bilolog/widgets/observacao_pacote_entry.dart';
 import 'package:camera/camera.dart';
@@ -67,7 +63,7 @@ class _EntregaPacoteViewState extends State<EntregaPacoteView> {
             longitude: userLocation.longitude ?? 0,
             onError: (value) => {}) ==
         true) {
-      final remessaAPI = Provider.of<RemessasAPI>(context, listen: false);
+      //final remessaAPI = Provider.of<RemessasAPI>(context, listen: false);
       final operacaoRemessa =
           Provider.of<OperacaoDeRemessaAPI>(context, listen: false);
 
@@ -117,11 +113,11 @@ class _EntregaPacoteViewState extends State<EntregaPacoteView> {
             dados: dados,
             latitude: userLocation.latitude ?? 0,
             longitude: userLocation.longitude ?? 0,
-            nomeRecebedor: "${_recipientNameController.text.trim()}",
+            nomeRecebedor: _recipientNameController.text.trim(),
             documentoRecebedor: "$selectedItem:${_recipientIDController.text}",
             onError: _onError) ==
         true) {
-      final remessaAPI = Provider.of<RemessasAPI>(context, listen: false);
+      //final remessaAPI = Provider.of<RemessasAPI>(context, listen: false);
       final operacaoRemessa =
           Provider.of<OperacaoDeRemessaAPI>(context, listen: false);
       // await remessaAPI.getRemessas(onError: () {});
@@ -167,6 +163,7 @@ class _EntregaPacoteViewState extends State<EntregaPacoteView> {
       return entrada.length <= 5
           ? {'check': false, 'motive': 'RG_TOO_SHORT'}
           : {'check': true};
+      /*
       var rgSemDV = entrada.substring(0, entrada.length - 1);
       var digitos = [];
       int tabela = 2;
@@ -183,6 +180,7 @@ class _EntregaPacoteViewState extends State<EntregaPacoteView> {
       } else {
         return {'check': false, 'motive': 'INVALID_RG'};
       }
+*/
     } else if (tipoDoc == TipoDoc.CPF) {
       if (entrada.length != 11) {
         return {'check': false, 'motive': 'INVALID_CPF'};
@@ -266,7 +264,7 @@ class _EntregaPacoteViewState extends State<EntregaPacoteView> {
           context: context,
           isScrollControlled: true,
           builder: (_) {
-            return ObservacaoPacoteEntry();
+            return const ObservacaoPacoteEntry();
           },
         );
         if (collectedInfo == null) {
@@ -462,7 +460,7 @@ class _EntregaPacoteViewState extends State<EntregaPacoteView> {
                                 context: context,
                                 isScrollControlled: true,
                                 builder: (_) {
-                                  return ObservacaoPacoteEntry();
+                                  return const ObservacaoPacoteEntry();
                                 },
                               );
                               if (collectedInfo == null) {

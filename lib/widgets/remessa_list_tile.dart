@@ -32,7 +32,8 @@ class RemessaListTile extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(2),
                     child: Text(
-                      DateFormat.yMd().format(_remessa.dtRemessa),
+                      DateFormat('dd/MM/yy', 'pt_BR')
+                          .format(_remessa.dtRemessa),
                       textAlign: TextAlign.left,
                       style: Theme.of(context).textTheme.bodySmall,
                     ),

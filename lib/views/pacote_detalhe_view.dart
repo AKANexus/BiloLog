@@ -190,8 +190,7 @@ class PacoteDetalheView extends StatelessWidget {
                     child: Column(children: [
                       Row(
                         children: [
-                          Text(DateFormat.yMd()
-                              .add_Hm()
+                          Text(DateFormat('dd/MM/yy', 'pt_BR')
                               .format(_pacote.statusPacotes[ix].timestamp)),
                           const SizedBox(width: 15),
                           Text(

@@ -1,25 +1,22 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io' as io;
-import 'dart:typed_data';
 
 import 'package:bilolog/models/pacote.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart';
-import 'package:path_provider/path_provider.dart';
 
 import '../env/api_url.dart';
 import '../models/remessa.dart';
 import 'auth_provider.dart';
+import 'error_api.dart';
 
 class OperacaoDePacoteAPI with ChangeNotifier {
   AuthenticationProvider? authProvider;
 
   late Pacote pacote;
+  final errorapi = ErrorsAPI();
 
   Future<bool> problemaAoEntregarPacote(
       {required Remessa remessa,
@@ -42,7 +39,8 @@ class OperacaoDePacoteAPI with ChangeNotifier {
       'latitude': latitude,
       'longitude': longitude,
     };
-    if (dados != null) {
+    //if (dados != null)
+    {
       mpPacote['observacoes'] = dados['observacao'];
     }
     final mpBody = {
@@ -63,7 +61,9 @@ class OperacaoDePacoteAPI with ChangeNotifier {
       var headers = {'apiKey': authProvider!.apiKey};
       var request = http.MultipartRequest('POST', url);
       request.fields.addAll({'pacote': json.encode(mpBody)});
-      if (dados != null && dados['images'] != null) {
+      if (
+          //dados != null &&
+          dados['images'] != null) {
         for (var file in dados['images'] as List<XFile>) {
           final mpFile = await http.MultipartFile.fromPath('photos', file.path);
           request.files.add(mpFile);
@@ -79,14 +79,21 @@ class OperacaoDePacoteAPI with ChangeNotifier {
 
       if (response.statusCode == 200) {
         //debugger();
-        print(await response.stream.bytesToString());
+        //print(await response.stream.bytesToString());
         return true;
       } else {
         //debugger();
-        print(response.reasonPhrase);
+        //print(response.reasonPhrase);
         final errorMessage = await response.stream.bytesToString();
-        print(errorMessage);
         onError(errorMessage);
+        errorapi.postNovoError(
+          source: 'problemaAoEntregarPacote()\nDados enviados:\n ' +
+              mpBody.toString(),
+          apiResponse: errorMessage,
+          code: response.statusCode.toString(),
+          pacote: int.parse(pacote.id),
+          operacao: remessa.uuid,
+        );
         return false;
       }
     }
@@ -117,17 +124,45 @@ class OperacaoDePacoteAPI with ChangeNotifier {
     //     return false;
     //   }
     // }
-    on io.SocketException catch (_) {
+    on io.SocketException catch (e, stacktrace) {
       //debugger();
       onError("Falha de conexão.\nVerifique sua conexão à internet.");
+      errorapi.postNovoError(
+        source: 'problemaAoEntregarPacote()\nDados enviados:\n ' +
+            mpBody.toString(),
+        exception: e,
+        stackTrace: stacktrace,
+        message: "Falha de conexão.\nVerifique sua conexão à internet.",
+        pacote: int.parse(pacote.id),
+        operacao: remessa.uuid,
+      );
       return false;
-    } on TimeoutException catch (_) {
+    } on TimeoutException catch (e, stacktrace) {
       //debugger();
       onError("Falha na conexão. Tente novamente mais tarde.");
+      errorapi.postNovoError(
+        source: 'problemaAoEntregarPacote()\nDados enviados:\n ' +
+            mpBody.toString(),
+        exception: e,
+        stackTrace: stacktrace,
+        message: "Falha na conexão. Tente novamente mais tarde.",
+        pacote: int.parse(pacote.id),
+        operacao: remessa.uuid,
+      );
       return false;
-    } on Exception catch (e) {
+    } on Exception catch (e, stacktrace) {
       //debugger();
       onError(e.toString());
+      onError("Falha na conexão. Tente novamente mais tarde.");
+      errorapi.postNovoError(
+        source: 'problemaAoEntregarPacote()\nDados enviados:\n ' +
+            mpBody.toString(),
+        exception: e,
+        stackTrace: stacktrace,
+        message: "Falha na conexão. Tente novamente mais tarde.",
+        pacote: int.parse(pacote.id),
+        operacao: remessa.uuid,
+      );
       return false;
     }
   }
@@ -194,12 +229,20 @@ class OperacaoDePacoteAPI with ChangeNotifier {
 
       if (response.statusCode == 200) {
         //debugger();
-        print(await response.stream.bytesToString());
+        //print(await response.stream.bytesToString());
         return true;
       } else {
         //debugger();
         final errorMessage = await response.stream.bytesToString();
-        print(errorMessage);
+        //print(errorMessage);
+        errorapi.postNovoError(
+          source: 'entregaPacoteAoClienteMP()\nDados enviados:\n ' +
+              mpBody.toString(),
+          apiResponse: errorMessage,
+          code: response.statusCode.toString(),
+          pacote: int.parse(pacote.id),
+          operacao: remessa.uuid,
+        );
         onError(errorMessage);
         return false;
       }
@@ -231,17 +274,45 @@ class OperacaoDePacoteAPI with ChangeNotifier {
     //     return false;
     //   }
     // }
-    on io.SocketException catch (_) {
+    on io.SocketException catch (e, stacktrace) {
       //debugger();
       onError("Falha de conexão.\nVerifique sua conexão à internet.");
+      errorapi.postNovoError(
+        source: 'entregaPacoteAoClienteMP()\nDados enviados:\n ' +
+            mpBody.toString(),
+        exception: e,
+        stackTrace: stacktrace,
+        message: "Falha de conexão.\nVerifique sua conexão à internet.",
+        pacote: int.parse(pacote.id),
+        operacao: remessa.uuid,
+      );
       return false;
-    } on TimeoutException catch (_) {
+    } on TimeoutException catch (e, stacktrace) {
       //debugger();
       onError("Falha na conexão. Tente novamente mais tarde.");
+      errorapi.postNovoError(
+        source: 'entregaPacoteAoClienteMP()\nDados enviados:\n ' +
+            mpBody.toString(),
+        exception: e,
+        stackTrace: stacktrace,
+        message: "Falha na conexão. Tente novamente mais tarde.",
+        pacote: int.parse(pacote.id),
+        operacao: remessa.uuid,
+      );
       return false;
-    } on Exception catch (e) {
+    } on Exception catch (e, stacktrace) {
       //debugger();
       onError(e.toString());
+      onError("Falha na conexão. Tente novamente mais tarde.");
+      errorapi.postNovoError(
+        source: 'entregaPacoteAoClienteMP()\nDados enviados:\n ' +
+            mpBody.toString(),
+        exception: e,
+        stackTrace: stacktrace,
+        message: "Falha na conexão. Tente novamente mais tarde.",
+        pacote: int.parse(pacote.id),
+        operacao: remessa.uuid,
+      );
       return false;
     }
   }

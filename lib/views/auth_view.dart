@@ -160,7 +160,8 @@ class _AuthenticationViewState extends State<AuthenticationView> {
                                 return null;
                               },
                               decoration: const InputDecoration(
-                                label: Text("Usuário"),
+                                label: Text("Usuário",
+                                    semanticsLabel: "Campo Usuário"),
                               ),
                             ),
                             const SizedBox(
@@ -184,7 +185,8 @@ class _AuthenticationViewState extends State<AuthenticationView> {
                                 }
                               },
                               decoration: const InputDecoration(
-                                label: Text("Senha"),
+                                label: Text("Senha",
+                                    semanticsLabel: "Campo Senha"),
                               ),
                               obscureText: false,
                             ),

@@ -30,7 +30,7 @@ class _RemessaPacotesViewState extends State<RemessaPacotesView> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  DateFormat.yMd()
+                  DateFormat('dd/MM/yy', 'pt_BR')
                       .format(operacaoRemessaProvider.remessa!.dtRemessa),
                   textAlign: TextAlign.left,
                   style: Theme.of(context)

@@ -1,27 +1,24 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:bilolog/env/api_url.dart';
 import 'package:bilolog/models/cargo.dart';
-import 'package:flutter/foundation.dart';
+import 'package:bilolog/providers/error_api.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:permission_handler/permission_handler.dart';
-
-import 'package:flutter/services.dart' show rootBundle;
-import 'package:http_parser/http_parser.dart';
 
 class AuthenticationProvider with ChangeNotifier {
   String? _apiKey;
   String? _name;
   String? _uuid;
   String? _authorization;
+  Cargo _specialAuth = Cargo.coletor;
   // String? _error;
+
+  final errorapi = ErrorsAPI();
 
   bool get isLoggedIn {
     return (_apiKey != null);
@@ -37,9 +34,20 @@ class AuthenticationProvider with ChangeNotifier {
         return Cargo.galeraDoCD;
       case "supervisor":
         return Cargo.supervisor;
+      case "administrador":
+        return Cargo.administrador;
       default:
         return Cargo.invalid;
     }
+  }
+
+  Cargo get specialAuth {
+    return _specialAuth;
+  }
+
+  set specialAuth(Cargo value) {
+    _specialAuth = value;
+    notifyListeners();
   }
 
   String get apiKey {
@@ -81,7 +89,7 @@ class AuthenticationProvider with ChangeNotifier {
     };
 
     mpPacote['observacoes'] = "dados['observacao']";
-    final picture = await rootBundle.load('lib/assets/test_RemoveMe/test.jpg');
+    //final picture = await rootBundle.load('lib/assets/test_RemoveMe/test.jpg');
 
     final teste1 = await getExternalStorageDirectory();
     String _localPath = teste1!.path;
@@ -98,12 +106,10 @@ class AuthenticationProvider with ChangeNotifier {
             .add(await http.MultipartFile.fromPath('photos', filePath));
       }
 
-      //debugger();
       final response =
           await request.send().timeout(const Duration(seconds: 1000));
-      //     );
-      //debugger();
-      final responseBody = await response.stream.bytesToString();
+      //final responseBody =
+      await response.stream.bytesToString();
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Response code: ${response.statusCode}")));
     } on Exception catch (e) {
@@ -119,11 +125,13 @@ class AuthenticationProvider with ChangeNotifier {
       path: 'transcolaboradores/login',
       // port: 5200,
     );
+
+    final apiBody = {
+      'username': username,
+      'password': password,
+    };
+
     try {
-      final apiBody = {
-        'username': username,
-        'password': password,
-      };
       final response = await http
           .post(url, body: apiBody)
           .timeout(const Duration(seconds: 5));
@@ -142,13 +150,27 @@ class AuthenticationProvider with ChangeNotifier {
         return;
       } else {
         onError(content['error']);
+        errorapi.postNovoError(
+          source: 'login(): ' + apiBody.toString(),
+          apiResponse: response.body,
+        );
         return;
       }
-    } on SocketException catch (_) {
+    } on SocketException catch (e, stacktrace) {
       onError("Falha de conexão");
+      errorapi.postNovoError(
+        source: 'login(): ' + apiBody.toString(),
+        exception: e,
+        stackTrace: stacktrace,
+      );
       return;
-    } on Exception catch (e) {
+    } on Exception catch (e, stacktrace) {
       onError("Erro inesperado: ${e.toString()}");
+      errorapi.postNovoError(
+        source: 'login(): ' + apiBody.toString(),
+        exception: e,
+        stackTrace: stacktrace,
+      );
       return;
     }
   }

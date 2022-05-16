@@ -6,6 +6,7 @@ import 'package:bilolog/exceptions/location_denied_exception.dart';
 import 'package:bilolog/models/cliente.dart';
 import 'package:bilolog/models/location_coords.dart';
 import 'package:bilolog/models/status_pacote.dart';
+import 'package:bilolog/providers/error_api.dart';
 import 'package:bilolog/providers/location_provider.dart';
 import 'package:bilolog/models/remessa_type.dart';
 import 'package:bilolog/models/status_remessa.dart';
@@ -35,6 +36,8 @@ class OperacaoDeRemessaAPI with ChangeNotifier {
   List<Pacote> get pacotesComErro =>
       _remessa!.pacotes.where((element) => element.hasError).toList();
   //List<Pacote> get pacotesVerificados => _remessaVerificada!.pacotes;
+
+  final errorsapi = ErrorsAPI();
 
   Pacote? _pacoteDetalhe;
   Pacote? get pacoteDetalhe => _pacoteDetalhe;
@@ -76,7 +79,11 @@ class OperacaoDeRemessaAPI with ChangeNotifier {
   }
 
   String get apiCheckPath {
-    if (authProvider == null) throw Exception("Sem informação de autenticação");
+    if (authProvider == null) {
+      errorsapi.postNovoError(
+          source: 'apiPostPath()', message: 'authProvider era nulo.');
+      throw Exception("Sem informação de autenticação");
+    }
     switch (authProvider!.authorization) {
       case Cargo.coletor:
         return "/coleta/check";
@@ -84,7 +91,24 @@ class OperacaoDeRemessaAPI with ChangeNotifier {
         return "/entrega/check";
       case Cargo.galeraDoCD:
         return "/recebimento/check";
+      case Cargo.supervisor:
+        switch (authProvider!.specialAuth) {
+          case Cargo.coletor:
+            return "/coleta/check";
+          case Cargo.galeraDoCD:
+            return "/recebimento/check";
+          default:
+            errorsapi.postNovoError(
+                source: 'apiGetPath',
+                message: 'Supervisor com special auth inválido: ' +
+                    authProvider!.specialAuth.toString());
+            throw Exception("Cargo inválido");
+        }
       default:
+        errorsapi.postNovoError(
+            source: 'apiGetPath',
+            message:
+                'Auth inválido: ' + authProvider!.authorization.toString());
         throw Exception("Cargo inválido");
     }
   }
@@ -189,20 +213,40 @@ class OperacaoDeRemessaAPI with ChangeNotifier {
       } else {
         final Map<String, dynamic> remessaRetornada =
             json.decode(response.body);
+        errorsapi.postNovoError(
+            code: remessaRetornada['code'],
+            message: remessaRetornada['message'],
+            apiResponse: remessaRetornada.toString(),
+            source:
+                'conferirRemessa()\nRemessa enviada: ' + jsonBody.toString());
         onError(remessaRetornada['code'] ??
             remessaRetornada['message'] ??
             remessaRetornada['error'] ??
             "Erro ao retornar remessa");
         return false;
       }
-    } on SocketException catch (_) {
+    } on SocketException catch (e, stacktrace) {
       onError("Falha de conexão.\nVerifique sua conexão à internet.");
+      errorsapi.postNovoError(
+          exception: e,
+          stackTrace: stacktrace,
+          message: "Falha de conexão.\nVerifique sua conexão à internet.",
+          source: 'conferirRemessa()\nRemessa enviada: ' + jsonBody.toString());
       return false;
-    } on TimeoutException catch (toe) {
+    } on TimeoutException catch (e, stacktrace) {
       onError("Falha na conexão. Tente novamente mais tarde.");
+      errorsapi.postNovoError(
+          exception: e,
+          stackTrace: stacktrace,
+          message: "Falha na conexão. Tente novamente mais tarde.",
+          source: 'conferirRemessa()\nRemessa enviada: ' + jsonBody.toString());
       return false;
-    } catch (e) {
+    } on Exception catch (e, stacktrace) {
       onError(e.toString());
+      errorsapi.postNovoError(
+          exception: e,
+          stackTrace: stacktrace,
+          source: 'conferirRemessa()\nRemessa enviada: ' + jsonBody.toString());
       return false;
     }
   }

@@ -1,11 +1,8 @@
-import 'dart:developer';
-
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
 class TakePictureWidget extends StatefulWidget {
-  TakePictureWidget({Key? key, required CameraDescription this.camera})
-      : super(key: key);
+  const TakePictureWidget({Key? key, required this.camera}) : super(key: key);
 
   final CameraDescription camera;
 
@@ -30,7 +27,7 @@ class _TakePictureWidgetState extends State<TakePictureWidget> {
 
   @override
   void dispose() {
-    print('Controller disposed');
+    //print('Controller disposed');
     _controller.dispose();
     super.dispose();
   }
@@ -120,7 +117,7 @@ class _TakePictureWidgetState extends State<TakePictureWidget> {
                 _isBusy
                     ? Container(
                         color: Colors.black45,
-                        child: Center(
+                        child: const Center(
                           child: CircularProgressIndicator(),
                         ),
                       )
@@ -128,7 +125,7 @@ class _TakePictureWidgetState extends State<TakePictureWidget> {
               ],
             );
           } else {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
         });
   }

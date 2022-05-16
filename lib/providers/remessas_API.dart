@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:bilolog/models/cargo.dart';
@@ -10,6 +9,7 @@ import 'package:bilolog/models/pacote.dart';
 import 'package:bilolog/models/status_pacote.dart';
 import 'package:bilolog/models/status_remessa.dart';
 import 'package:bilolog/providers/auth_provider.dart';
+import 'package:bilolog/providers/error_api.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -21,13 +21,18 @@ class RemessasAPI with ChangeNotifier {
   String? get apiKey => authProvider?.apiKey;
 
   AuthenticationProvider? authProvider;
+  final errorapi = ErrorsAPI();
 
   // ignore: prefer_final_fields
   List<Remessa> _remessas = [];
   List<Remessa> get remessas => [..._remessas];
 
   String get apiGetPath {
-    if (authProvider == null) throw Exception("Sem informação de autenticação");
+    if (authProvider == null) {
+      errorapi.postNovoError(
+          source: 'apiPostPath()', message: 'authProvider era nulo.');
+      throw Exception("Sem informação de autenticação");
+    }
     switch (authProvider!.authorization) {
       case Cargo.coletor:
         return "/coleta";
@@ -35,7 +40,39 @@ class RemessasAPI with ChangeNotifier {
         return "/entrega";
       case Cargo.galeraDoCD:
         return "/recebimento";
+      case Cargo.supervisor:
+        switch (authProvider!.specialAuth) {
+          case Cargo.coletor:
+            return "/coleta";
+          case Cargo.galeraDoCD:
+            return "/recebimento";
+          default:
+            errorapi.postNovoError(
+                source: 'apiGetPath',
+                message: 'Supervisor com special auth inválido: ' +
+                    authProvider!.specialAuth.toString());
+            throw Exception("Cargo inválido");
+        }
+      case Cargo.administrador:
+        switch (authProvider!.specialAuth) {
+          case Cargo.coletor:
+            return "/coleta";
+          case Cargo.galeraDoCD:
+            return "/recebimento";
+          case Cargo.motocorno:
+            return "/entrega";
+          default:
+            errorapi.postNovoError(
+                source: 'apiGetPath',
+                message: 'Administrador com special auth inválido: ' +
+                    authProvider!.specialAuth.toString());
+            throw Exception("Cargo inválido");
+        }
       default:
+        errorapi.postNovoError(
+            source: 'apiGetPath',
+            message:
+                'Auth inválido: ' + authProvider!.authorization.toString());
         throw Exception("Cargo inválido");
     }
   }
@@ -119,21 +156,41 @@ class RemessasAPI with ChangeNotifier {
       } else {
         final content = json.decode(response.body);
         onError(content['message'] ?? content['code']);
+        errorapi.postNovoError(
+            source: 'GetRemessas()',
+            code: content['code'],
+            apiResponse: response.body,
+            message: content['message']);
         notifyListeners();
         return;
       }
-    } on SocketException catch (_) {
+    } on SocketException catch (e, stacktrace) {
+      errorapi.postNovoError(
+          source: 'GetRemessas()',
+          stackTrace: stacktrace,
+          exception: e,
+          message: "Falha de conexão.\nVerifique sua conexão à internet.");
       onError("Falha de conexão.\nVerifique sua conexão à internet.");
-    } on TimeoutException catch (nhanha) {
-      //debugger();
+    } on TimeoutException catch (e, stacktrace) {
+      errorapi.postNovoError(
+          source: 'GetRemessas()',
+          stackTrace: stacktrace,
+          exception: e,
+          message: "Falha de conexão.\nVerifique sua conexão à internet.");
       onError("Falha na conexão. Tente novamente mais tarde.");
-    } on Exception catch (e) {
+    } on Exception catch (e, stacktrace) {
+      errorapi.postNovoError(
+          source: 'GetRemessas()', stackTrace: stacktrace, exception: e);
       onError(e.toString());
     }
   }
 
   String get apiPostPath {
-    if (authProvider == null) throw Exception("Sem informação de autenticação");
+    if (authProvider == null) {
+      errorapi.postNovoError(
+          source: 'apiPostPath()', message: 'authProvider era nulo.');
+      throw Exception("Sem informação de autenticação");
+    }
     switch (authProvider!.authorization) {
       case Cargo.coletor:
         return "/coleta/create";
@@ -141,7 +198,25 @@ class RemessasAPI with ChangeNotifier {
         return "/entrega/create";
       case Cargo.galeraDoCD:
         return "/recebimento/create";
+      case Cargo.supervisor:
+        switch (authProvider!.specialAuth) {
+          case Cargo.coletor:
+            return "/coleta/create";
+          case Cargo.galeraDoCD:
+            return "/recebimento/create";
+          default:
+            errorapi.postNovoError(
+                source: 'apiPostPath',
+                message:
+                    'Cargo especial de supervisor informado era inválido. Valor recebido: ' +
+                        authProvider!.specialAuth.toString());
+            throw Exception("Cargo inválido");
+        }
       default:
+        errorapi.postNovoError(
+            source: 'apiPostPath',
+            message: 'Cargo informado era inválido. Valor recebido: ' +
+                authProvider!.authorization.toString());
         throw Exception("Cargo inválido");
     }
   }
@@ -176,17 +251,36 @@ class RemessasAPI with ChangeNotifier {
       } else {
         final content = json.decode(response.body);
         onError(content['message']);
+        errorapi.postNovoError(
+            source: 'postNovaRemessaJson()\nJson enviado:\n' + jsonBody,
+            code: content['code'],
+            apiResponse: response.body);
         notifyListeners();
         return false;
       }
-    } on SocketException catch (_) {
+    } on SocketException catch (e, stacktrace) {
       onError("Falha de conexão.\nVerifique sua conexão à internet.");
+      errorapi.postNovoError(
+          source: 'postNovaRemessaJson()\nJson enviado:\n' + jsonBody,
+          stackTrace: stacktrace,
+          exception: e,
+          message: "Falha de conexão.\nVerifique sua conexão à internet.");
       return false;
-    } on TimeoutException catch (_) {
+    } on TimeoutException catch (e, stacktrace) {
       onError("Falha na conexão. Tente novamente mais tarde.");
+      errorapi.postNovoError(
+          source: 'postNovaRemessaJson()\nJson enviado:\n' + jsonBody,
+          stackTrace: stacktrace,
+          exception: e,
+          message: "Falha na conexão. Tente novamente mais tarde.");
       return false;
-    } on Exception catch (e) {
+    } on Exception catch (e, stacktrace) {
       onError(e.toString());
+      errorapi.postNovoError(
+          source: 'postNovaRemessaJson()\nJson enviado:\n' + jsonBody,
+          stackTrace: stacktrace,
+          exception: e,
+          message: e.toString());
       return false;
     }
   }

@@ -1,13 +1,10 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:bilolog/providers/auth_provider.dart';
-import 'package:bilolog/providers/location_provider.dart';
+import 'package:bilolog/providers/error_api.dart';
 import 'package:bilolog/providers/remessas_api.dart';
 import 'package:bilolog/views/remessa_qr_scan_view.dart';
 import 'package:bilolog/widgets/app_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 
 import '../models/cargo.dart';
@@ -27,6 +24,7 @@ class _RemessasViewState extends State<RemessasView> {
 
   bool _isBusy = false;
   bool _isInit = true;
+  late ErrorsAPI errorProvider;
 
   @override
   void didChangeDependencies() {
@@ -37,9 +35,15 @@ class _RemessasViewState extends State<RemessasView> {
     super.didChangeDependencies();
   }
 
-  String get title {
-    switch (Provider.of<AuthenticationProvider>(context, listen: false)
-        .authorization) {
+  @override
+  void initState() {
+    super.initState();
+    errorProvider = Provider.of<ErrorsAPI>(context, listen: false);
+    //initializeDateFormatting('pt_BR').then((_) => setState(() {}));
+  }
+
+  String title(Cargo cargo) {
+    switch (cargo) {
       case Cargo.invalid:
         return "ERRO";
       case Cargo.motocorno:
@@ -49,7 +53,9 @@ class _RemessasViewState extends State<RemessasView> {
       case Cargo.galeraDoCD:
         return "Recebimentos";
       case Cargo.supervisor:
-        return "A poha toda";
+        return "A coisa toda";
+      case Cargo.administrador:
+        return "A coisa toda";
     }
   }
 
@@ -57,103 +63,94 @@ class _RemessasViewState extends State<RemessasView> {
   Widget build(BuildContext context) {
     // final deviceSize = MediaQuery.of(context).size;
     // print("Rebuilt");
+    final authProvider = Provider.of<AuthenticationProvider>(context);
     return Scaffold(
-      drawer: AppDrawer(),
+      drawer: const AppDrawer(),
       appBar: AppBar(
-        title: Text(title),
+        title: Text(authProvider.authorization == Cargo.supervisor
+            ? title(authProvider.specialAuth)
+            : title(authProvider.authorization)),
         actions: [
           IconButton(
             onPressed: () {
               Navigator.of(context).pushNamed(RemessaQRScanView.routeName);
             },
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
           ),
         ],
       ),
-      body: title == "A poha toda"
-          ? Center(child: Text("Acesso negado"))
-          : Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                        "Minhas remessas (${Provider.of<RemessasAPI>(context).remessas.fold(0, (int sum, x) => sum + x.qtdPacotesProcessados)})",
-                        style: Theme.of(context).textTheme.headline5,
-                        textAlign: TextAlign.left),
-                    // const TextField(
-                    //   decoration: InputDecoration(
-                    //     label: Text("Pesquisar"),
-                    //   ),
-                    // ),
-                    // Text("Lista de remessas"),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        TextButton.icon(
-                          style: TextButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                          ),
-                          icon:
-                              Text(DateFormat('dd/MM/yyyy').format(_startDate)),
-                          label: const Icon(Icons.expand_more),
-                          onPressed: !_isBusy
-                              ? () async {
-                                  final DateTime? _selectedDate;
-                                  _selectedDate = await showDatePicker(
-                                      context: context,
-                                      initialDate: _startDate,
-                                      firstDate: DateTime(2000),
-                                      lastDate: DateTime.now());
-                                  if (_selectedDate != null) {
-                                    setState(() {
-                                      _startDate = _selectedDate!;
-                                      _getRemessas(context);
-                                    });
-                                  }
-                                }
-                              : null,
-                        ),
-                        TextButton.icon(
-                          style: TextButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                          ),
-                          icon: Text(DateFormat('dd/MM/yyyy').format(_endDate)),
-                          label: Icon(Icons.expand_more),
-                          onPressed: !_isBusy
-                              ? () async {
-                                  final DateTime? _selectedDate;
-                                  _selectedDate = await showDatePicker(
-                                      context: context,
-                                      initialDate: _endDate,
-                                      firstDate: DateTime(2000),
-                                      lastDate: DateTime.now());
-                                  if (_selectedDate != null) {
-                                    setState(() {
-                                      _endDate = _selectedDate!;
-                                      _getRemessas(context);
-                                    });
-                                  }
-                                }
-                              : null,
-                        )
-                      ],
-                    ),
-                    Expanded(
-                      child: _isBusy
-                          ? const Center(
-                              child: CircularProgressIndicator(),
-                            )
-                          : RefreshIndicator(
-                              onRefresh: () => _getRemessas(context),
-                              child: RemessasList(
-                                remessas:
-                                    Provider.of<RemessasAPI>(context).remessas,
-                              )),
-                    ),
-                  ]),
-            ),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child:
+            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Text(
+              "Minhas remessas (${Provider.of<RemessasAPI>(context).remessas.fold(0, (int sum, x) => sum + x.qtdPacotesProcessados)})",
+              style: Theme.of(context).textTheme.headline5,
+              textAlign: TextAlign.left),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              TextButton.icon(
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                ),
+                icon: Text(DateFormat('dd/MM/yy', 'pt_BR').format(_startDate)),
+                label: const Icon(Icons.expand_more),
+                onPressed: !_isBusy
+                    ? () async {
+                        final DateTime? _selectedDate;
+                        _selectedDate = await showDatePicker(
+                            context: context,
+                            initialDate: _startDate,
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime.now());
+                        if (_selectedDate != null) {
+                          setState(() {
+                            _startDate = _selectedDate!;
+                            _getRemessas(context);
+                          });
+                        }
+                      }
+                    : null,
+              ),
+              TextButton.icon(
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                ),
+                icon: Text(DateFormat('dd/MM/yy', 'pt_BR').format(_endDate)),
+                label: const Icon(Icons.expand_more),
+                onPressed: !_isBusy
+                    ? () async {
+                        final DateTime? _selectedDate;
+                        _selectedDate = await showDatePicker(
+                            context: context,
+                            initialDate: _endDate,
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime.now());
+                        if (_selectedDate != null) {
+                          setState(() {
+                            _endDate = _selectedDate!;
+                            _getRemessas(context);
+                          });
+                        }
+                      }
+                    : null,
+              )
+            ],
+          ),
+          Expanded(
+            child: _isBusy
+                ? const Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : RefreshIndicator(
+                    onRefresh: () => _getRemessas(context),
+                    child: RemessasList(
+                      remessas: Provider.of<RemessasAPI>(context).remessas,
+                    )),
+          ),
+        ]),
+      ),
     );
   }
 
